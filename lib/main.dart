@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:awecg/screen/splash_screen.dart';
+import 'package:desktop_window/desktop_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -8,8 +11,12 @@ import 'bloc/init_screen/init_screen_bloc.dart';
 import 'generated/i18n.dart';
 import 'screen/init_screen.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    print("Desktop");
+    DesktopWindow.setMinWindowSize(Size(400, 400));
+  }
   runApp(MyApp());
   configLoading();
 }
