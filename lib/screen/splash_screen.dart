@@ -40,6 +40,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -47,8 +49,8 @@ class _SplashScreenState extends State<SplashScreen> {
           painter: Awecg(time),
           child: Container(
             color: Colors.transparent,
-            width: 700,
-            height: 700,
+            width: width > height ? height : width,
+            height: width > height ? height : width,
           ),
         ),
       ),
