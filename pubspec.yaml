@@ -31,7 +31,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_bloc: ^8.0.1
+  flutter_bloc: ^8.1.1
   flutter_sizer: ^1.0.5
   flutter_easyloading: ^3.0.5
   http: ^0.13.5
@@ -39,6 +39,7 @@ dependencies:
   animated_svg: ^1.1.2
   path_drawing: ^1.0.1
   desktop_window: ^0.4.0
+  fl_chart: ^0.55.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -71,11 +72,11 @@ flutter_icons:
   windows:
     generate: true
     image_path: "lib/assets/icons/awecg.png"
-    icon_size: 48 # min:48, max:256, default: 48
+    icon_size: 256 # min:48, max:256, default: 48
   linux:
     generate: true
     image_path: "lib/assets/icons/awecg.png"
-    icon_size: 48 # min:48, max:256, default: 48
+    icon_size: 256 # min:48, max:256, default: 48
   macos:
     generate: true
     image_path: "lib/assets/icons/awecg.png"

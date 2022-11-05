@@ -29,6 +29,8 @@ class _SplashScreenState extends State<SplashScreen> {
       });
       if (time >= 4.2) {
         timer.cancel();
+        Navigator.pushReplacementNamed(context, '/init');
+        //Navigator.popAndPushNamed(context, '/init');
       }
     });
   }
