@@ -16,7 +16,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     print("Desktop");
-    await DesktopWindow.setMinWindowSize(const Size(700, 600));
+    await DesktopWindow.setMinWindowSize(const Size(800, 600));
   }
   // remove vivisble status bar
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
@@ -24,7 +24,7 @@ Future<void> main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
-  runApp(const MyApp());
+  runApp(const AppState());
   configLoading();
 }
 

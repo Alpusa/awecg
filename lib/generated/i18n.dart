@@ -36,6 +36,26 @@ class I18n implements WidgetsLocalizations {
   TextDirection get textDirection => TextDirection.ltr;
   /// "Hello ${name}"
   String greetTo(String name) => "Hello ${name}";
+  /// "ECG Signal"
+  String get ecgSignal => "ECG Signal";
+  /// "Scale"
+  String get scale => "Scale";
+  /// "Speed"
+  String get speed => "Speed";
+  /// "Frequency"
+  String get frequency => "Frequency";
+  /// "Change Scale"
+  String get changeScale => "Change Scale";
+  /// "Change Speed"
+  String get changeSpeed => "Change Speed";
+  /// "Reset Scale"
+  String get resetScale => "Reset Scale";
+  /// "Zoom In"
+  String get zoomIn => "Zoom In";
+  /// "Zoom Out"
+  String get zoomOut => "Zoom Out";
+  /// "Reset Zoom"
+  String get resetZoom => "Reset Zoom";
 }
 
 class _I18n_en_US extends I18n {

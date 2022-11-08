@@ -1,3 +1,13 @@
 {
-    "greetTo": "Hello {name}"
+    "greetTo": "Hello {name}",
+    "ecgSignal": "ECG Signal",
+    "scale": "Scale",
+    "speed": "Speed",
+    "frequency": "Frequency",
+    "changeScale": "Change Scale",
+    "changeSpeed": "Change Speed",
+    "resetScale": "Reset Scale",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "resetZoom": "Reset Zoom"
 }
