@@ -18,3 +18,8 @@ class ZoomInInitScreen extends InitScreenEvent {}
 class ZoomOutInitScreen extends InitScreenEvent {}
 
 class ResetZoomInitScreen extends InitScreenEvent {}
+
+class ChangeBaselineXInitScreen extends InitScreenEvent {
+  double baselineX;
+  ChangeBaselineXInitScreen({required this.baselineX});
+}

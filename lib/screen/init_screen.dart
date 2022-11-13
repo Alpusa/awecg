@@ -20,6 +20,7 @@ class InitScreen extends StatelessWidget {
   double? scale;
   double? speed;
   double? zoom;
+  double? baselineX;
 
   @override
   Widget build(BuildContext context) {
@@ -198,160 +199,175 @@ class InitScreen extends StatelessWidget {
                             builder: (context, state) {
                               print('state: $state');
                               if (state is InitScreenLoadData) {
-                                print('ecgData: ${state.data}');
+                                //print('ecgData: ${state.data}');
                                 ecgData = state.data;
                               }
                               if (state is InitScreenChangeScales) {
-                                print('ecgData: ${state.data}');
+                                //print('ecgData: ${state.data}');
                                 scale = state.scale;
                                 speed = state.speed;
                                 zoom = state.zoom;
                                 ecgData = state.data;
+                                baselineX = state.baselineX;
                               }
                               ecgData ??= [];
                               scale ??= 10;
                               speed ??= 25;
                               zoom ??= 1;
+                              baselineX ??= 0;
                               List<double> ecgShow = [];
-                              print('ecgData: $ecgData');
+                              //print('ecgData: $ecgData');
                               for (int i = 0; i < ecgData!.length; i++) {
                                 ecgShow.add(ecgData![i] * scale!);
                               }
-                              return LineChart(
-                                LineChartData(
-                                  lineTouchData: LineTouchData(
-                                    distanceCalculator:
-                                        (touchPoint, spotPixelCoordinates) {
-                                      return (touchPoint - spotPixelCoordinates)
-                                          .distance;
-                                    },
-                                    touchTooltipData: LineTouchTooltipData(
-                                        //maxContentWidth: 1,
-                                        tooltipBgColor: MyColors.RedL,
-                                        getTooltipItems: (touchedSpots) {
-                                          return touchedSpots
-                                              .map((LineBarSpot touchedSpot) {
-                                            final textStyle = TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 12.dp,
-                                            );
-                                            return LineTooltipItem(
-                                                'Time: ${(touchedSpot.x / speed!).toStringAsFixed(3)} s\nVoltage: ${(touchedSpot.y / scale!).toStringAsFixed(2)} mV',
-                                                textStyle);
-                                          }).toList();
-                                        }),
-                                    handleBuiltInTouches: true,
-                                    getTouchLineStart: (data, index) => 0,
-                                  ),
-                                  lineBarsData: [
-                                    LineChartBarData(
+                              return Container(
+                                child: LineChart(
+                                  LineChartData(
+                                    lineTouchData: LineTouchData(
+                                      enabled: true,
+                                      mouseCursorResolver: (p0, p1) {
+                                        return SystemMouseCursors.precise;
+                                      },
+                                      distanceCalculator:
+                                          (touchPoint, spotPixelCoordinates) {
+                                        return (touchPoint -
+                                                spotPixelCoordinates)
+                                            .distance;
+                                      },
+                                      touchTooltipData: LineTouchTooltipData(
+                                          //maxContentWidth: 1,
+                                          tooltipBgColor: MyColors.RedL,
+                                          getTooltipItems: (touchedSpots) {
+                                            return touchedSpots
+                                                .map((LineBarSpot touchedSpot) {
+                                              final textStyle = TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 12.dp,
+                                              );
+                                              return LineTooltipItem(
+                                                  'Time: ${(touchedSpot.x / speed!).toStringAsFixed(3)} s\nVoltage: ${(touchedSpot.y / scale!).toStringAsFixed(2)} mV',
+                                                  textStyle);
+                                            }).toList();
+                                          }),
+                                      handleBuiltInTouches: true,
+                                      getTouchLineStart: (data, index) => 0,
+                                    ),
+                                    lineBarsData: [
+                                      LineChartBarData(
+                                        show: true,
+                                        color: MyColors.grayL,
+                                        spots: ecgShow.isEmpty
+                                            ? []
+                                            : ecgShow
+                                                .asMap()
+                                                .map((index, value) => MapEntry(
+                                                    index,
+                                                    FlSpot(
+                                                        index *
+                                                            (0.004) *
+                                                            speed!,
+                                                        value)))
+                                                .values
+                                                .toList(),
+                                        isCurved: false,
+                                        preventCurveOverShooting: true,
+                                        //curveSmoothness: 0.1,
+                                        isStrokeCapRound: false,
+                                        barWidth: 1,
+                                        belowBarData: BarAreaData(
+                                          show: false,
+                                        ),
+                                        dotData: FlDotData(show: false),
+                                      ),
+                                    ],
+                                    titlesData: FlTitlesData(
+                                      show: false,
+                                      leftTitles: AxisTitles(
+                                        axisNameWidget: Text(
+                                          'Voltage [mV]',
+                                          style: TextStyle(
+                                            color: Colors.black
+                                                .withOpacity(0.5), // 0.2
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12.dp,
+                                          ),
+                                        ),
+                                        sideTitles: SideTitles(
+                                          showTitles: true,
+                                          //getTitlesWidget: leftTitleWidgets,
+                                          reservedSize: 30.dp,
+                                        ),
+                                      ),
+                                      rightTitles: AxisTitles(
+                                        sideTitles:
+                                            SideTitles(showTitles: false),
+                                      ),
+                                      bottomTitles: AxisTitles(
+                                        axisNameWidget: Text(
+                                          'Time [s]',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Colors.black
+                                                .withOpacity(0.5), // 0.2
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12.dp,
+                                          ),
+                                        ),
+                                        sideTitles: SideTitles(
+                                          showTitles: true,
+                                          //getTitlesWidget: bottomTitleWidgets,
+                                          reservedSize: 26.dp,
+                                        ),
+                                      ),
+                                      topTitles: AxisTitles(
+                                        sideTitles:
+                                            SideTitles(showTitles: false),
+                                      ),
+                                    ),
+                                    gridData: FlGridData(
                                       show: true,
-                                      color: MyColors.grayL,
-                                      spots: ecgShow.isEmpty
-                                          ? []
-                                          : ecgShow
-                                              .asMap()
-                                              .map((index, value) => MapEntry(
-                                                  index,
-                                                  FlSpot(
-                                                      index * (0.004) * speed!,
-                                                      value)))
-                                              .values
-                                              .toList(),
-                                      isCurved: false,
-                                      curveSmoothness: 0.1,
-                                      isStrokeCapRound: false,
-                                      barWidth: 1,
-                                      belowBarData: BarAreaData(
-                                        show: false,
-                                      ),
-                                      dotData: FlDotData(show: false),
+                                      drawHorizontalLine: true,
+                                      drawVerticalLine: true,
+                                      horizontalInterval:
+                                          1, // scale in mV (0.1 mV)
+                                      verticalInterval: 1, // scale to show
+                                      getDrawingHorizontalLine: (value) {
+                                        return value % 5 == 0
+                                            ? FlLine(
+                                                color: MyColors.RedL, // 0.2
+                                                strokeWidth: 0.5,
+                                              )
+                                            : FlLine(
+                                                color: MyColors.RedL, // 0.2
+                                                strokeWidth: 0.1,
+                                              );
+                                      },
+                                      getDrawingVerticalLine: (value) {
+                                        return value % 5 == 0
+                                            ? FlLine(
+                                                color: MyColors.RedL, // 0.2
+                                                strokeWidth: 0.5,
+                                              )
+                                            : FlLine(
+                                                color: MyColors.RedL, // 0.2
+                                                strokeWidth: 0.1,
+                                              );
+                                      },
                                     ),
-                                  ],
-                                  titlesData: FlTitlesData(
-                                    show: false,
-                                    leftTitles: AxisTitles(
-                                      axisNameWidget: Text(
-                                        'Voltage [mV]',
-                                        style: TextStyle(
-                                          color: Colors.black
-                                              .withOpacity(0.5), // 0.2
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12.dp,
-                                        ),
-                                      ),
-                                      sideTitles: SideTitles(
-                                        showTitles: true,
-                                        //getTitlesWidget: leftTitleWidgets,
-                                        reservedSize: 30.dp,
+                                    borderData: FlBorderData(
+                                      show: true,
+                                      border: Border.all(
+                                        color: MyColors.RedL,
+                                        width: 1,
                                       ),
                                     ),
-                                    rightTitles: AxisTitles(
-                                      sideTitles: SideTitles(showTitles: false),
-                                    ),
-                                    bottomTitles: AxisTitles(
-                                      axisNameWidget: Text(
-                                        'Time [s]',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          color: Colors.black
-                                              .withOpacity(0.5), // 0.2
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12.dp,
-                                        ),
-                                      ),
-                                      sideTitles: SideTitles(
-                                        showTitles: true,
-                                        //getTitlesWidget: bottomTitleWidgets,
-                                        reservedSize: 26.dp,
-                                      ),
-                                    ),
-                                    topTitles: AxisTitles(
-                                      sideTitles: SideTitles(showTitles: false),
-                                    ),
+                                    maxY: 30 * zoom!,
+                                    minY: -30 * zoom!,
+                                    minX: (0) + baselineX!,
+                                    maxX: ((80) * zoom! + baselineX!),
+                                    clipData: FlClipData.all(),
                                   ),
-                                  gridData: FlGridData(
-                                    show: true,
-                                    drawHorizontalLine: true,
-                                    drawVerticalLine: true,
-                                    horizontalInterval:
-                                        1, // scale in mV (0.1 mV)
-                                    verticalInterval: 1, // scale to show
-                                    getDrawingHorizontalLine: (value) {
-                                      return value % 5 == 0
-                                          ? FlLine(
-                                              color: MyColors.RedL, // 0.2
-                                              strokeWidth: 0.5,
-                                            )
-                                          : FlLine(
-                                              color: MyColors.RedL, // 0.2
-                                              strokeWidth: 0.1,
-                                            );
-                                    },
-                                    getDrawingVerticalLine: (value) {
-                                      return value % 5 == 0
-                                          ? FlLine(
-                                              color: MyColors.RedL, // 0.2
-                                              strokeWidth: 0.5,
-                                            )
-                                          : FlLine(
-                                              color: MyColors.RedL, // 0.2
-                                              strokeWidth: 0.1,
-                                            );
-                                    },
-                                  ),
-                                  borderData: FlBorderData(
-                                    show: true,
-                                    border: Border.all(
-                                      color: MyColors.RedL,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  maxY: 30 * zoom!,
-                                  minY: -30 * zoom!,
-                                  minX: 0,
-                                  maxX: 80 * zoom!,
                                 ),
                               );
                             },
@@ -359,6 +375,44 @@ class InitScreen extends StatelessWidget {
                                 current is InitScreenLoadData ||
                                 current is InitScreenInitial ||
                                 current is InitScreenChangeScales,
+                          ),
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: BlocBuilder<InitScreenBloc, InitScreenState>(
+                              builder: (context, state) {
+                                double max = 0;
+                                double limit = 0;
+                                double maxvalue = 0;
+
+                                if (state is InitScreenChangeScales) {
+                                  max = state.data.length.toDouble();
+                                  speed = state.speed;
+                                  zoom = state.zoom;
+                                  scale = state.scale;
+                                  baselineX = state.baselineX;
+                                  maxvalue = state.silverMax;
+                                }
+                                baselineX ??= 0;
+                                speed ??= 25;
+                                zoom ??= 1;
+
+                                return Slider(
+                                  onChanged: (value) {
+                                    print("value $value");
+                                    BlocProvider.of<InitScreenBloc>(context)
+                                        .add(ChangeBaselineXInitScreen(
+                                            baselineX: (value)));
+                                  },
+                                  value: baselineX!,
+                                  min: 0,
+                                  max: maxvalue,
+                                );
+                              },
+                              buildWhen: (previous, current) =>
+                                  current is InitScreenChangeScales,
+                            ),
                           ),
                           Positioned(
                             bottom: 0,
@@ -706,16 +760,15 @@ class InitScreen extends StatelessWidget {
                       ),
                       Expanded(
                         child: Container(
-                          padding: EdgeInsets.only(
-                            top: menuButtonPadding,
-                            bottom: menuButtonPadding,
-                            left: menuButtonPadding,
-                            right: menuButtonPadding,
-                          ),
-                          child: Row(
-                            children: [],
-                          ),
-                        ),
+                            padding: EdgeInsets.only(
+                              top: menuButtonPadding,
+                              bottom: menuButtonPadding,
+                              left: menuButtonPadding,
+                              right: menuButtonPadding,
+                            ),
+                            child: Column(
+                              children: [],
+                            )),
                       ),
                       Divider(
                         color: MyColors.grayL,

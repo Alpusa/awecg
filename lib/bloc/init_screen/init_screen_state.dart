@@ -17,11 +17,19 @@ class InitScreenChangeScales extends InitScreenState {
   double speed;
   double zoom;
   final List<double> data;
+  double baselineX;
+  bool loaded;
+  bool file;
+  double silverMax;
 
   InitScreenChangeScales({
     required this.scale,
     required this.speed,
     required this.data,
     required this.zoom,
+    required this.baselineX,
+    required this.loaded,
+    required this.file,
+    required this.silverMax,
   });
 }

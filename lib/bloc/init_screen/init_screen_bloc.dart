@@ -8,31 +8,61 @@ part 'init_screen_event.dart';
 part 'init_screen_state.dart';
 
 class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
+  bool file = true;
+  bool loaded = false;
+  List<double> ecgData = [];
+  double scale = 10;
+  double speed = 25;
+  double zoom = 1;
+  double baselineX = 0.0;
+  double silverMax = 0.0;
+
   InitScreenBloc() : super(InitScreenInitial()) {
-    List<double> ecgData = [];
-    double scale = 10;
-    double speed = 25;
-    double zoom = 1;
     on<InitScreenEvent>((event, emit) {
       // TODO: implement event handler
     });
 
     on<LoadECGFIleInitScreen>((event, emit) async {
-      // load file from local storage
-      FilePickerResult? rr = await FilePicker.platform.pickFiles();
-      if (rr != null) {
-        File file = File(rr.files.single.path!);
+      loaded = false;
+      baselineX = 0.0;
+      speed = 25;
+      zoom = 1;
+      scale = 10;
+      ecgData = [];
 
-        // load de file like a text
-        String text = await file.readAsString();
-        // split the text into a list of doubles separated by ','
-        List<double> data =
-            text.split(',').map((e) => double.parse(e)).toList();
-        // multiply the data by 100 to get the data in mV
-        data = data.map((e) => e).toList();
-        ecgData.clear();
-        ecgData.addAll(data);
-        emit(InitScreenLoadData(ecgData));
+      if (file) {
+        // load file from local storage
+        FilePickerResult? rr = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowedExtensions: ['txt', 'csv'],
+        );
+        if (rr != null) {
+          File fileLoad = File(rr.files.single.path!);
+
+          // load de file like a text
+          String text = await fileLoad.readAsString();
+          // split the text into a list of doubles separated by ','
+          List<double> data =
+              text.split(',').map((e) => double.parse(e)).toList();
+          // multiply the data by 100 to get the data in mV
+          data = data.map((e) => e).toList();
+          ecgData.clear();
+          ecgData.addAll(data);
+          loaded = true;
+          updateSilver();
+          emit(
+            InitScreenChangeScales(
+              scale: scale,
+              speed: speed,
+              data: ecgData,
+              zoom: zoom,
+              baselineX: baselineX,
+              loaded: loaded,
+              file: file,
+              silverMax: silverMax,
+            ),
+          );
+        }
       }
     });
 
@@ -51,9 +81,19 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         scale = 10;
       }
 
-      print("scale: $scale");
-      emit(InitScreenChangeScales(
-          scale: scale, speed: speed, data: ecgData, zoom: zoom));
+      updateSilver();
+      emit(
+        InitScreenChangeScales(
+          scale: scale,
+          speed: speed,
+          data: ecgData,
+          zoom: zoom,
+          baselineX: baselineX,
+          loaded: loaded,
+          file: file,
+          silverMax: silverMax,
+        ),
+      );
     });
 
     on<ChangeSpeedInitScreen>((event, emit) {
@@ -66,17 +106,39 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       } else if (speed == 20.0) {
         speed = 25;
       }
-      print("speed $speed");
 
-      emit(InitScreenChangeScales(
-          scale: scale, speed: speed, data: ecgData, zoom: zoom));
+      updateSilver();
+
+      emit(
+        InitScreenChangeScales(
+          scale: scale,
+          speed: speed,
+          data: ecgData,
+          zoom: zoom,
+          baselineX: baselineX,
+          loaded: loaded,
+          file: file,
+          silverMax: silverMax,
+        ),
+      );
     });
 
     on<ResetScalesInitScreen>((event, emit) {
       scale = 10;
       speed = 25;
-      emit(InitScreenChangeScales(
-          scale: scale, speed: speed, data: ecgData, zoom: zoom));
+      updateSilver();
+      emit(
+        InitScreenChangeScales(
+          scale: scale,
+          speed: speed,
+          data: ecgData,
+          zoom: zoom,
+          baselineX: baselineX,
+          loaded: loaded,
+          file: file,
+          silverMax: silverMax,
+        ),
+      );
     });
 
     on<ZoomOutInitScreen>((event, emit) {
@@ -102,8 +164,20 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         zoom = 1;
       }
 
-      emit(InitScreenChangeScales(
-          scale: scale, speed: speed, data: ecgData, zoom: zoom));
+      updateSilver();
+
+      emit(
+        InitScreenChangeScales(
+          scale: scale,
+          speed: speed,
+          data: ecgData,
+          zoom: zoom,
+          baselineX: baselineX,
+          loaded: loaded,
+          file: file,
+          silverMax: silverMax,
+        ),
+      );
     });
 
     on<ZoomInInitScreen>((event, emit) {
@@ -128,14 +202,65 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       } else if (zoom == 0.2) {
         zoom = 0.1;
       }
-      emit(InitScreenChangeScales(
-          scale: scale, speed: speed, data: ecgData, zoom: zoom));
+
+      updateSilver();
+
+      emit(
+        InitScreenChangeScales(
+          scale: scale,
+          speed: speed,
+          data: ecgData,
+          zoom: zoom,
+          baselineX: baselineX,
+          loaded: loaded,
+          file: file,
+          silverMax: silverMax,
+        ),
+      );
     });
 
     on<ResetZoomInitScreen>((event, emit) {
       zoom = 1;
-      emit(InitScreenChangeScales(
-          scale: scale, speed: speed, data: ecgData, zoom: zoom));
+
+      updateSilver();
+
+      emit(
+        InitScreenChangeScales(
+          scale: scale,
+          speed: speed,
+          data: ecgData,
+          zoom: zoom,
+          baselineX: baselineX,
+          loaded: loaded,
+          file: file,
+          silverMax: silverMax,
+        ),
+      );
     });
+
+    on<ChangeBaselineXInitScreen>((event, emit) {
+      baselineX = event.baselineX;
+
+      updateSilver();
+
+      emit(
+        InitScreenChangeScales(
+          scale: scale,
+          speed: speed,
+          data: ecgData,
+          zoom: zoom,
+          baselineX: baselineX,
+          loaded: loaded,
+          file: file,
+          silverMax: silverMax,
+        ),
+      );
+    });
+  }
+
+  void updateSilver() {
+    silverMax = (ecgData.length * (0.004) * speed) - (80 * zoom);
+    silverMax = silverMax >= 0 ? silverMax : 0;
+    baselineX = baselineX > silverMax ? silverMax : baselineX;
   }
 }
