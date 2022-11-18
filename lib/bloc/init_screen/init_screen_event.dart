@@ -23,3 +23,16 @@ class ChangeBaselineXInitScreen extends InitScreenEvent {
   double baselineX;
   ChangeBaselineXInitScreen({required this.baselineX});
 }
+
+class SetRulePointInitScreen extends InitScreenEvent {
+  FlSpot? spot;
+  SetRulePointInitScreen({required this.spot});
+}
+
+class ResetRulePointInitScreen extends InitScreenEvent {
+  ResetRulePointInitScreen();
+}
+
+class evaluateDataInitScreen extends InitScreenEvent {
+  evaluateDataInitScreen();
+}

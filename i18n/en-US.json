@@ -9,5 +9,21 @@
     "resetScale": "Reset Scale",
     "zoomIn": "Zoom In",
     "zoomOut": "Zoom Out",
-    "resetZoom": "Reset Zoom"
+    "resetZoom": "Reset Zoom",
+    "time": "Time",
+    "voltage": "Voltage",
+    "amplitude": "Amplitude",
+    "duration": "Duration",
+    "voltageDifference": "Voltage Difference",
+    "timeDifference": "Time Difference",
+    "arrhythmiaDetection": "Arrhythmia Detection",
+    "normal": "Normal",
+    "arrhythmia": "Arrhythmia",
+    "noise": "Noise",
+    "packs": "Packs",
+    "pack": "Pack",
+    "iter": "Iter",
+    "iterations": "Iterations",
+    "tachycardia": "Tachycardia",
+    "bradycardia": "Bradycardia"
 }

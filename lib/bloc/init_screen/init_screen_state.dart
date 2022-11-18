@@ -1,6 +1,5 @@
 part of 'init_screen_bloc.dart';
 
-@immutable
 abstract class InitScreenState {
   const InitScreenState();
 }
@@ -12,24 +11,40 @@ class InitScreenLoadData extends InitScreenState {
   InitScreenLoadData(this.data);
 }
 
-class InitScreenChangeScales extends InitScreenState {
+class InitScreenTools extends InitScreenState {
   double scale;
   double speed;
   double zoom;
   final List<double> data;
+  final List<double> data2;
   double baselineX;
   bool loaded;
   bool file;
   double silverMax;
+  FlSpot? initSpot;
+  FlSpot? endSpot;
+  int stateRule;
 
-  InitScreenChangeScales({
+  InitScreenTools({
     required this.scale,
     required this.speed,
     required this.data,
+    required this.data2,
     required this.zoom,
     required this.baselineX,
     required this.loaded,
     required this.file,
     required this.silverMax,
+    this.initSpot,
+    this.endSpot,
+    this.stateRule = 0,
+  });
+}
+
+class ArrhythmiaDetectionInitScreenState extends InitScreenState {
+  ArrhythmiaResult result;
+
+  ArrhythmiaDetectionInitScreenState({
+    required this.result,
   });
 }

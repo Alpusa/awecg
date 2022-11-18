@@ -56,6 +56,38 @@ class I18n implements WidgetsLocalizations {
   String get zoomOut => "Zoom Out";
   /// "Reset Zoom"
   String get resetZoom => "Reset Zoom";
+  /// "Time"
+  String get time => "Time";
+  /// "Voltage"
+  String get voltage => "Voltage";
+  /// "Amplitude"
+  String get amplitude => "Amplitude";
+  /// "Duration"
+  String get duration => "Duration";
+  /// "Voltage Difference"
+  String get voltageDifference => "Voltage Difference";
+  /// "Time Difference"
+  String get timeDifference => "Time Difference";
+  /// "Arrhythmia Detection"
+  String get arrhythmiaDetection => "Arrhythmia Detection";
+  /// "Normal"
+  String get normal => "Normal";
+  /// "Arrhythmia"
+  String get arrhythmia => "Arrhythmia";
+  /// "Noise"
+  String get noise => "Noise";
+  /// "Packs"
+  String get packs => "Packs";
+  /// "Pack"
+  String get pack => "Pack";
+  /// "Iter"
+  String get iter => "Iter";
+  /// "Iterations"
+  String get iterations => "Iterations";
+  /// "Tachycardia"
+  String get tachycardia => "Tachycardia";
+  /// "Bradycardia"
+  String get bradycardia => "Bradycardia";
 }
 
 class _I18n_en_US extends I18n {
