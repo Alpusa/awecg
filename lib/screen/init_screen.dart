@@ -685,7 +685,7 @@ class InitScreen extends StatelessWidget {
                                       return Text(
                                         resultAr.frequency != null
                                             ? resultAr.frequency.toString()
-                                            : "",
+                                            : "N/A",
                                         style: TextStyle(
                                           color: MyColors.RedL,
                                           fontWeight: FontWeight.bold,
@@ -713,7 +713,7 @@ class InitScreen extends StatelessWidget {
                                     resultAr = state.result;
                                   }
                                   return Text(
-                                    resultAr.getFrequencyClassify,
+                                    resultAr.getFrequencyClassify ?? "",
                                     style: TextStyle(
                                       color: MyColors.RedL,
                                       fontWeight: FontWeight.bold,
