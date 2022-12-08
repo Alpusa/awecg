@@ -3,7 +3,9 @@ import 'dart:math';
 import 'package:awecg/generated/i18n.dart';
 import 'package:awecg/models/arrhythmia_result.dart';
 import 'package:awecg/repository/my_colors.dart';
+import 'package:awecg/screen/splash_screen.dart';
 import 'package:awecg/widget/menu_button.dart';
+import 'package:awecg/widget/select_mode.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +13,7 @@ import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../bloc/init_screen/init_screen_bloc.dart';
+import '../widget/select_bluetooth_device.dart';
 
 class InitScreen extends StatelessWidget {
   InitScreen({super.key});
@@ -149,8 +152,22 @@ class InitScreen extends StatelessWidget {
                       color: MyColors.grayL,
                     ),*/
                     onPressed: () {
-                      BlocProvider.of<InitScreenBloc>(context)
-                          .add(LoadECGFIleInitScreen());
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext) {
+                            return BlocBuilder<InitScreenBloc, InitScreenState>(
+                              builder: (context, state) {
+                                if (state is SelectBluetoothDeviceInitScreen) {
+                                  return SelectBluetoothDevice();
+                                }
+                                return SelectMode();
+                              },
+                              buildWhen: (previous, current) =>
+                                  current is SelectBluetoothDeviceInitScreen,
+                            );
+                          });
+                      /*BlocProvider.of<InitScreenBloc>(context)
+                          .add(LoadECGFIleInitScreen());*/
                     },
                   ),
                 ),

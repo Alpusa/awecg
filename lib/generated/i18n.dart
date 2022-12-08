@@ -88,6 +88,62 @@ class I18n implements WidgetsLocalizations {
   String get tachycardia => "Tachycardia";
   /// "Bradycardia"
   String get bradycardia => "Bradycardia";
+  /// "Select Mode"
+  String get selectMode => "Select Mode";
+  /// "Cancel"
+  String get cancel => "Cancel";
+  /// "OK"
+  String get ok => "OK";
+  /// "Select"
+  String get select => "Select";
+  /// "Load File"
+  String get loadFile => "Load File";
+  /// "Save File"
+  String get saveFile => "Save File";
+  /// "Save"
+  String get save => "Save";
+  /// "Load"
+  String get load => "Load";
+  /// "Save As"
+  String get saveAs => "Save As";
+  /// "Load From"
+  String get loadFrom => "Load From";
+  /// "Save To"
+  String get saveTo => "Save To";
+  /// "Bluetooth"
+  String get bluetooth => "Bluetooth";
+  /// "Connect"
+  String get connect => "Connect";
+  /// "Disconnect"
+  String get disconnect => "Disconnect";
+  /// "Connected"
+  String get connected => "Connected";
+  /// "Disconnected"
+  String get disconnected => "Disconnected";
+  /// "Connected to ${name}"
+  String connectedTo(String name) => "Connected to ${name}";
+  /// "Disconnected from ${name}"
+  String disconnectedFrom(String name) => "Disconnected from ${name}";
+  /// "Connect to ${name}"
+  String connectTo(String name) => "Connect to ${name}";
+  /// "Disconnect from ${name}"
+  String disconnectFrom(String name) => "Disconnect from ${name}";
+  /// "Connect to Bluetooth"
+  String get connectToBluetooth => "Connect to Bluetooth";
+  /// "Disconnect from Bluetooth"
+  String get disconnectFromBluetooth => "Disconnect from Bluetooth";
+  /// "Select mode to start"
+  String get selectModeContent => "Select mode to start";
+  /// "If you want to load file, select \"Load File\" mode. The file extension must be \".txt\" or \".csv\"."
+  String get selectModeFile => "If you want to load file, select \"Load File\" mode. The file extension must be \".txt\" or \".csv\".";
+  /// "If you want to connect to bluetooth device, select \"Bluetooth\" mode and record ECG signal."
+  String get selectModeBluetooth => "If you want to connect to bluetooth device, select \"Bluetooth\" mode and record ECG signal.";
+  /// "Select Bluetooth Device"
+  String get selectBluetoothDevice => "Select Bluetooth Device";
+  /// "Address"
+  String get address => "Address";
+  /// "RSSI"
+  String get rssi => "RSSI";
 }
 
 class _I18n_en_US extends I18n {

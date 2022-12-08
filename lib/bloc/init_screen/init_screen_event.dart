@@ -7,6 +7,10 @@ class LoadECGFIleInitScreen extends InitScreenEvent {
   LoadECGFIleInitScreen();
 }
 
+class LoadECGBluetoothInitScreen extends InitScreenEvent {
+  LoadECGBluetoothInitScreen();
+}
+
 class ChangeScaleInitScreen extends InitScreenEvent {}
 
 class ChangeSpeedInitScreen extends InitScreenEvent {}
@@ -35,4 +39,31 @@ class ResetRulePointInitScreen extends InitScreenEvent {
 
 class evaluateDataInitScreen extends InitScreenEvent {
   evaluateDataInitScreen();
+}
+
+class AddBluetoothDevice extends InitScreenEvent {
+  BlueScanResult scanResult;
+  AddBluetoothDevice({required this.scanResult});
+}
+
+class ConnectBluetoothDeviceInitScreen extends InitScreenEvent {
+  String deviceId;
+  ConnectBluetoothDeviceInitScreen({required this.deviceId});
+}
+
+class ConnectedBluetoothDeviceInitScreen extends InitScreenEvent {
+  ConnectedBluetoothDeviceInitScreen();
+}
+
+class AddECGMonitorValue extends InitScreenEvent {
+  double value;
+  AddECGMonitorValue({required this.value});
+}
+
+class CancelBluetoothDeviceInitScreen extends InitScreenEvent {
+  CancelBluetoothDeviceInitScreen();
+}
+
+class DisconnectBluetoothDeviceInitScreen extends InitScreenEvent {
+  DisconnectBluetoothDeviceInitScreen();
 }

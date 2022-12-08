@@ -48,3 +48,24 @@ class ArrhythmiaDetectionInitScreenState extends InitScreenState {
     required this.result,
   });
 }
+
+class SelectBluetoothDeviceInitScreen extends InitScreenState {
+  SelectBluetoothDeviceInitScreen();
+}
+
+class AddBluetoothDeviceInitScreenState extends InitScreenState {
+  List<BlueScanResult> scanResults;
+  AddBluetoothDeviceInitScreenState({required this.scanResults});
+}
+
+class ConnectingBluetoothDeviceInitScreenState extends InitScreenState {
+  ConnectingBluetoothDeviceInitScreenState();
+}
+
+class DisconnectBluetoothDeviceInitScreenState extends InitScreenState {
+  DisconnectBluetoothDeviceInitScreenState();
+}
+
+class ConnectedBluetoothDeviceInitScreenState extends InitScreenState {
+  ConnectedBluetoothDeviceInitScreenState();
+}

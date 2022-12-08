@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:awecg/models/arrhythmia_result.dart';
 import 'package:awecg/repository/classifier.dart';
@@ -8,6 +10,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:meta/meta.dart';
 import 'package:iirjdart/butterworth.dart';
+import 'package:quick_blue/models.dart';
+import 'package:quick_blue/quick_blue.dart';
 import 'package:scidart/numdart.dart';
 import 'package:scidart/scidart.dart';
 
@@ -15,6 +19,9 @@ part 'init_screen_event.dart';
 part 'init_screen_state.dart';
 
 class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
+  List<BlueScanResult> scanResults = [];
+  String? deviceId;
+
   bool file = true;
   bool loaded = false;
   List<double> ecgData = [];
@@ -49,47 +56,79 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       endSpot = null;
       ruleState = 0;
       result.clear();
+      file = true;
 
-      if (file) {
-        // load file from local storage
-        FilePickerResult? rr = await FilePicker.platform.pickFiles(
-          type: FileType.custom,
-          allowedExtensions: ['txt', 'csv'],
-        );
-        if (rr != null) {
-          File fileLoad = File(rr.files.single.path!);
-
-          // load de file like a text
-          String text = await fileLoad.readAsString();
-          // split the text into a list of doubles separated by ','
-          List<double> data =
-              text.split(',').map((e) => double.parse(e)).toList();
-          // multiply the data by 100 to get the data in mV
-          data = data.map((e) => e).toList();
-          ecgData.clear();
-          ecgData.addAll(data);
-          loaded = true;
-          updateSilver();
-          //evaluate(data);
-          add(evaluateDataInitScreen());
-          emit(
-            InitScreenTools(
-              scale: scale,
-              speed: speed,
-              data: ecgData,
-              data2: filterData,
-              zoom: zoom,
-              baselineX: baselineX,
-              loaded: loaded,
-              file: file,
-              silverMax: silverMax,
-              initSpot: initSpot,
-              endSpot: endSpot,
-              stateRule: ruleState,
-            ),
-          );
-        }
+      if (deviceId != null) {
+        QuickBlue.disconnect(deviceId!);
+        deviceId = null;
       }
+
+      QuickBlue.stopScan();
+
+      // load file from local storage
+      FilePickerResult? rr = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['txt', 'csv'],
+      );
+      if (rr != null) {
+        File fileLoad = File(rr.files.single.path!);
+
+        // load de file like a text
+        String text = await fileLoad.readAsString();
+        // split the text into a list of doubles separated by ','
+        List<double> data =
+            text.split(',').map((e) => double.parse(e)).toList();
+        // multiply the data by 100 to get the data in mV
+        data = data.map((e) => e).toList();
+        ecgData.clear();
+        ecgData.addAll(data);
+        loaded = true;
+        updateSilver();
+        //evaluate(data);
+        add(evaluateDataInitScreen());
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+          ),
+        );
+      }
+    });
+
+    on<LoadECGBluetoothInitScreen>((event, emit) async {
+      scanResults = [];
+      loaded = false;
+      baselineX = 0.0;
+      speed = 25;
+      zoom = 1;
+      scale = 10;
+      ecgData = [];
+      filterData = [];
+      baselineX = 0.0;
+      silverMax = 0.0;
+      initSpot = null;
+      endSpot = null;
+      ruleState = 0;
+      result.clear();
+
+      file = false;
+
+      // start the bluetooth connection
+      print('start scan');
+      getDeviceName();
+      emit(
+        SelectBluetoothDeviceInitScreen(),
+      );
     });
 
     on<ChangeScaleInitScreen>((event, emit) {
@@ -419,6 +458,136 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         }
       }
     });
+
+    on<AddBluetoothDevice>((event, emit) {
+      // check if device is already added
+      Iterable<BlueScanResult> devicesFound = scanResults
+          .where((element) => element.deviceId == event.scanResult.deviceId);
+
+      if (devicesFound.isEmpty) {
+        scanResults.add(event.scanResult);
+        emit(AddBluetoothDeviceInitScreenState(scanResults: scanResults));
+      } else {
+        int deviceIndex = scanResults.indexOf(devicesFound.first);
+        scanResults[deviceIndex] = event.scanResult;
+        emit(AddBluetoothDeviceInitScreenState(scanResults: scanResults));
+      }
+    });
+
+    on<ConnectBluetoothDeviceInitScreen>((event, emit) async {
+      emit(ConnectingBluetoothDeviceInitScreenState());
+      QuickBlue.stopScan();
+      QuickBlue.setConnectionHandler(_handleConnectionChange);
+      QuickBlue.setServiceHandler(_handleServiceDiscovery);
+      deviceId = event.deviceId;
+      print("Connecting to device");
+      connectToDevice();
+    });
+
+    on<CancelBluetoothDeviceInitScreen>((event, emit) async {
+      QuickBlue.stopScan();
+      if (deviceId != null) {
+        QuickBlue.disconnect(deviceId!);
+      }
+      emit(DisconnectBluetoothDeviceInitScreenState());
+    });
+
+    on<DisconnectBluetoothDeviceInitScreen>((event, emit) async {
+      //QuickBlue.stopScan();
+      if (deviceId != null) {
+        QuickBlue.disconnect(deviceId!);
+      }
+      emit(DisconnectBluetoothDeviceInitScreenState());
+    });
+
+    on<AddECGMonitorValue>((event, emit) {
+      if (ecgData == null) {
+        ecgData = [];
+      }
+      ecgData.add(event.value);
+      /*if (ecgData.length > 100000) {
+        ecgData.removeRange(0, 10000);
+      }*/
+      /*if (ecgData.length == 2049) {
+        add(event)
+      }*/
+      updateSilver();
+      baselineX = silverMax;
+      emit(
+        InitScreenTools(
+          scale: scale,
+          speed: speed,
+          data: ecgData,
+          data2: filterData,
+          zoom: zoom,
+          baselineX: baselineX,
+          loaded: loaded,
+          file: file,
+          silverMax: silverMax,
+          initSpot: initSpot,
+          endSpot: endSpot,
+          stateRule: ruleState,
+        ),
+      );
+    });
+
+    on<ConnectedBluetoothDeviceInitScreen>((event, emit) async {
+      emit(ConnectedBluetoothDeviceInitScreenState());
+    });
+  }
+
+  void _handleConnectionChange(String deviceId, BlueConnectionState state) {
+    print('_handleConnectionChange $deviceId, ${state.toString()}');
+    if (state == BlueConnectionState.connected) {
+      add(ConnectedBluetoothDeviceInitScreen());
+      print('connected to $deviceId');
+      QuickBlue.setServiceHandler(_handleServiceDiscovery);
+      QuickBlue.discoverServices(deviceId);
+      QuickBlue.setValueHandler(_handleValueChange);
+
+      QuickBlue.setNotifiable(
+          deviceId,
+          "832a0638-67db-11ed-9022-0242ac120002",
+          '00002b18-0000-1000-8000-00805f9b34fb',
+          BleInputProperty.notification);
+    } else if (state == BlueConnectionState.disconnected) {
+      print('disconnected from $deviceId');
+    }
+  }
+
+  void _handleServiceDiscovery(String deviceId, String serviceId) {
+    print('_handleServiceDiscovery $deviceId, $serviceId');
+  }
+
+  void _handleValueChange(
+      String deviceId, String characteristicId, Uint8List value) {
+    final utf8Decoder = Utf8Decoder(allowMalformed: false);
+    var dat = utf8Decoder.convert(value);
+    double temp = double.parse(dat);
+    print('${temp}');
+    add(AddECGMonitorValue(value: temp));
+
+    //print(
+    //    '_handleValueChange $deviceId, $characteristicId, ${hex.encode(value)}');
+  }
+
+  void connectToDevice() async {
+    print("connectToDevice $deviceId");
+    if (deviceId != null) {
+      QuickBlue.connect(deviceId!);
+    }
+  }
+
+  void getDeviceName(/*ScanResult event*/) async {
+    // Start scanning
+    QuickBlue.stopScan();
+    QuickBlue.setConnectionHandler(_handleConnectionChange);
+    QuickBlue.setServiceHandler(_handleServiceDiscovery);
+    QuickBlue.scanResultStream.listen((result) {
+      print('onScanResult $result');
+      add(AddBluetoothDevice(scanResult: result));
+    });
+    QuickBlue.startScan();
   }
 
   void updateSilver() {
@@ -429,8 +598,9 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
 
   int evaluate(List<double> data) {
     Array ldata = Array.empty();
-    List<double> b = [0.05833987, 0, -0.05833987];
-    List<double> a = [1, -1.72253523, 0.88332027];
+    // filter iir
+    List<double> b = [0.05833987, 0, -0.05833987]; // numerators
+    List<double> a = [1, -1.72253523, 0.88332027]; // denominators
     for (int i = 0; i < data.length; i++) {
       // evaluate filter iir with b and a
 
