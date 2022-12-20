@@ -1,20 +1,118 @@
+import 'dart:io';
+
 import 'package:awecg/generated/i18n.dart';
 
 class ArrhythmiaResult {
-  List<int> results = [];
-  int? result;
-  int iter = 10;
-  int? packs;
-  int? frequency;
+  String nameFile; // name of the file
+  String pathFolder; // path of the folder
+  List<String> pathFiles = []; // the list of paths of the files
+  int? result; // latest result
+  int iter = 10; // number of iterations
+  int? frequency; // frequency of the arrhythmia
+  int position = 0; // position of the file
 
-  ArrhythmiaResult();
+  ArrhythmiaResult({required this.nameFile, required this.pathFolder});
 
-  void addResult(int resultAdd) {
-    resultAdd >= 0 && resultAdd <= 2 ? results.add(resultAdd) : null;
-    calculateResult();
+  Future<ArrhythmiaResult> init() async {
+    result = null;
+    frequency = null;
+    // remove nameFile from pathFolder
+    pathFolder = pathFolder.replaceAll(nameFile, "");
+    // remove form the last _ to the end
+    nameFile = nameFile.substring(0, nameFile.lastIndexOf("_"));
+    // find in the folder the files with the name of the file
+    print("pathFolder = ${pathFolder}" + " nameFile = ${nameFile}");
+
+    Directory dir = Directory(pathFolder);
+    print("dir = ${dir.path}");
+    List<FileSystemEntity> files = dir.listSync(recursive: false);
+    print(files);
+
+    // find the files with the name of the file and the extension
+    for (var element in files) {
+      if (element.path.contains(RegExp(
+          "^.*${nameFile}_([+-]?(?=\\.\\d|\\d)(?:\\d+)?(?:\\.?\\d*))(?:[eE]([+-]?\\d+))?awecg\$"))) {
+        print("element.path = ${element.path}");
+        pathFiles.add(element.path);
+      }
+    }
+    pathFiles.sort((a, b) {
+      int aInt =
+          int.parse(a.substring(a.lastIndexOf("_") + 1, a.lastIndexOf(".")));
+      int bInt =
+          int.parse(b.substring(b.lastIndexOf("_") + 1, b.lastIndexOf(".")));
+
+      return aInt.compareTo(bInt);
+    });
+    print("pathFiles = ${pathFiles}");
+
+    return this;
   }
 
-  void calculateResult() {
+  int get getPosition {
+    return position;
+  }
+
+  bool get isFinished {
+    return (position == pathFiles.length - 1);
+  }
+
+  bool get isStarted {
+    return (position > 0);
+  }
+
+  List<double> loadECG(int ecgPosition) {
+    print("loading ecg position = ${ecgPosition}");
+    position = ecgPosition;
+    List<double> ecg = []; // the list of ecg values
+    ecg = getData(ecgPosition);
+
+    return ecg;
+  }
+
+  void addECG(List<double> ecg) {
+    print("adding ecg");
+    int createPosition = pathFiles.length;
+    String pathFile = "$pathFolder${nameFile}_$createPosition.awecg";
+    // add the ecg to the file
+    File fileLoad = File(pathFile);
+    // save the file
+    fileLoad.writeAsStringSync(ecg.join(','));
+    pathFiles.add(pathFile);
+  }
+
+  List<double> getData(int posInt) {
+// load the file
+    File fileLoad = File(pathFiles[posInt]);
+    // load de file like a text
+    String text = fileLoad.readAsStringSync();
+    // split the text into a list of doubles separated by ','
+    var fData = text.split(',').map((e) => double.parse(e)).toList();
+    return fData;
+  }
+
+  int get getLength {
+    return (pathFiles.length);
+  }
+
+  /*
+  // load all the files
+    for (var element in pathFiles) {
+      File fileLoad = await File(element);
+      // load de file like a text
+      String text = await fileLoad.readAsString();
+      // split the text into a list of doubles separated by ','
+      List<double> data = text.split(',').map((e) => double.parse(e)).toList();
+    }
+  */
+
+  void addResult(int resultAdd) {
+    print("resultAdd = ${resultAdd}");
+    result = resultAdd >= 0 && resultAdd <= 2 ? resultAdd : null;
+    //calculateResult();
+  }
+
+  /*void calculateResult() {
     int count_0 = 0;
     int count_1 = 0;
     int count_2 = 0;
@@ -34,14 +132,14 @@ class ArrhythmiaResult {
             : count_2 > count_0 && count_2 > count_1
                 ? 2
                 : 0;
-  }
+  }*/
 
   void clear() {
-    results.clear();
+    //results.clear();
     result = null;
   }
 
-  get getResultValidation {
+  /*get getResultValidation {
     if (result != null) {
       int count = 0;
       for (var element in results) {
@@ -52,7 +150,7 @@ class ArrhythmiaResult {
       return count;
     }
     return null;
-  }
+  }*/
 
   get getFrequencyClassify {
     if (frequency != null) {
@@ -71,90 +169,11 @@ class ArrhythmiaResult {
     this.iter = iter;
   }
 
-  set setPacks(int? packs) {
-    this.packs = packs;
-  }
-
   set setFrequency(int? frequency) {
     this.frequency = frequency;
   }
 
   get getResult => result;
   get getIter => iter;
-  get getPacks => packs;
   get getFrequency => frequency;
-
-  ArrhythmiaResult.fromJson(Map<String, dynamic> json) {
-    results = json['results'].cast<int>();
-    result = json['result'];
-    iter = json['iter'];
-    packs = json['packs'];
-    frequency = json['frequency'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['results'] = this.results;
-    data['result'] = this.result;
-    data['iter'] = this.iter;
-    data['packs'] = this.packs;
-    data['frequency'] = this.frequency;
-
-    return data;
-  }
-
-  @override
-  String toString() {
-    return 'ArrhythmiaResult{results: $results, result: $result , iter: $iter, packs: $packs, frequency: $frequency}';
-  }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ArrhythmiaResult &&
-          runtimeType == other.runtimeType &&
-          results == other.results &&
-          result == other.result &&
-          iter == other.iter &&
-          packs == other.packs &&
-          frequency == other.frequency;
-
-  @override
-  int get hashCode => results.hashCode ^ result.hashCode;
-
-  ArrhythmiaResult copyWith({
-    List<int>? results,
-    int? result,
-    int? iter,
-    int? packs,
-    int? frequency,
-  }) {
-    return ArrhythmiaResult()
-      ..results = results ?? this.results
-      ..result = result ?? this.result
-      ..iter = iter ?? this.iter
-      ..packs = packs ?? this.packs
-      ..frequency = frequency ?? this.frequency;
-  }
-
-  ArrhythmiaResult.fromJsonMap(Map<String, dynamic> map)
-      : results = List<int>.from(map["results"]),
-        result = map["result"],
-        iter = map["iter"],
-        packs = map["packs"],
-        frequency = map["frequency"];
-
-  Map<String, dynamic> toJsonMap() {
-    var map = <String, dynamic>{};
-    map["results"] = results;
-    map["result"] = result;
-    map["iter"] = iter;
-    map["packs"] = packs;
-    map["frequency"] = frequency;
-    return map;
-  }
-
-  ArrhythmiaResult clone() {
-    return ArrhythmiaResult.fromJsonMap(toJsonMap());
-  }
 }

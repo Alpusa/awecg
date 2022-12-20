@@ -13,20 +13,23 @@ class SelectBluetoothDevice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BlocListener<InitScreenBloc, InitScreenState>(
-      listener: (context, state) {
-        print(state);
-        if (state is ConnectedBluetoothDeviceInitScreenState) {
-          Navigator.pop(context);
-        }
-      },
-    );
     // TODO: implement build
     return AlertDialog(
+      icon: BlocListener<InitScreenBloc, InitScreenState>(
+        listener: (context, state) {
+          print(state);
+          if (state is ConnectedBluetoothDeviceInitScreenState) {
+            Navigator.pop(context);
+          }
+        },
+        child: Icon(
+          Icons.bluetooth,
+        ),
+      ),
       title: Text(I18n().selectBluetoothDevice),
       content: Scaffold(
         body: Container(
-          width: 20.w,
+          //width: 20.w,
           child: BlocBuilder<InitScreenBloc, InitScreenState>(
             builder: (context, state) {
               if (state is AddBluetoothDeviceInitScreenState) {

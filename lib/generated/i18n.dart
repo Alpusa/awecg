@@ -56,6 +56,10 @@ class I18n implements WidgetsLocalizations {
   String get zoomOut => "Zoom Out";
   /// "Reset Zoom"
   String get resetZoom => "Reset Zoom";
+  /// "Vertical Alignment"
+  String get verticalAlignment => "Vertical Alignment";
+  /// "Horizontal Alignment"
+  String get horizontalAlignment => "Horizontal Alignment";
   /// "Time"
   String get time => "Time";
   /// "Voltage"
@@ -134,8 +138,8 @@ class I18n implements WidgetsLocalizations {
   String get disconnectFromBluetooth => "Disconnect from Bluetooth";
   /// "Select mode to start"
   String get selectModeContent => "Select mode to start";
-  /// "If you want to load file, select \"Load File\" mode. The file extension must be \".txt\" or \".csv\"."
-  String get selectModeFile => "If you want to load file, select \"Load File\" mode. The file extension must be \".txt\" or \".csv\".";
+  /// "If you want to load file, select \"Load File\" mode. The file extension must be \".awecg\"."
+  String get selectModeFile => "If you want to load file, select \"Load File\" mode. The file extension must be \".awecg\".";
   /// "If you want to connect to bluetooth device, select \"Bluetooth\" mode and record ECG signal."
   String get selectModeBluetooth => "If you want to connect to bluetooth device, select \"Bluetooth\" mode and record ECG signal.";
   /// "Select Bluetooth Device"
@@ -144,6 +148,12 @@ class I18n implements WidgetsLocalizations {
   String get address => "Address";
   /// "RSSI"
   String get rssi => "RSSI";
+  /// "Next Signal"
+  String get nextSignal => "Next Signal";
+  /// "Previous Signal"
+  String get previousSignal => "Previous Signal";
+  /// "File Name"
+  String get fileName => "File Name";
 }
 
 class _I18n_en_US extends I18n {

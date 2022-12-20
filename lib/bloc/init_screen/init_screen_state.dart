@@ -18,12 +18,18 @@ class InitScreenTools extends InitScreenState {
   final List<double> data;
   final List<double> data2;
   double baselineX;
+  double baselineY;
+  double silverMaxY;
+  double silverMinY;
   bool loaded;
   bool file;
   double silverMax;
+  bool pause;
+
   FlSpot? initSpot;
   FlSpot? endSpot;
   int stateRule;
+  ArrhythmiaResult? result;
 
   InitScreenTools({
     required this.scale,
@@ -32,9 +38,14 @@ class InitScreenTools extends InitScreenState {
     required this.data2,
     required this.zoom,
     required this.baselineX,
+    required this.baselineY,
+    required this.silverMaxY,
+    required this.silverMinY,
     required this.loaded,
     required this.file,
     required this.silverMax,
+    required this.pause,
+    this.result,
     this.initSpot,
     this.endSpot,
     this.stateRule = 0,

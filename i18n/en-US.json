@@ -10,6 +10,8 @@
     "zoomIn": "Zoom In",
     "zoomOut": "Zoom Out",
     "resetZoom": "Reset Zoom",
+    "verticalAlignment": "Vertical Alignment",
+    "horizontalAlignment": "Horizontal Alignment",
     "time": "Time",
     "voltage": "Voltage",
     "amplitude": "Amplitude",
@@ -50,9 +52,13 @@
     "connectToBluetooth": "Connect to Bluetooth",
     "disconnectFromBluetooth": "Disconnect from Bluetooth",
     "selectModeContent": "Select mode to start",
-    "selectModeFile": "If you want to load file, select \"Load File\" mode. The file extension must be \".txt\" or \".csv\".",
+    "selectModeFile": "If you want to load file, select \"Load File\" mode. The file extension must be \".awecg\".",
     "selectModeBluetooth": "If you want to connect to bluetooth device, select \"Bluetooth\" mode and record ECG signal.",
     "selectBluetoothDevice": "Select Bluetooth Device",
     "address": "Address",
-    "rssi": "RSSI"
+    "rssi": "RSSI",
+
+    "nextSignal": "Next Signal",
+    "previousSignal": "Previous Signal",
+    "fileName": "File Name"
 }

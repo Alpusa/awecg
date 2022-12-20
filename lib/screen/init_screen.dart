@@ -26,10 +26,12 @@ class InitScreen extends StatelessWidget {
   double? speed;
   double? zoom;
   double? baselineX;
-  ArrhythmiaResult resultAr = ArrhythmiaResult();
+  double? baselineY;
+  ArrhythmiaResult? resultAr;
 
   bool file = true;
   bool loaded = false;
+  bool pause = false;
 
   @override
   Widget build(BuildContext context) {
@@ -153,6 +155,7 @@ class InitScreen extends StatelessWidget {
                     ),*/
                     onPressed: () {
                       showDialog(
+                          barrierDismissible: false,
                           context: context,
                           builder: (BuildContext) {
                             return BlocBuilder<InitScreenBloc, InitScreenState>(
@@ -238,6 +241,7 @@ class InitScreen extends StatelessWidget {
                                 initSpot = state.initSpot;
                                 endSpot = state.endSpot;
                                 stateRule = state.stateRule;
+                                baselineY = state.baselineY;
                               }
                               ecgData ??= [];
                               filterData ??= [];
@@ -245,6 +249,7 @@ class InitScreen extends StatelessWidget {
                               speed ??= 25;
                               zoom ??= 1;
                               baselineX ??= 0;
+                              baselineY ??= 0;
                               List<double> ecgShow = [];
                               for (int i = 0; i < ecgData!.length; i++) {
                                 ecgShow.add(ecgData![i] * scale!);
@@ -436,9 +441,9 @@ class InitScreen extends StatelessWidget {
                                                   .asMap()
                                                   .map((index, value) =>
                                                       MapEntry(
-                                                          index,
+                                                          (index),
                                                           FlSpot(
-                                                              index *
+                                                              (index) *
                                                                   (0.004) *
                                                                   speed!,
                                                               value)))
@@ -536,8 +541,8 @@ class InitScreen extends StatelessWidget {
                                           width: 1,
                                         ),
                                       ),
-                                      maxY: 30 * zoom!,
-                                      minY: -30 * zoom!,
+                                      maxY: 30 * zoom! + baselineY!,
+                                      minY: -30 * zoom! + baselineY!,
                                       minX: (0) + baselineX!,
                                       maxX: ((80) * zoom! + baselineX!),
                                       clipData: FlClipData.all(),
@@ -572,15 +577,18 @@ class InitScreen extends StatelessWidget {
                                 speed ??= 25;
                                 zoom ??= 1;
                                 if (file && loaded) {
-                                  return Slider(
-                                    onChanged: (value) {
-                                      BlocProvider.of<InitScreenBloc>(context)
-                                          .add(ChangeBaselineXInitScreen(
-                                              baselineX: (value)));
-                                    },
-                                    value: baselineX!,
-                                    min: 0,
-                                    max: maxvalue,
+                                  return Tooltip(
+                                    message: I18n().horizontalAlignment,
+                                    child: Slider(
+                                      onChanged: (value) {
+                                        BlocProvider.of<InitScreenBloc>(context)
+                                            .add(ChangeBaselineXInitScreen(
+                                                baselineX: (value)));
+                                      },
+                                      value: baselineX!,
+                                      min: 0,
+                                      max: maxvalue,
+                                    ),
                                   );
                                 }
 
@@ -648,6 +656,123 @@ class InitScreen extends StatelessWidget {
                               ),
                             ),
                           ),
+                          BlocBuilder<InitScreenBloc, InitScreenState>(
+                            builder: (context, state) {
+                              double maxvalue = 0;
+                              if (state is InitScreenTools) {
+                                maxvalue = state.silverMax;
+                                baselineX = state.baselineX;
+                                resultAr = state.result;
+                                loaded = state.loaded;
+                              }
+                              baselineX ??= 0;
+                              if (baselineX! < maxvalue * 0.1 &&
+                                  resultAr != null &&
+                                  loaded) {
+                                if (resultAr!.isStarted) {
+                                  return Positioned(
+                                    left: 0,
+                                    top: 60.dp,
+                                    child: Tooltip(
+                                      message: I18n().previousSignal,
+                                      waitDuration: const Duration(seconds: 1),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: MyColors.RedL,
+                                          borderRadius:
+                                              BorderRadius.circular(5.dp),
+                                        ),
+                                        padding: EdgeInsets.all(5.dp),
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.arrow_back_ios,
+                                            color: Colors.white,
+                                            size: 20.dp,
+                                          ),
+                                          onPressed: () {
+                                            BlocProvider.of<InitScreenBloc>(
+                                                    context)
+                                                .add(
+                                                    PreviousECGDataInitScreen());
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return Container(
+                                    height: 0.0,
+                                    width: 0.0,
+                                  );
+                                }
+                              } else {
+                                return Container(
+                                  height: 0.0,
+                                  width: 0.0,
+                                );
+                              }
+                            },
+                            buildWhen: (previous, current) =>
+                                current is InitScreenTools,
+                          ),
+                          BlocBuilder<InitScreenBloc, InitScreenState>(
+                            builder: (context, state) {
+                              double maxvalue = 0;
+                              if (state is InitScreenTools) {
+                                maxvalue = state.silverMax;
+                                baselineX = state.baselineX;
+                                resultAr = state.result;
+                                loaded = state.loaded;
+                              }
+                              baselineX ??= 0;
+                              if (baselineX! > maxvalue * 0.9 &&
+                                  resultAr != null &&
+                                  loaded) {
+                                if (!resultAr!.isFinished) {
+                                  return Positioned(
+                                    right: 0,
+                                    top: 60.dp,
+                                    child: Tooltip(
+                                      message: I18n().nextSignal,
+                                      waitDuration: const Duration(seconds: 1),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: MyColors.RedL,
+                                          borderRadius:
+                                              BorderRadius.circular(5.dp),
+                                        ),
+                                        padding: EdgeInsets.all(5.dp),
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: Colors.white,
+                                            size: 20.dp,
+                                          ),
+                                          onPressed: () {
+                                            BlocProvider.of<InitScreenBloc>(
+                                                    context)
+                                                .add(NextECGDataInitScreen());
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return Container(
+                                    height: 0.0,
+                                    width: 0.0,
+                                  );
+                                }
+                              } else {
+                                return Container(
+                                  height: 0.0,
+                                  width: 0.0,
+                                );
+                              }
+                            },
+                            buildWhen: (previous, current) =>
+                                current is InitScreenTools,
+                          ),
                         ],
                       )),
                 ),
@@ -698,10 +823,21 @@ class InitScreen extends StatelessWidget {
                                       if (state
                                           is ArrhythmiaDetectionInitScreenState) {
                                         resultAr = state.result;
+                                        print("arrhythmia detection state");
+                                      }
+                                      if (resultAr == null) {
+                                        return Text(
+                                          "N/A",
+                                          style: TextStyle(
+                                            color: MyColors.RedL,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 40.dp,
+                                          ),
+                                        );
                                       }
                                       return Text(
-                                        resultAr.frequency != null
-                                            ? resultAr.frequency.toString()
+                                        resultAr!.frequency != null
+                                            ? resultAr!.frequency.toString()
                                             : "N/A",
                                         style: TextStyle(
                                           color: MyColors.RedL,
@@ -728,9 +864,20 @@ class InitScreen extends StatelessWidget {
                                   if (state
                                       is ArrhythmiaDetectionInitScreenState) {
                                     resultAr = state.result;
+                                    print("arrhythmia detection state");
+                                  }
+                                  if (resultAr == null) {
+                                    return Text(
+                                      "",
+                                      style: TextStyle(
+                                        color: MyColors.RedL,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15.dp,
+                                      ),
+                                    );
                                   }
                                   return Text(
-                                    resultAr.getFrequencyClassify ?? "",
+                                    resultAr!.getFrequencyClassify ?? "",
                                     style: TextStyle(
                                       color: MyColors.RedL,
                                       fontWeight: FontWeight.bold,
@@ -954,6 +1101,32 @@ class InitScreen extends StatelessWidget {
                                         ),
                                       ],
                                     ),
+                                    BlocBuilder<InitScreenBloc,
+                                        InitScreenState>(
+                                      builder: (context, state) {
+                                        if (state is InitScreenTools) {
+                                          baselineY = state.baselineY;
+                                          zoom = state.zoom;
+                                        }
+                                        baselineY ??= 0;
+                                        zoom ??= 1;
+                                        return Tooltip(
+                                          message: I18n().verticalAlignment,
+                                          child: Slider(
+                                            onChanged: (value) {
+                                              BlocProvider.of<InitScreenBloc>(
+                                                      context)
+                                                  .add(
+                                                      ChangeBaselineYInitScreen(
+                                                          baselineY: value));
+                                            },
+                                            value: baselineY!,
+                                            max: 30 * zoom!,
+                                            min: -30 * zoom!,
+                                          ),
+                                        );
+                                      },
+                                    ),
                                   ],
                                 ),
                               ),
@@ -975,7 +1148,7 @@ class InitScreen extends StatelessWidget {
                             right: menuButtonPadding,
                           ),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               Container(
                                 // title of section Scale
@@ -1004,19 +1177,23 @@ class InitScreen extends StatelessWidget {
                                     //print("state: $state");
                                     if (state
                                         is ArrhythmiaDetectionInitScreenState) {
-                                      print(state.result);
-                                      switch (state.result.getResult) {
-                                        case 0:
-                                          text = I18n().normal.toUpperCase();
-                                          break;
-                                        case 1:
-                                          text =
-                                              I18n().arrhythmia.toUpperCase();
-                                          break;
-                                        case 2:
-                                          text = I18n().noise.toUpperCase();
-                                          break;
-                                        default:
+                                      resultAr = state.result;
+                                      print(resultAr);
+                                      if (resultAr != null) {
+                                        print("result ${resultAr!.getResult}");
+                                        switch (resultAr!.getResult) {
+                                          case 0:
+                                            text = I18n().normal.toUpperCase();
+                                            break;
+                                          case 1:
+                                            text =
+                                                I18n().arrhythmia.toUpperCase();
+                                            break;
+                                          case 2:
+                                            text = I18n().noise.toUpperCase();
+                                            break;
+                                          default:
+                                        }
                                       }
                                     }
                                     return Text(
@@ -1032,17 +1209,20 @@ class InitScreen extends StatelessWidget {
                                       is ArrhythmiaDetectionInitScreenState,
                                 ),
                               ),
-                              BlocBuilder<InitScreenBloc, InitScreenState>(
+                              /*BlocBuilder<InitScreenBloc, InitScreenState>(
                                 builder: (context, state) {
                                   int iter = 10;
                                   int packs = 0;
                                   int resultValidation = 0;
                                   if (state
                                       is ArrhythmiaDetectionInitScreenState) {
-                                    iter = state.result.getIter;
-                                    packs = state.result.getPacks;
+                                    resultAr = state.result;
+                                  }
+                                  if (resultAr != null) {
+                                    iter = resultAr!.getIter;
+                                    packs = resultAr!.getLength;
                                     resultValidation =
-                                        state.result.getResultValidation;
+                                        resultAr!.getResultValidation;
                                   }
 
                                   iter = iter != null ? iter : 10;
@@ -1075,12 +1255,12 @@ class InitScreen extends StatelessWidget {
                                 },
                                 buildWhen: (previous, current) => current
                                     is ArrhythmiaDetectionInitScreenState,
-                              ),
+                              ),*/
                             ],
                           ),
                         ),
                       ),
-                      Divider(
+                      /*Divider(
                         color: MyColors.grayL,
                         thickness: 0.5,
                         height: 1,
@@ -1097,7 +1277,7 @@ class InitScreen extends StatelessWidget {
                             children: [],
                           ),
                         ),
-                      ),
+                      ),*/
                       Divider(
                         color: MyColors.grayL,
                         thickness: 0.5,
@@ -1111,8 +1291,122 @@ class InitScreen extends StatelessWidget {
                             left: menuButtonPadding,
                             right: menuButtonPadding,
                           ),
-                          child: Row(
-                            children: [],
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  BlocBuilder<InitScreenBloc, InitScreenState>(
+                                    builder: (context, state) {
+                                      bool bluetooth = true;
+                                      if (state is InitScreenTools) {
+                                        file = state.file;
+                                      }
+                                      if (state
+                                          is DisconnectBluetoothDeviceInitScreenState) {
+                                        bluetooth = false;
+                                      }
+
+                                      return file
+                                          ? Icon(
+                                              Icons.folder,
+                                              color: MyColors.RedL,
+                                              size: 30.dp,
+                                            )
+                                          : IconButton(
+                                              onPressed: () {
+                                                BlocProvider.of<InitScreenBloc>(
+                                                        context)
+                                                    .add(
+                                                        DisconnectBluetoothDeviceInitScreen());
+                                              },
+                                              icon: Icon(
+                                                bluetooth
+                                                    ? Icons.bluetooth_connected
+                                                    : Icons.bluetooth,
+                                                color: MyColors.RedL,
+                                                size: 30.dp,
+                                              ),
+                                            );
+                                    },
+                                    buildWhen: (previous, current) =>
+                                        current is InitScreenTools ||
+                                        current
+                                            is DisconnectBluetoothDeviceInitScreenState,
+                                  ),
+                                  Expanded(
+                                    child: BlocBuilder<InitScreenBloc,
+                                        InitScreenState>(
+                                      builder: (context, state) {
+                                        if (state is InitScreenTools) {
+                                          file = state.file;
+                                          resultAr = state.result;
+                                        }
+
+                                        return Container(
+                                          // title of section
+                                          width: double.infinity,
+                                          padding: EdgeInsets.all(3.dp),
+                                          decoration: BoxDecoration(
+                                            color: MyColors.RedL,
+                                            borderRadius:
+                                                BorderRadius.circular(5.dp),
+                                          ),
+                                          child: Text(
+                                            resultAr != null
+                                                ? "${I18n().fileName}: ${resultAr!.nameFile}"
+                                                : "${I18n().fileName}: ",
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 4,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13.dp,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      buildWhen: (previous, current) =>
+                                          current is InitScreenTools,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              /*Row(
+                                children: [
+                                  BlocBuilder<InitScreenBloc, InitScreenState>(
+                                    builder: (context, state) {
+                                      if (state is InitScreenTools) {
+                                        file = state.file;
+                                        pause = state.pause;
+                                        loaded = state.loaded;
+                                      }
+                                      return file
+                                          ? Container()
+                                          : IconButton(
+                                              onPressed: () {
+                                                BlocProvider.of<InitScreenBloc>(
+                                                        context)
+                                                    .add(
+                                                        changePlayECGBluetoothInitScreen());
+                                              },
+                                              icon: Icon(
+                                                !loaded
+                                                    ? Icons.pause
+                                                    : Icons.play_arrow,
+                                                color: MyColors.RedL,
+                                                size: 30.dp,
+                                              ),
+                                            );
+                                    },
+                                    buildWhen: (previous, current) =>
+                                        current is InitScreenTools,
+                                  ),
+                                ],
+                              )*/
+                            ],
                           ),
                         ),
                       ),

@@ -10,10 +10,12 @@ import 'package:file_picker/file_picker.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:meta/meta.dart';
 import 'package:iirjdart/butterworth.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:quick_blue/models.dart';
 import 'package:quick_blue/quick_blue.dart';
 import 'package:scidart/numdart.dart';
 import 'package:scidart/scidart.dart';
+import 'package:uuid/uuid.dart';
 
 part 'init_screen_event.dart';
 part 'init_screen_state.dart';
@@ -25,17 +27,23 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
   bool file = true;
   bool loaded = false;
   List<double> ecgData = [];
+  List<double> ecgDataTemp = [];
   List<double> filterData = [];
   double scale = 10;
   double speed = 25;
   double zoom = 1;
   double baselineX = 0.0;
   double silverMax = 0.0;
+  double baselineY = 0.0;
+  double silverMaxY = 0.0;
+  double silverMinY = 0.0;
   FlSpot? initSpot;
   FlSpot? endSpot;
   int ruleState = 0;
   Classifier classifier = Classifier();
-  ArrhythmiaResult result = ArrhythmiaResult();
+  ArrhythmiaResult? result;
+  int ecgMaxLength = 2049;
+  bool pause = false;
 
   InitScreenBloc() : super(InitScreenInitial()) {
     on<InitScreenEvent>((event, emit) {
@@ -45,6 +53,9 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
     on<LoadECGFIleInitScreen>((event, emit) async {
       loaded = false;
       baselineX = 0.0;
+      baselineY = 0.0;
+      silverMaxY = 0.0;
+
       speed = 25;
       zoom = 1;
       scale = 10;
@@ -55,8 +66,8 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       initSpot = null;
       endSpot = null;
       ruleState = 0;
-      result.clear();
       file = true;
+      result = null;
 
       if (deviceId != null) {
         QuickBlue.disconnect(deviceId!);
@@ -66,12 +77,34 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       QuickBlue.stopScan();
 
       // load file from local storage
-      FilePickerResult? rr = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['txt', 'csv'],
-      );
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      FilePickerResult? rr;
+      if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+        rr = await FilePicker.platform.pickFiles(
+          initialDirectory: appDocDir.path,
+          type: FileType.custom,
+          allowedExtensions: [/*'txt', 'csv',*/ 'awecg'],
+        );
+      } else {
+        FilePicker.platform.clearTemporaryFiles();
+        rr = await FilePicker.platform.pickFiles(
+          //initialDirectory: appDocDir.path,
+          type: FileType.any,
+          allowMultiple: false,
+          //allowedExtensions: [/*'txt', 'csv',*/ 'awecg'],
+        );
+        print("rr: $rr");
+      }
+
       if (rr != null) {
-        File fileLoad = File(rr.files.single.path!);
+        String path = rr.files.single.path!;
+        String name = rr.files.single.name;
+        print('path: $path name: $name');
+
+        result =
+            await ArrhythmiaResult(nameFile: name, pathFolder: path).init();
+
+        /*File fileLoad = await File(rr.files.single.path!);
 
         // load de file like a text
         String text = await fileLoad.readAsString();
@@ -82,26 +115,58 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         data = data.map((e) => e).toList();
         ecgData.clear();
         ecgData.addAll(data);
+        */
+
+        ecgData = result!.loadECG(0);
         loaded = true;
-        updateSilver();
+        updateSilver(ecgMaxLength);
+        updateSilverY();
         //evaluate(data);
-        add(evaluateDataInitScreen());
-        emit(
-          InitScreenTools(
-            scale: scale,
-            speed: speed,
-            data: ecgData,
-            data2: filterData,
-            zoom: zoom,
-            baselineX: baselineX,
-            loaded: loaded,
-            file: file,
-            silverMax: silverMax,
-            initSpot: initSpot,
-            endSpot: endSpot,
-            stateRule: ruleState,
-          ),
-        );
+        add(evaluateDataInitScreen(data: ecgData));
+        if (result != null) {
+          emit(
+            InitScreenTools(
+              scale: scale,
+              speed: speed,
+              data: ecgData,
+              data2: filterData,
+              zoom: zoom,
+              baselineX: baselineX,
+              baselineY: baselineY,
+              silverMaxY: silverMaxY,
+              silverMinY: silverMinY,
+              loaded: loaded,
+              file: file,
+              silverMax: silverMax,
+              initSpot: initSpot,
+              endSpot: endSpot,
+              stateRule: ruleState,
+              result: result!,
+              pause: pause,
+            ),
+          );
+        } else {
+          emit(
+            InitScreenTools(
+              scale: scale,
+              speed: speed,
+              data: ecgData,
+              data2: filterData,
+              zoom: zoom,
+              baselineX: baselineX,
+              baselineY: baselineY,
+              silverMaxY: silverMaxY,
+              silverMinY: silverMinY,
+              loaded: loaded,
+              file: file,
+              silverMax: silverMax,
+              initSpot: initSpot,
+              endSpot: endSpot,
+              stateRule: ruleState,
+              pause: pause,
+            ),
+          );
+        }
       }
     });
 
@@ -109,6 +174,8 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       scanResults = [];
       loaded = false;
       baselineX = 0.0;
+      baselineY = 0.0;
+      silverMaxY = 0.0;
       speed = 25;
       zoom = 1;
       scale = 10;
@@ -119,7 +186,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       initSpot = null;
       endSpot = null;
       ruleState = 0;
-      result.clear();
+      result = null;
 
       file = false;
 
@@ -146,23 +213,52 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         scale = 10;
       }
 
-      updateSilver();
-      emit(
-        InitScreenTools(
-          scale: scale,
-          speed: speed,
-          data: ecgData,
-          data2: filterData,
-          zoom: zoom,
-          baselineX: baselineX,
-          loaded: loaded,
-          file: file,
-          silverMax: silverMax,
-          initSpot: initSpot,
-          endSpot: endSpot,
-          stateRule: ruleState,
-        ),
-      );
+      updateSilver(ecgMaxLength);
+      updateSilverY();
+      if (result != null) {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            result: result!,
+            pause: pause,
+          ),
+        );
+      } else {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            pause: pause,
+          ),
+        );
+      }
     });
 
     on<ChangeSpeedInitScreen>((event, emit) {
@@ -176,46 +272,104 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         speed = 25;
       }
 
-      updateSilver();
-
-      emit(
-        InitScreenTools(
-          scale: scale,
-          speed: speed,
-          data: ecgData,
-          data2: filterData,
-          zoom: zoom,
-          baselineX: baselineX,
-          loaded: loaded,
-          file: file,
-          silverMax: silverMax,
-          initSpot: initSpot,
-          endSpot: endSpot,
-          stateRule: ruleState,
-        ),
-      );
+      updateSilver(ecgMaxLength);
+      updateSilverY();
+      if (result != null) {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            result: result!,
+            pause: pause,
+          ),
+        );
+      } else {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            pause: pause,
+          ),
+        );
+      }
     });
 
     on<ResetScalesInitScreen>((event, emit) {
       scale = 10;
       speed = 25;
-      updateSilver();
-      emit(
-        InitScreenTools(
-          scale: scale,
-          speed: speed,
-          data: ecgData,
-          data2: filterData,
-          zoom: zoom,
-          baselineX: baselineX,
-          loaded: loaded,
-          file: file,
-          silverMax: silverMax,
-          initSpot: initSpot,
-          endSpot: endSpot,
-          stateRule: ruleState,
-        ),
-      );
+      baselineY = 0.0;
+      updateSilver(ecgMaxLength);
+      updateSilverY();
+      if (result != null) {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            result: result!,
+            pause: pause,
+          ),
+        );
+      } else {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            pause: pause,
+          ),
+        );
+      }
     });
 
     on<ZoomOutInitScreen>((event, emit) {
@@ -241,24 +395,52 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         zoom = 1;
       }
 
-      updateSilver();
-
-      emit(
-        InitScreenTools(
-          scale: scale,
-          speed: speed,
-          data: ecgData,
-          data2: filterData,
-          zoom: zoom,
-          baselineX: baselineX,
-          loaded: loaded,
-          file: file,
-          silverMax: silverMax,
-          initSpot: initSpot,
-          endSpot: endSpot,
-          stateRule: ruleState,
-        ),
-      );
+      updateSilver(ecgMaxLength);
+      updateSilverY();
+      if (result != null) {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            result: result!,
+            pause: pause,
+          ),
+        );
+      } else {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            pause: pause,
+          ),
+        );
+      }
     });
 
     on<ZoomInInitScreen>((event, emit) {
@@ -284,70 +466,207 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         zoom = 0.1;
       }
 
-      updateSilver();
-
-      emit(
-        InitScreenTools(
-          scale: scale,
-          speed: speed,
-          data: ecgData,
-          data2: filterData,
-          zoom: zoom,
-          baselineX: baselineX,
-          loaded: loaded,
-          file: file,
-          silverMax: silverMax,
-          initSpot: initSpot,
-          endSpot: endSpot,
-          stateRule: ruleState,
-        ),
-      );
+      updateSilver(ecgMaxLength);
+      updateSilverY();
+      if (result != null) {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            result: result!,
+            pause: pause,
+          ),
+        );
+      } else {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            pause: pause,
+          ),
+        );
+      }
     });
 
     on<ResetZoomInitScreen>((event, emit) {
       zoom = 1;
 
-      updateSilver();
+      updateSilver(ecgMaxLength);
 
-      emit(
-        InitScreenTools(
-          scale: scale,
-          speed: speed,
-          data: ecgData,
-          data2: filterData,
-          zoom: zoom,
-          baselineX: baselineX,
-          loaded: loaded,
-          file: file,
-          silverMax: silverMax,
-          initSpot: initSpot,
-          endSpot: endSpot,
-          stateRule: ruleState,
-        ),
-      );
+      updateSilverY();
+      if (result != null) {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            result: result!,
+            pause: pause,
+          ),
+        );
+      } else {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            pause: pause,
+          ),
+        );
+      }
     });
 
     on<ChangeBaselineXInitScreen>((event, emit) {
       baselineX = event.baselineX;
 
-      updateSilver();
+      updateSilver(ecgMaxLength);
+      //ecgData = result!.loadECG(0);
+      updateSilverY();
+      if (result != null) {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            result: result!,
+            pause: pause,
+          ),
+        );
+      } else {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            pause: pause,
+          ),
+        );
+      }
+    });
 
-      emit(
-        InitScreenTools(
-          scale: scale,
-          speed: speed,
-          data: ecgData,
-          data2: filterData,
-          zoom: zoom,
-          baselineX: baselineX,
-          loaded: loaded,
-          file: file,
-          silverMax: silverMax,
-          initSpot: initSpot,
-          endSpot: endSpot,
-          stateRule: ruleState,
-        ),
-      );
+    on<ChangeBaselineYInitScreen>((event, emit) {
+      baselineY = event.baselineY;
+
+      //ecgData = result!.loadECG(0);
+
+      if (result != null) {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            result: result!,
+            pause: pause,
+          ),
+        );
+      } else {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            pause: pause,
+          ),
+        );
+      }
     });
 
     on<SetRulePointInitScreen>((event, emit) {
@@ -368,24 +687,52 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         default:
       }
 
-      updateSilver();
-
-      emit(
-        InitScreenTools(
-          scale: scale,
-          speed: speed,
-          data: ecgData,
-          data2: filterData,
-          zoom: zoom,
-          baselineX: baselineX,
-          loaded: loaded,
-          file: file,
-          silverMax: silverMax,
-          initSpot: initSpot,
-          endSpot: endSpot,
-          stateRule: ruleState,
-        ),
-      );
+      updateSilver(ecgMaxLength);
+      updateSilverY();
+      if (result != null) {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            result: result!,
+            pause: pause,
+          ),
+        );
+      } else {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            pause: pause,
+          ),
+        );
+      }
     });
 
     on<ResetRulePointInitScreen>((event, emit) {
@@ -393,29 +740,57 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       endSpot = null;
       ruleState = 0;
 
-      updateSilver();
-
-      emit(
-        InitScreenTools(
-          scale: scale,
-          speed: speed,
-          data: ecgData,
-          data2: filterData,
-          zoom: zoom,
-          baselineX: baselineX,
-          loaded: loaded,
-          file: file,
-          silverMax: silverMax,
-          initSpot: initSpot,
-          endSpot: endSpot,
-          stateRule: ruleState,
-        ),
-      );
+      updateSilver(ecgMaxLength);
+      updateSilverY();
+      if (result != null) {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            result: result!,
+            pause: pause,
+          ),
+        );
+      } else {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            pause: pause,
+          ),
+        );
+      }
     });
     on<evaluateDataInitScreen>((event, emit) {
-      if (ecgData != null) {
-        if (ecgData.isNotEmpty) {
-          int max = ecgData.length;
+      if (event.data != null) {
+        if (event.data.isNotEmpty) {
+          /*int max = event.data.length;
 
           //----------------- prueba error -----------------
           //.
@@ -424,37 +799,145 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
 
           print("max: $max");
           max = (max / 2049).toInt();
-          print("max: $max");
-          result.setPacks = max;
-          for (int j = 0; j < max; j++) {
+          print("max: $max");*/
+          //result.setPacks = max;
+          /*for (int j = 0; j < max; j++) {
             int count_0 = 0;
             int count_1 = 0;
-            int count_2 = 0;
+            int count_2 = 0;*/
 
-            for (int i = 0; i < result.getIter; i++) {
-              int value = evaluate(ecgData);
-              if (value == 0) {
+          //for (int i = 0; i < result.getIter; i++) {
+          int value = evaluate(event.data);
+          /*if (value == 0) {
                 count_0++;
               } else if (value == 1) {
                 count_1++;
               } else if (value == 2) {
                 count_2++;
-              }
-            }
+              }*/
+          //}
 
-            int value = count_0 > count_1 && count_0 > count_2
+          /*int value = count_0 > count_1 && count_0 > count_2
                 ? 0
                 : count_1 > count_0 && count_1 > count_2
                     ? 1
                     : count_2 > count_0 && count_2 > count_1
                         ? 2
-                        : 0;
-            print("value: $value");
-            print("result: ${result}");
-            result.addResult(value);
-            print("result: ${result}");
+                        : 0;*/
+          print("value: $value");
+          print("result: ${result}");
+          result!.addResult(value);
+          print("result: ${result}");
+        }
+        emit(ArrhythmiaDetectionInitScreenState(result: result!));
+        //}
+      }
+    });
+
+    on<NextECGDataInitScreen>((event, emit) {
+      if (result != null) {
+        ecgData = result!.loadECG(result!.getPosition + 1);
+        add(evaluateDataInitScreen(data: ecgData));
+        baselineX = 0;
+        if (ecgData.isNotEmpty) {
+          if (result != null) {
+            emit(
+              InitScreenTools(
+                scale: scale,
+                speed: speed,
+                data: ecgData,
+                data2: filterData,
+                zoom: zoom,
+                baselineX: baselineX,
+                baselineY: baselineY,
+                silverMaxY: silverMaxY,
+                silverMinY: silverMinY,
+                loaded: loaded,
+                file: file,
+                silverMax: silverMax,
+                initSpot: initSpot,
+                endSpot: endSpot,
+                stateRule: ruleState,
+                result: result!,
+                pause: pause,
+              ),
+            );
+          } else {
+            emit(
+              InitScreenTools(
+                scale: scale,
+                speed: speed,
+                data: ecgData,
+                data2: filterData,
+                zoom: zoom,
+                baselineX: baselineX,
+                baselineY: baselineY,
+                silverMaxY: silverMaxY,
+                silverMinY: silverMinY,
+                loaded: loaded,
+                file: file,
+                silverMax: silverMax,
+                initSpot: initSpot,
+                endSpot: endSpot,
+                stateRule: ruleState,
+                pause: pause,
+              ),
+            );
           }
-          emit(ArrhythmiaDetectionInitScreenState(result: result));
+        }
+      }
+    });
+
+    on<PreviousECGDataInitScreen>((event, emit) {
+      if (result != null) {
+        ecgData = result!.loadECG(result!.getPosition - 1);
+        add(evaluateDataInitScreen(data: ecgData));
+        baselineX = silverMax;
+        if (ecgData.isNotEmpty) {
+          if (result != null) {
+            emit(
+              InitScreenTools(
+                scale: scale,
+                speed: speed,
+                data: ecgData,
+                data2: filterData,
+                zoom: zoom,
+                baselineX: baselineX,
+                baselineY: baselineY,
+                silverMaxY: silverMaxY,
+                silverMinY: silverMinY,
+                loaded: loaded,
+                file: file,
+                silverMax: silverMax,
+                initSpot: initSpot,
+                endSpot: endSpot,
+                stateRule: ruleState,
+                result: result!,
+                pause: pause,
+              ),
+            );
+          } else {
+            emit(
+              InitScreenTools(
+                scale: scale,
+                speed: speed,
+                data: ecgData,
+                data2: filterData,
+                zoom: zoom,
+                baselineX: baselineX,
+                baselineY: baselineY,
+                silverMaxY: silverMaxY,
+                silverMinY: silverMinY,
+                loaded: loaded,
+                file: file,
+                silverMax: silverMax,
+                initSpot: initSpot,
+                endSpot: endSpot,
+                stateRule: ruleState,
+                pause: pause,
+              ),
+            );
+          }
         }
       }
     });
@@ -504,15 +987,96 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       if (ecgData == null) {
         ecgData = [];
       }
-      ecgData.add(event.value);
-      /*if (ecgData.length > 100000) {
+      if (loaded) {
+        ecgDataTemp = ecgData;
+        ecgData = [];
+        ecgData = result!.loadECG(0);
+        updateSilver(ecgData.length);
+        updateSilverY();
+        baselineX = silverMax;
+        if (ecgDataTemp.length >= 2049) {
+          result!.addECG(ecgDataTemp.sublist(0, 2049));
+          add(evaluateDataInitScreen(data: ecgData.toList()));
+          ecgData = ecgData.length > 2049
+              ? ecgDataTemp.sublist(2049, ecgDataTemp.length)
+              : [];
+        }
+      } else {
+        ecgData.addAll(event.value);
+        /*if (ecgData.length > 100000) {
         ecgData.removeRange(0, 10000);
       }*/
-      /*if (ecgData.length == 2049) {
-        add(event)
-      }*/
-      updateSilver();
-      baselineX = silverMax;
+        updateSilver(ecgData.length);
+        updateSilverY();
+        baselineX = silverMax;
+        if (ecgData.length >= 2049) {
+          result!.addECG(ecgData.sublist(0, 2049));
+          add(evaluateDataInitScreen(data: ecgData.sublist(0, 2049)));
+          ecgData = ecgData.length > 2049
+              ? ecgData.sublist(2049, ecgData.length)
+              : [];
+        }
+      }
+      if (result != null) {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            result: result!,
+            pause: pause,
+          ),
+        );
+      } else {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            pause: pause,
+          ),
+        );
+      }
+    });
+
+    on<ConnectedBluetoothDeviceInitScreen>((event, emit) async {
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      // generate a random file name
+      String nameFile = Uuid().v4();
+      String appDocPath = '${appDocDir.path}/AWECG/$nameFile/';
+      print("appDocPath: $appDocPath nameFile: $nameFile");
+      Directory(appDocPath).createSync(recursive: true);
+
+      result = ArrhythmiaResult(nameFile: nameFile, pathFolder: appDocPath);
+      emit(ConnectedBluetoothDeviceInitScreenState());
+    });
+
+    on<changePlayECGBluetoothInitScreen>((event, emit) {
+      loaded = !loaded;
       emit(
         InitScreenTools(
           scale: scale,
@@ -521,18 +1085,19 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
           data2: filterData,
           zoom: zoom,
           baselineX: baselineX,
+          baselineY: baselineY,
+          silverMaxY: silverMaxY,
+          silverMinY: silverMinY,
           loaded: loaded,
           file: file,
           silverMax: silverMax,
           initSpot: initSpot,
           endSpot: endSpot,
           stateRule: ruleState,
+          result: result!,
+          pause: pause,
         ),
       );
-    });
-
-    on<ConnectedBluetoothDeviceInitScreen>((event, emit) async {
-      emit(ConnectedBluetoothDeviceInitScreenState());
     });
   }
 
@@ -542,7 +1107,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       add(ConnectedBluetoothDeviceInitScreen());
       print('connected to $deviceId');
       QuickBlue.setServiceHandler(_handleServiceDiscovery);
-      QuickBlue.discoverServices(deviceId);
+      //QuickBlue.discoverServices(deviceId);
       QuickBlue.setValueHandler(_handleValueChange);
 
       QuickBlue.setNotifiable(
@@ -563,9 +1128,23 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       String deviceId, String characteristicId, Uint8List value) {
     final utf8Decoder = Utf8Decoder(allowMalformed: false);
     var dat = utf8Decoder.convert(value);
-    double temp = double.parse(dat);
-    print('${temp}');
-    add(AddECGMonitorValue(value: temp));
+    // split the string using the delimiter ','
+    //var data = [dat.substring(0, 4), dat.substring(4, 84)];
+    // remove latest character
+    dat = dat.substring(0, dat.length - 1);
+    var data = dat.split(',');
+    //print("data $data");
+    // convert the string to double
+    var valueF = data.map((e) {
+      double temp = double.parse(e);
+      temp = (temp * (3.3 / 4095.0));
+      temp = temp - 1.65;
+      temp = temp / 1.1;
+      return temp;
+    }).toList();
+
+    //print('${temp}');
+    add(AddECGMonitorValue(value: valueF));
 
     //print(
     //    '_handleValueChange $deviceId, $characteristicId, ${hex.encode(value)}');
@@ -590,13 +1169,24 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
     QuickBlue.startScan();
   }
 
-  void updateSilver() {
-    silverMax = (ecgData.length * (0.004) * speed) - (80 * zoom);
+  void updateSilver(int maxLength) {
+    //silverMax = (ecgData.length * (0.004) * speed) - (80 * zoom);
+    silverMax = (maxLength * (0.004) * speed) - (80 * zoom);
     silverMax = silverMax >= 0 ? silverMax : 0;
     baselineX = baselineX > silverMax ? silverMax : baselineX;
   }
 
+  void updateSilverY() {
+    if (baselineY > (30 * zoom)) {
+      baselineY = (30 * zoom);
+    }
+    if (baselineY < (-30 * zoom)) {
+      baselineY = (-30 * zoom);
+    }
+  }
+
   int evaluate(List<double> data) {
+    print("data length: ${data.length}");
     Array ldata = Array.empty();
     // filter iir
     List<double> b = [0.05833987, 0, -0.05833987]; // numerators
@@ -633,10 +1223,10 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
     ldataP.add(0);
     for (int i = 1; i < ldata.length; i++) {
       if (ldata[i] > 0 && ldata[i - 1] == 0) {
-        ldataP.add(1);
-      } else {
+        ldataP.add(i.toDouble());
+      } /*else {
         ldataP.add(0);
-      }
+      }*/
     }
 
     // select the first 1500 points and count the number of 1s
@@ -650,22 +1240,28 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       if (ldataP[i] == 1) {
         count++;
       }
-    }
-    */
+    }*/
 
-    int count = 0;
-    for (int i = 0; i < ldataP.length; i++) {
-      if (ldataP[i] == 1) {
-        count++;
+    double HR = 0;
+    if (ldataP.length > 2) {
+      for (int i = 0; i < ldataP.length - 1; i++) {
+        HR = HR + (ldataP[i + 1] - ldataP[i]) * 0.004;
+        print("HR: $HR");
       }
+      HR = HR / (ldataP.length - 1);
+      HR = 60 / HR;
     }
 
     //print("length ldatap: ${ldataP.length}");
-    result.setFrequency = count * data.length ~/ 250; // count * 10;
-    //print("Frequency: ${result.getFrequency}");
+    //print("frequency: ${HR/*count * data.length ~/ 250*/}");
+    result!.setFrequency =
+        HR.toInt(); //count * data.length ~/ 250; // count * 10;
+    print("Frequency: ${result!.getFrequency}");
     //filterData = [];
     //filterData.addAll(ldataP.toList().sublist(0, data.length));
     //print("length: ${filterData.length}");
+
+    data = data.map((e) => (e - 0.001572584) / 0.16089901).toList();
     var result_ = classifier.classify(data);
     // print the result
 

@@ -28,6 +28,11 @@ class ChangeBaselineXInitScreen extends InitScreenEvent {
   ChangeBaselineXInitScreen({required this.baselineX});
 }
 
+class ChangeBaselineYInitScreen extends InitScreenEvent {
+  double baselineY;
+  ChangeBaselineYInitScreen({required this.baselineY});
+}
+
 class SetRulePointInitScreen extends InitScreenEvent {
   FlSpot? spot;
   SetRulePointInitScreen({required this.spot});
@@ -38,7 +43,8 @@ class ResetRulePointInitScreen extends InitScreenEvent {
 }
 
 class evaluateDataInitScreen extends InitScreenEvent {
-  evaluateDataInitScreen();
+  List<double> data;
+  evaluateDataInitScreen({required this.data});
 }
 
 class AddBluetoothDevice extends InitScreenEvent {
@@ -56,7 +62,7 @@ class ConnectedBluetoothDeviceInitScreen extends InitScreenEvent {
 }
 
 class AddECGMonitorValue extends InitScreenEvent {
-  double value;
+  List<double> value;
   AddECGMonitorValue({required this.value});
 }
 
@@ -66,4 +72,16 @@ class CancelBluetoothDeviceInitScreen extends InitScreenEvent {
 
 class DisconnectBluetoothDeviceInitScreen extends InitScreenEvent {
   DisconnectBluetoothDeviceInitScreen();
+}
+
+class NextECGDataInitScreen extends InitScreenEvent {
+  NextECGDataInitScreen();
+}
+
+class PreviousECGDataInitScreen extends InitScreenEvent {
+  PreviousECGDataInitScreen();
+}
+
+class changePlayECGBluetoothInitScreen extends InitScreenEvent {
+  changePlayECGBluetoothInitScreen();
 }

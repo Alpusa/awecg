@@ -13,59 +13,61 @@ class SelectMode extends StatelessWidget {
     // TODO: implement build
     return AlertDialog(
       title: Text(I18n().selectMode),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          //Text(I18n().selectModeContent, style: TextStyle(fontSize: 18.dp)),
-          Container(
-            width: 20.w,
-            child: Text(
-              I18n().selectModeFile,
-              textAlign: TextAlign.justify,
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            //Text(I18n().selectModeContent, style: TextStyle(fontSize: 18.dp)),
+            Container(
+              width: 20.w,
+              child: Text(
+                I18n().selectModeFile,
+                textAlign: TextAlign.justify,
+              ),
             ),
-          ),
-          SizedBox(
-            height: 2.dp,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              BlocProvider.of<InitScreenBloc>(context)
-                  .add(LoadECGFIleInitScreen());
-              Navigator.of(context).pop();
-            },
-            child: Text(
-              I18n().loadFile,
+            SizedBox(
+              height: 2.dp,
             ),
-          ),
-          SizedBox(
-            height: 2.dp,
-          ),
-          Divider(),
-          Container(
-            width: 20.w,
-            child: Text(
-              I18n().selectModeBluetooth,
-              textAlign: TextAlign.justify,
+            ElevatedButton(
+              onPressed: () {
+                BlocProvider.of<InitScreenBloc>(context)
+                    .add(LoadECGFIleInitScreen());
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                I18n().loadFile,
+              ),
             ),
-          ),
-          SizedBox(
-            height: 2.dp,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              BlocProvider.of<InitScreenBloc>(context)
-                  .add(LoadECGBluetoothInitScreen());
-              //Navigator.of(context).pop();
-            },
-            child: Text(
-              I18n().connectToBluetooth,
+            SizedBox(
+              height: 2.dp,
             ),
-          ),
-          SizedBox(
-            height: 2.dp,
-          ),
-          Divider(),
-        ],
+            Divider(),
+            Container(
+              width: 20.w,
+              child: Text(
+                I18n().selectModeBluetooth,
+                textAlign: TextAlign.justify,
+              ),
+            ),
+            SizedBox(
+              height: 2.dp,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                BlocProvider.of<InitScreenBloc>(context)
+                    .add(LoadECGBluetoothInitScreen());
+                //Navigator.of(context).pop();
+              },
+              child: Text(
+                I18n().connectToBluetooth,
+              ),
+            ),
+            SizedBox(
+              height: 2.dp,
+            ),
+            Divider(),
+          ],
+        ),
       ),
       actionsAlignment: MainAxisAlignment.center,
       actions: <Widget>[
