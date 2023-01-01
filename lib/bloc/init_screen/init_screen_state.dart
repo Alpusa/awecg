@@ -80,3 +80,12 @@ class DisconnectBluetoothDeviceInitScreenState extends InitScreenState {
 class ConnectedBluetoothDeviceInitScreenState extends InitScreenState {
   ConnectedBluetoothDeviceInitScreenState();
 }
+
+class InitScreenError extends InitScreenState {
+  final String message;
+  InitScreenError(this.message);
+}
+
+class ShowNewProjectInitScreenState extends InitScreenState {
+  ShowNewProjectInitScreenState();
+}

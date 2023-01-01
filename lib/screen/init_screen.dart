@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:awecg/generated/i18n.dart';
@@ -5,10 +6,12 @@ import 'package:awecg/models/arrhythmia_result.dart';
 import 'package:awecg/repository/my_colors.dart';
 import 'package:awecg/screen/splash_screen.dart';
 import 'package:awecg/widget/menu_button.dart';
+import 'package:awecg/widget/new_project.dart';
 import 'package:awecg/widget/select_mode.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -73,25 +76,23 @@ class InitScreen extends StatelessWidget {
             color: MyColors.blueL,
             child: Column(
               children: [
-                Container(
-                  padding: EdgeInsets.only(
-                    top: menuButtonPadding,
-                    bottom: menuButtonPadding,
-                  ),
-                  child: TextButton(
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.menu, // Menu button
-                      size: 40.dp,
-                      color: MyColors.grayL,
-                    ),
-                    onPressed: () {},
+                BlocListener<InitScreenBloc, InitScreenState>(
+                  listener: (context, state) {
+                    if (state is InitScreenError) {
+                      EasyLoading.showError(state.message);
+                    }
+                    if (state is ShowNewProjectInitScreenState) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return NewProject();
+                        },
+                      );
+                    }
+                  },
+                  child: Container(
+                    height: 0.0,
+                    width: 0.0,
                   ),
                 ),
                 Divider(
@@ -106,55 +107,33 @@ class InitScreen extends StatelessWidget {
                     top: menuButtonPadding,
                     bottom: menuButtonPadding,
                   ),
-                  child: TextButton(
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0),
+                  child: Tooltip(
+                    message: const I18n().newProject,
+                    waitDuration: const Duration(seconds: 1),
+                    child: TextButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0),
+                          ),
                         ),
                       ),
-                    ),
-                    child: Icon(
-                      Icons.share, // share button -----------------------------
-                      size: 40.dp,
-                      color: MyColors.grayL,
-                    ),
-                    onPressed: () {},
-                  ),
-                ),
-                Divider(
-                  color: MyColors.grayL,
-                  thickness: 0.5,
-                  height: 1,
-                  endIndent: 10.dp,
-                  indent: 10.dp,
-                ),
-                Container(
-                  padding: EdgeInsets.only(
-                    top: menuButtonPadding,
-                    bottom: menuButtonPadding,
-                  ),
-                  child: TextButton(
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                      ),
-                    ),
-                    child: SvgPicture.asset(
+                      child: /*SvgPicture.asset(
                       'lib/assets/svg_files/up-and-down.svg', // up and down button
                       width: 40.dp,
                       height: 40.dp,
                       color: MyColors.grayL,
-                    ),
-                    /*Icon(
-                      Icons.insert_chart,
-                      size: 40.dp,
-                      color: MyColors.grayL,
                     ),*/
-                    onPressed: () {
-                      showDialog(
+                          Icon(
+                        Icons.create_new_folder_outlined,
+                        size: 40.dp,
+                        color: MyColors.grayL,
+                      ),
+                      onPressed: () {
+                        BlocProvider.of<InitScreenBloc>(context)
+                            .add(newProjectInitScreen());
+                        /*showDialog(
                           barrierDismissible: false,
                           context: context,
                           builder: (BuildContext) {
@@ -168,10 +147,115 @@ class InitScreen extends StatelessWidget {
                               buildWhen: (previous, current) =>
                                   current is SelectBluetoothDeviceInitScreen,
                             );
-                          });
-                      /*BlocProvider.of<InitScreenBloc>(context)
+                          });*/
+                        /*BlocProvider.of<InitScreenBloc>(context)
                           .add(LoadECGFIleInitScreen());*/
-                    },
+                      },
+                    ),
+                  ),
+                ),
+                Divider(
+                  color: MyColors.grayL,
+                  thickness: 0.5,
+                  height: 1,
+                  endIndent: 10.dp,
+                  indent: 10.dp,
+                ),
+                Container(
+                  padding: EdgeInsets.only(
+                    top: menuButtonPadding,
+                    bottom: menuButtonPadding,
+                  ),
+                  child: Tooltip(
+                    message: const I18n().openProject,
+                    waitDuration: const Duration(seconds: 1),
+                    child: TextButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                        ),
+                      ),
+                      child: SvgPicture.asset(
+                        'lib/assets/svg_files/folder.svg', // up and down button
+                        width: 35.dp,
+                        height: 35.dp,
+                        color: MyColors.grayL,
+                      ),
+                      onPressed: () {},
+                    ),
+                  ),
+                ),
+                Divider(
+                  color: MyColors.grayL,
+                  thickness: 0.5,
+                  height: 1,
+                  endIndent: 10.dp,
+                  indent: 10.dp,
+                ),
+                Container(
+                  padding: EdgeInsets.only(
+                    top: menuButtonPadding,
+                    bottom: menuButtonPadding,
+                  ),
+                  child: Tooltip(
+                    message: I18n().editPatientInfrmation,
+                    waitDuration: const Duration(seconds: 1),
+                    child: TextButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.manage_accounts_outlined, // Menu button
+                        size: 40.dp,
+                        color: MyColors.grayL,
+                      ),
+                      onPressed: () {},
+                    ),
+                  ),
+                ),
+                Divider(
+                  color: MyColors.grayL,
+                  thickness: 0.5,
+                  height: 1,
+                  endIndent: 10.dp,
+                  indent: 10.dp,
+                ),
+                Container(
+                  padding: EdgeInsets.only(
+                    top: menuButtonPadding,
+                    bottom: menuButtonPadding,
+                  ),
+                  child: Tooltip(
+                    message: I18n().exportAsPDF,
+                    waitDuration: const Duration(seconds: 1),
+                    child: TextButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                        ),
+                      ),
+                      child: Icon(
+                        Icons
+                            .picture_as_pdf_outlined, // share button -----------------------------
+                        size: 40.dp,
+                        color: MyColors.grayL,
+                      ),
+                      onPressed: () {
+                        BlocProvider.of<InitScreenBloc>(context)
+                            .add(exportECGDataInitScreen());
+                      },
+                    ),
                   ),
                 ),
                 Divider(
@@ -182,25 +266,37 @@ class InitScreen extends StatelessWidget {
                   indent: 10.dp,
                 ),
                 Expanded(child: Container()),
+                Divider(
+                  color: MyColors.grayL,
+                  thickness: 0.5,
+                  height: 1,
+                  endIndent: 10.dp,
+                  indent: 10.dp,
+                ),
                 Container(
                   padding: EdgeInsets.only(
                     top: menuButtonPadding,
                     bottom: menuButtonPadding,
                   ),
-                  child: TextButton(
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0),
+                  child: Tooltip(
+                    message: I18n().medicalProfessional,
+                    waitDuration: const Duration(seconds: 1),
+                    child: TextButton(
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0),
+                          ),
                         ),
                       ),
+                      child: Icon(
+                        Icons.badge_outlined,
+                        size: 40.dp,
+                        color: MyColors.grayL,
+                      ),
+                      onPressed: () {},
                     ),
-                    child: Icon(
-                      Icons.settings,
-                      size: 40.dp,
-                      color: MyColors.grayL,
-                    ),
-                    onPressed: () {},
                   ),
                 ),
               ],
@@ -347,10 +443,10 @@ class InitScreen extends StatelessWidget {
                                               double endY = endSpot.y / scale!;
                                               return [
                                                 LineTooltipItem(
-                                                    '${I18n().timeDifference}: ${((end - init).abs()).toStringAsFixed(3)} s\n${I18n().voltageDifference}: ${((endY - initY).abs()).toStringAsFixed(2)} mV',
+                                                    '${const I18n().timeDifference}: ${((end - init).abs()).toStringAsFixed(3)} s\n${const I18n().voltageDifference}: ${((endY - initY).abs()).toStringAsFixed(2)} mV',
                                                     textStyle),
                                                 LineTooltipItem(
-                                                    '${I18n().time}: ${(touchedSpots[1].x / speed!).toStringAsFixed(3)} s\n${I18n().voltage}: ${(touchedSpots[1].y / scale!).toStringAsFixed(2)} mV',
+                                                    '${const I18n().time}: ${(touchedSpots[1].x / speed!).toStringAsFixed(3)} s\n${const I18n().voltage}: ${(touchedSpots[1].y / scale!).toStringAsFixed(2)} mV',
                                                     textStyle),
                                               ];
                                             }
@@ -360,7 +456,7 @@ class InitScreen extends StatelessWidget {
                                             return touchedSpots
                                                 .map((LineBarSpot touchedSpot) {
                                               return LineTooltipItem(
-                                                  '${I18n().time}: ${(touchedSpot.x / speed!).toStringAsFixed(3)} s\n${I18n().voltage}: ${(touchedSpot.y / scale!).toStringAsFixed(2)} mV',
+                                                  '${const I18n().time}: ${(touchedSpot.x / speed!).toStringAsFixed(3)} s\n${const I18n().voltage}: ${(touchedSpot.y / scale!).toStringAsFixed(2)} mV',
                                                   textStyle);
                                             }).toList();
                                           },
@@ -578,7 +674,7 @@ class InitScreen extends StatelessWidget {
                                 zoom ??= 1;
                                 if (file && loaded) {
                                   return Tooltip(
-                                    message: I18n().horizontalAlignment,
+                                    message: const I18n().horizontalAlignment,
                                     child: Slider(
                                       onChanged: (value) {
                                         BlocProvider.of<InitScreenBloc>(context)
@@ -674,7 +770,7 @@ class InitScreen extends StatelessWidget {
                                     left: 0,
                                     top: 60.dp,
                                     child: Tooltip(
-                                      message: I18n().previousSignal,
+                                      message: const I18n().previousSignal,
                                       waitDuration: const Duration(seconds: 1),
                                       child: Container(
                                         decoration: BoxDecoration(
@@ -733,7 +829,7 @@ class InitScreen extends StatelessWidget {
                                     right: 0,
                                     top: 60.dp,
                                     child: Tooltip(
-                                      message: I18n().nextSignal,
+                                      message: const I18n().nextSignal,
                                       waitDuration: const Duration(seconds: 1),
                                       child: Container(
                                         decoration: BoxDecoration(
@@ -776,139 +872,151 @@ class InitScreen extends StatelessWidget {
                         ],
                       )),
                 ),
-                Container(
-                  color: MyColors.blueL,
-                  width: 200.dp,
-                  child: Column(
+                Platform.isAndroid || Platform.isIOS
+                    ? SingleChildScrollView(
+                        child: _buildButtons(context),
+                      )
+                    : _buildButtons(context),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildButtons(BuildContext context) {
+    return Container(
+      color: MyColors.blueL,
+      width: 200.dp,
+      height: Platform.isAndroid || Platform.isIOS ? 600.dp : double.infinity,
+      child: Column(
+        children: [
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.only(
+                top: menuButtonPadding - 3.dp,
+                bottom: menuButtonPadding - 3.dp,
+                left: menuButtonPadding,
+                right: menuButtonPadding,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    // title of section
+                    padding: EdgeInsets.all(3.dp),
+                    decoration: BoxDecoration(
+                      color: MyColors.RedL,
+                      borderRadius: BorderRadius.circular(5.dp),
+                    ),
+                    child: Text(
+                      const I18n().frequency.toUpperCase(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10.dp,
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.only(
-                            top: menuButtonPadding - 3.dp,
-                            bottom: menuButtonPadding - 3.dp,
-                            left: menuButtonPadding,
-                            right: menuButtonPadding,
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Container(
-                                // title of section
-                                padding: EdgeInsets.all(3.dp),
-                                decoration: BoxDecoration(
-                                  color: MyColors.RedL,
-                                  borderRadius: BorderRadius.circular(5.dp),
-                                ),
-                                child: Text(
-                                  const I18n().frequency.toUpperCase(),
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 10.dp,
-                                  ),
-                                ),
+                      Icon(
+                        Icons.favorite,
+                        color: MyColors.RedL,
+                        size: 35.dp,
+                      ),
+                      BlocBuilder<InitScreenBloc, InitScreenState>(
+                        builder: (context, state) {
+                          if (state is ArrhythmiaDetectionInitScreenState) {
+                            resultAr = state.result;
+                            print("arrhythmia detection state");
+                          }
+                          if (resultAr == null) {
+                            return Text(
+                              "N/A",
+                              style: TextStyle(
+                                color: MyColors.RedL,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 40.dp,
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.favorite,
-                                    color: MyColors.RedL,
-                                    size: 35.dp,
-                                  ),
-                                  BlocBuilder<InitScreenBloc, InitScreenState>(
-                                    builder: (context, state) {
-                                      if (state
-                                          is ArrhythmiaDetectionInitScreenState) {
-                                        resultAr = state.result;
-                                        print("arrhythmia detection state");
-                                      }
-                                      if (resultAr == null) {
-                                        return Text(
-                                          "N/A",
-                                          style: TextStyle(
-                                            color: MyColors.RedL,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 40.dp,
-                                          ),
-                                        );
-                                      }
-                                      return Text(
-                                        resultAr!.frequency != null
-                                            ? resultAr!.frequency.toString()
-                                            : "N/A",
-                                        style: TextStyle(
-                                          color: MyColors.RedL,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 40.dp,
-                                        ),
-                                      );
-                                    },
-                                    buildWhen: (previous, current) => current
-                                        is ArrhythmiaDetectionInitScreenState,
-                                  ),
-                                  Text(
-                                    'bpm',
-                                    style: TextStyle(
-                                      color: MyColors.RedL,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 25.dp,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              BlocBuilder<InitScreenBloc, InitScreenState>(
-                                builder: (context, state) {
-                                  if (state
-                                      is ArrhythmiaDetectionInitScreenState) {
-                                    resultAr = state.result;
-                                    print("arrhythmia detection state");
-                                  }
-                                  if (resultAr == null) {
-                                    return Text(
-                                      "",
-                                      style: TextStyle(
-                                        color: MyColors.RedL,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 15.dp,
-                                      ),
-                                    );
-                                  }
-                                  return Text(
-                                    resultAr!.getFrequencyClassify ?? "",
-                                    style: TextStyle(
-                                      color: MyColors.RedL,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15.dp,
-                                    ),
-                                  );
-                                },
-                                buildWhen: (previous, current) => current
-                                    is ArrhythmiaDetectionInitScreenState,
-                              ),
-                            ],
-                          ),
+                            );
+                          }
+                          return Text(
+                            resultAr!.frequency != null
+                                ? resultAr!.frequency.toString()
+                                : "N/A",
+                            style: TextStyle(
+                              color: MyColors.RedL,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 40.dp,
+                            ),
+                          );
+                        },
+                        buildWhen: (previous, current) =>
+                            current is ArrhythmiaDetectionInitScreenState,
+                      ),
+                      Text(
+                        'bpm',
+                        style: TextStyle(
+                          color: MyColors.RedL,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25.dp,
                         ),
                       ),
-                      Divider(
-                        color: MyColors.grayL,
-                        thickness: 0.5,
-                        height: 1,
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.only(
-                            top: menuButtonPadding,
-                            bottom: menuButtonPadding,
-                            left: menuButtonPadding,
-                            right: menuButtonPadding,
+                    ],
+                  ),
+                  BlocBuilder<InitScreenBloc, InitScreenState>(
+                    builder: (context, state) {
+                      if (state is ArrhythmiaDetectionInitScreenState) {
+                        resultAr = state.result;
+                        print("arrhythmia detection state");
+                      }
+                      if (resultAr == null) {
+                        return Text(
+                          "",
+                          style: TextStyle(
+                            color: MyColors.RedL,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15.dp,
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              /*Container( // title of section Scale
+                        );
+                      }
+                      return Text(
+                        resultAr!.getFrequencyClassify ?? "",
+                        style: TextStyle(
+                          color: MyColors.RedL,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15.dp,
+                        ),
+                      );
+                    },
+                    buildWhen: (previous, current) =>
+                        current is ArrhythmiaDetectionInitScreenState,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Divider(
+            color: MyColors.grayL,
+            thickness: 0.5,
+            height: 1,
+          ),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.only(
+                top: menuButtonPadding,
+                bottom: menuButtonPadding,
+                left: menuButtonPadding,
+                right: menuButtonPadding,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  /*Container( // title of section Scale
                                 padding: EdgeInsets.all(5.dp),
                                 decoration: BoxDecoration(
                                   color: MyColors.RedL,
@@ -923,293 +1031,263 @@ class InitScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),*/
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Tooltip(
-                                          message: I18n().changeSpeed,
-                                          waitDuration:
-                                              const Duration(seconds: 1),
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: MyColors.RedL,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        10.dp),
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              BlocProvider.of<InitScreenBloc>(
-                                                      context)
-                                                  .add(ChangeSpeedInitScreen());
-                                            },
-                                            onHover: (value) {
-                                              // show tooltip here with name of button
-                                            },
-                                            child: Transform.rotate(
-                                              angle: 90 * pi / 180,
-                                              child: Icon(
-                                                Icons.height,
-                                                size: 25.dp,
-                                                color: MyColors.GrayL,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Tooltip(
-                                          message: I18n().resetZoom,
-                                          waitDuration: Duration(seconds: 1),
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: MyColors.RedL,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        10.dp),
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              BlocProvider.of<InitScreenBloc>(
-                                                      context)
-                                                  .add(ResetZoomInitScreen());
-                                            },
-                                            onHover: (value) {
-                                              // show tooltip here with name of button
-                                            },
-                                            child: Icon(
-                                              Icons.find_replace,
-                                              size: 25.dp,
-                                              color: MyColors.GrayL,
-                                            ),
-                                          ),
-                                        ),
-                                        Tooltip(
-                                          message: I18n().zoomIn,
-                                          waitDuration: Duration(seconds: 1),
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: MyColors.RedL,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        10.dp),
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              BlocProvider.of<InitScreenBloc>(
-                                                      context)
-                                                  .add(ZoomInInitScreen());
-                                            },
-                                            onHover: (value) {
-                                              // show tooltip here with name of button
-                                            },
-                                            child: Icon(
-                                              Icons.zoom_in,
-                                              size: 25.dp,
-                                              color: MyColors.GrayL,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Tooltip(
-                                          message: I18n().changeScale,
-                                          waitDuration: Duration(seconds: 1),
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: MyColors.RedL,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        10.dp),
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              BlocProvider.of<InitScreenBloc>(
-                                                      context)
-                                                  .add(ChangeScaleInitScreen());
-                                            },
-                                            child: Icon(
-                                              Icons.height,
-                                              size: 25.dp,
-                                              color: MyColors.GrayL,
-                                            ),
-                                          ),
-                                        ),
-                                        Tooltip(
-                                          message: I18n().resetScale,
-                                          waitDuration: Duration(seconds: 1),
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: MyColors.RedL,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        10.dp),
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              BlocProvider.of<InitScreenBloc>(
-                                                      context)
-                                                  .add(ResetScalesInitScreen());
-                                            },
-                                            child: Icon(
-                                              Icons.autorenew,
-                                              size: 25.dp,
-                                              color: MyColors.GrayL,
-                                            ),
-                                          ),
-                                        ),
-                                        Tooltip(
-                                          message: I18n().zoomOut,
-                                          waitDuration: Duration(seconds: 1),
-                                          child: ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor: MyColors.RedL,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        10.dp),
-                                              ),
-                                            ),
-                                            onPressed: () {
-                                              BlocProvider.of<InitScreenBloc>(
-                                                      context)
-                                                  .add(ZoomOutInitScreen());
-                                            },
-                                            onHover: (value) {
-                                              // show tooltip here with name of button
-                                            },
-                                            child: Icon(
-                                              Icons.zoom_out,
-                                              size: 25.dp,
-                                              color: MyColors.GrayL,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    BlocBuilder<InitScreenBloc,
-                                        InitScreenState>(
-                                      builder: (context, state) {
-                                        if (state is InitScreenTools) {
-                                          baselineY = state.baselineY;
-                                          zoom = state.zoom;
-                                        }
-                                        baselineY ??= 0;
-                                        zoom ??= 1;
-                                        return Tooltip(
-                                          message: I18n().verticalAlignment,
-                                          child: Slider(
-                                            onChanged: (value) {
-                                              BlocProvider.of<InitScreenBloc>(
-                                                      context)
-                                                  .add(
-                                                      ChangeBaselineYInitScreen(
-                                                          baselineY: value));
-                                            },
-                                            value: baselineY!,
-                                            max: 30 * zoom!,
-                                            min: -30 * zoom!,
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ],
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Tooltip(
+                              message: const I18n().changeSpeed,
+                              waitDuration: const Duration(seconds: 1),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: MyColors.RedL,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.dp),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Divider(
-                        color: MyColors.grayL,
-                        thickness: 0.5,
-                        height: 1,
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.only(
-                            top: menuButtonPadding,
-                            bottom: menuButtonPadding,
-                            left: menuButtonPadding,
-                            right: menuButtonPadding,
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Container(
-                                // title of section Scale
-                                padding: EdgeInsets.all(5.dp),
-                                decoration: BoxDecoration(
-                                  color: MyColors.RedL,
-                                  borderRadius: BorderRadius.circular(5.dp),
-                                ),
-                                child: Text(
-                                  const I18n()
-                                      .arrhythmiaDetection
-                                      .toUpperCase(),
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 10.dp,
+                                onPressed: () {
+                                  BlocProvider.of<InitScreenBloc>(context)
+                                      .add(ChangeSpeedInitScreen());
+                                },
+                                onHover: (value) {
+                                  // show tooltip here with name of button
+                                },
+                                child: Transform.rotate(
+                                  angle: 90 * pi / 180,
+                                  child: Icon(
+                                    Icons.height,
+                                    size: 25.dp,
+                                    color: MyColors.GrayL,
                                   ),
                                 ),
                               ),
-                              Container(
-                                alignment: Alignment.center,
-                                child: BlocBuilder<InitScreenBloc,
-                                    InitScreenState>(
-                                  builder: (context, state) {
-                                    String text = "";
-                                    //print("state: $state");
-                                    if (state
-                                        is ArrhythmiaDetectionInitScreenState) {
-                                      resultAr = state.result;
-                                      print(resultAr);
-                                      if (resultAr != null) {
-                                        print("result ${resultAr!.getResult}");
-                                        switch (resultAr!.getResult) {
-                                          case 0:
-                                            text = I18n().normal.toUpperCase();
-                                            break;
-                                          case 1:
-                                            text =
-                                                I18n().arrhythmia.toUpperCase();
-                                            break;
-                                          case 2:
-                                            text = I18n().noise.toUpperCase();
-                                            break;
-                                          default:
-                                        }
-                                      }
-                                    }
-                                    return Text(
-                                      text,
-                                      style: TextStyle(
-                                        color: MyColors.RedL,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 25.dp,
-                                      ),
-                                    );
-                                  },
-                                  buildWhen: (previous, current) => current
-                                      is ArrhythmiaDetectionInitScreenState,
+                            ),
+                            Tooltip(
+                              message: const I18n().resetZoom,
+                              waitDuration: const Duration(seconds: 1),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: MyColors.RedL,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.dp),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  BlocProvider.of<InitScreenBloc>(context)
+                                      .add(ResetZoomInitScreen());
+                                },
+                                onHover: (value) {
+                                  // show tooltip here with name of button
+                                },
+                                child: Icon(
+                                  Icons.find_replace,
+                                  size: 25.dp,
+                                  color: MyColors.GrayL,
                                 ),
                               ),
-                              /*BlocBuilder<InitScreenBloc, InitScreenState>(
+                            ),
+                            Tooltip(
+                              message: const I18n().zoomIn,
+                              waitDuration: const Duration(seconds: 1),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: MyColors.RedL,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.dp),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  BlocProvider.of<InitScreenBloc>(context)
+                                      .add(ZoomInInitScreen());
+                                },
+                                onHover: (value) {
+                                  // show tooltip here with name of button
+                                },
+                                child: Icon(
+                                  Icons.zoom_in,
+                                  size: 25.dp,
+                                  color: MyColors.GrayL,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Tooltip(
+                              message: const I18n().changeScale,
+                              waitDuration: const Duration(seconds: 1),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: MyColors.RedL,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.dp),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  BlocProvider.of<InitScreenBloc>(context)
+                                      .add(ChangeScaleInitScreen());
+                                },
+                                child: Icon(
+                                  Icons.height,
+                                  size: 25.dp,
+                                  color: MyColors.GrayL,
+                                ),
+                              ),
+                            ),
+                            Tooltip(
+                              message: const I18n().resetScale,
+                              waitDuration: const Duration(seconds: 1),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: MyColors.RedL,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.dp),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  BlocProvider.of<InitScreenBloc>(context)
+                                      .add(ResetScalesInitScreen());
+                                },
+                                child: Icon(
+                                  Icons.autorenew,
+                                  size: 25.dp,
+                                  color: MyColors.GrayL,
+                                ),
+                              ),
+                            ),
+                            Tooltip(
+                              message: const I18n().zoomOut,
+                              waitDuration: const Duration(seconds: 1),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: MyColors.RedL,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.dp),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  BlocProvider.of<InitScreenBloc>(context)
+                                      .add(ZoomOutInitScreen());
+                                },
+                                onHover: (value) {
+                                  // show tooltip here with name of button
+                                },
+                                child: Icon(
+                                  Icons.zoom_out,
+                                  size: 25.dp,
+                                  color: MyColors.GrayL,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        BlocBuilder<InitScreenBloc, InitScreenState>(
+                          builder: (context, state) {
+                            if (state is InitScreenTools) {
+                              baselineY = state.baselineY;
+                              zoom = state.zoom;
+                            }
+                            baselineY ??= 0;
+                            zoom ??= 1;
+                            return Tooltip(
+                              message: const I18n().verticalAlignment,
+                              child: Slider(
+                                onChanged: (value) {
+                                  BlocProvider.of<InitScreenBloc>(context).add(
+                                      ChangeBaselineYInitScreen(
+                                          baselineY: value));
+                                },
+                                value: baselineY!,
+                                max: 30 * zoom!,
+                                min: -30 * zoom!,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Divider(
+            color: MyColors.grayL,
+            thickness: 0.5,
+            height: 1,
+          ),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.only(
+                top: menuButtonPadding,
+                bottom: menuButtonPadding,
+                left: menuButtonPadding,
+                right: menuButtonPadding,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    // title of section Scale
+                    padding: EdgeInsets.all(5.dp),
+                    decoration: BoxDecoration(
+                      color: MyColors.RedL,
+                      borderRadius: BorderRadius.circular(5.dp),
+                    ),
+                    child: Text(
+                      const I18n().arrhythmiaDetection.toUpperCase(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10.dp,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    child: BlocBuilder<InitScreenBloc, InitScreenState>(
+                      builder: (context, state) {
+                        String text = "";
+                        //print("state: $state");
+                        if (state is ArrhythmiaDetectionInitScreenState) {
+                          resultAr = state.result;
+                          print(resultAr);
+                          if (resultAr != null) {
+                            print("result ${resultAr!.getResult}");
+                            switch (resultAr!.getResult) {
+                              case 0:
+                                text = const I18n().normal.toUpperCase();
+                                break;
+                              case 1:
+                                text = const I18n().arrhythmia.toUpperCase();
+                                break;
+                              case 2:
+                                text = const I18n().noise.toUpperCase();
+                                break;
+                              default:
+                            }
+                          }
+                        }
+                        return Text(
+                          text,
+                          style: TextStyle(
+                            color: MyColors.RedL,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25.dp,
+                          ),
+                        );
+                      },
+                      buildWhen: (previous, current) =>
+                          current is ArrhythmiaDetectionInitScreenState,
+                    ),
+                  ),
+                  /*BlocBuilder<InitScreenBloc, InitScreenState>(
                                 builder: (context, state) {
                                   int iter = 10;
                                   int packs = 0;
@@ -1256,11 +1334,11 @@ class InitScreen extends StatelessWidget {
                                 buildWhen: (previous, current) => current
                                     is ArrhythmiaDetectionInitScreenState,
                               ),*/
-                            ],
-                          ),
-                        ),
-                      ),
-                      /*Divider(
+                ],
+              ),
+            ),
+          ),
+          /*Divider(
                         color: MyColors.grayL,
                         thickness: 0.5,
                         height: 1,
@@ -1278,103 +1356,97 @@ class InitScreen extends StatelessWidget {
                           ),
                         ),
                       ),*/
-                      Divider(
-                        color: MyColors.grayL,
-                        thickness: 0.5,
-                        height: 1,
+          Divider(
+            color: MyColors.grayL,
+            thickness: 0.5,
+            height: 1,
+          ),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.only(
+                top: menuButtonPadding,
+                bottom: menuButtonPadding,
+                left: menuButtonPadding,
+                right: menuButtonPadding,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      BlocBuilder<InitScreenBloc, InitScreenState>(
+                        builder: (context, state) {
+                          bool bluetooth = true;
+                          if (state is InitScreenTools) {
+                            file = state.file;
+                          }
+                          if (state
+                              is DisconnectBluetoothDeviceInitScreenState) {
+                            bluetooth = false;
+                          }
+
+                          return file
+                              ? Icon(
+                                  Icons.folder,
+                                  color: MyColors.RedL,
+                                  size: 30.dp,
+                                )
+                              : IconButton(
+                                  onPressed: () {
+                                    BlocProvider.of<InitScreenBloc>(context).add(
+                                        DisconnectBluetoothDeviceInitScreen());
+                                  },
+                                  icon: Icon(
+                                    bluetooth
+                                        ? Icons.bluetooth_connected
+                                        : Icons.bluetooth,
+                                    color: MyColors.RedL,
+                                    size: 30.dp,
+                                  ),
+                                );
+                        },
+                        buildWhen: (previous, current) =>
+                            current is InitScreenTools ||
+                            current is DisconnectBluetoothDeviceInitScreenState,
                       ),
                       Expanded(
-                        child: Container(
-                          padding: EdgeInsets.only(
-                            top: menuButtonPadding,
-                            bottom: menuButtonPadding,
-                            left: menuButtonPadding,
-                            right: menuButtonPadding,
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  BlocBuilder<InitScreenBloc, InitScreenState>(
-                                    builder: (context, state) {
-                                      bool bluetooth = true;
-                                      if (state is InitScreenTools) {
-                                        file = state.file;
-                                      }
-                                      if (state
-                                          is DisconnectBluetoothDeviceInitScreenState) {
-                                        bluetooth = false;
-                                      }
+                        child: BlocBuilder<InitScreenBloc, InitScreenState>(
+                          builder: (context, state) {
+                            if (state is InitScreenTools) {
+                              file = state.file;
+                              resultAr = state.result;
+                            }
 
-                                      return file
-                                          ? Icon(
-                                              Icons.folder,
-                                              color: MyColors.RedL,
-                                              size: 30.dp,
-                                            )
-                                          : IconButton(
-                                              onPressed: () {
-                                                BlocProvider.of<InitScreenBloc>(
-                                                        context)
-                                                    .add(
-                                                        DisconnectBluetoothDeviceInitScreen());
-                                              },
-                                              icon: Icon(
-                                                bluetooth
-                                                    ? Icons.bluetooth_connected
-                                                    : Icons.bluetooth,
-                                                color: MyColors.RedL,
-                                                size: 30.dp,
-                                              ),
-                                            );
-                                    },
-                                    buildWhen: (previous, current) =>
-                                        current is InitScreenTools ||
-                                        current
-                                            is DisconnectBluetoothDeviceInitScreenState,
-                                  ),
-                                  Expanded(
-                                    child: BlocBuilder<InitScreenBloc,
-                                        InitScreenState>(
-                                      builder: (context, state) {
-                                        if (state is InitScreenTools) {
-                                          file = state.file;
-                                          resultAr = state.result;
-                                        }
-
-                                        return Container(
-                                          // title of section
-                                          width: double.infinity,
-                                          padding: EdgeInsets.all(3.dp),
-                                          decoration: BoxDecoration(
-                                            color: MyColors.RedL,
-                                            borderRadius:
-                                                BorderRadius.circular(5.dp),
-                                          ),
-                                          child: Text(
-                                            resultAr != null
-                                                ? "${I18n().fileName}: ${resultAr!.nameFile}"
-                                                : "${I18n().fileName}: ",
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 4,
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 13.dp,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      buildWhen: (previous, current) =>
-                                          current is InitScreenTools,
-                                    ),
-                                  ),
-                                ],
+                            return Container(
+                              // title of section
+                              width: double.infinity,
+                              padding: EdgeInsets.all(3.dp),
+                              decoration: BoxDecoration(
+                                color: MyColors.RedL,
+                                borderRadius: BorderRadius.circular(5.dp),
                               ),
-                              /*Row(
+                              child: Text(
+                                resultAr != null
+                                    ? "${const I18n().fileName}: ${resultAr!.nameFile}"
+                                    : "${const I18n().fileName}: ",
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 4,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13.dp,
+                                ),
+                              ),
+                            );
+                          },
+                          buildWhen: (previous, current) =>
+                              current is InitScreenTools,
+                        ),
+                      ),
+                    ],
+                  ),
+                  /*Row(
                                 children: [
                                   BlocBuilder<InitScreenBloc, InitScreenState>(
                                     builder: (context, state) {
@@ -1406,14 +1478,8 @@ class InitScreen extends StatelessWidget {
                                   ),
                                 ],
                               )*/
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

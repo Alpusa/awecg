@@ -154,6 +154,40 @@ class I18n implements WidgetsLocalizations {
   String get previousSignal => "Previous Signal";
   /// "File Name"
   String get fileName => "File Name";
+  /// "New Project"
+  String get newProject => "New Project";
+  /// "Open Project"
+  String get openProject => "Open Project";
+  /// "Edit Patient Information"
+  String get editPatientInfrmation => "Edit Patient Information";
+  /// "Edit Project Information"
+  String get editProjectInformation => "Edit Project Information";
+  /// "Medical Professional"
+  String get medicalProfessional => "Medical Professional";
+  /// "Export as PDF"
+  String get exportAsPDF => "Export as PDF";
+  /// "Next"
+  String get next => "Next";
+  /// "Previous"
+  String get previous => "Previous";
+  /// "Create"
+  String get create => "Create";
+  /// "Select Project Folder"
+  String get selectProjectFolder => "Select Project Folder";
+  /// "Set Project Name"
+  String get setProjectName => "Set Project Name";
+  /// "Project Folder"
+  String get projectFolder => "Project Folder";
+  /// "Storage Permission Required"
+  String get storagePermissionRequired => "Storage Permission Required";
+  /// "Bluetooth Permission Required"
+  String get bluetoothPermissionRequired => "Bluetooth Permission Required";
+  /// "or"
+  String get or => "or";
+  /// "Bluetooth is disabled"
+  String get bluetoothIsDisabled => "Bluetooth is disabled";
+  /// "To use this function, first load or create new project"
+  String get firstLoadOrCreateNewProjectToUseToUseThisFunction => "To use this function, first load or create new project";
 }
 
 class _I18n_en_US extends I18n {

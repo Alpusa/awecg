@@ -3,6 +3,8 @@ part of 'init_screen_bloc.dart';
 @immutable
 abstract class InitScreenEvent {}
 
+class InitScreenInitialEvent extends InitScreenEvent {}
+
 class LoadECGFIleInitScreen extends InitScreenEvent {
   LoadECGFIleInitScreen();
 }
@@ -84,4 +86,16 @@ class PreviousECGDataInitScreen extends InitScreenEvent {
 
 class changePlayECGBluetoothInitScreen extends InitScreenEvent {
   changePlayECGBluetoothInitScreen();
+}
+
+class exportECGDataInitScreen extends InitScreenEvent {
+  exportECGDataInitScreen();
+}
+
+class newProjectInitScreen extends InitScreenEvent {
+  newProjectInitScreen();
+}
+
+class newProjectPatientInformationInitScreen extends InitScreenEvent {
+  newProjectPatientInformationInitScreen();
 }

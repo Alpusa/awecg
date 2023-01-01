@@ -60,5 +60,25 @@
 
     "nextSignal": "Next Signal",
     "previousSignal": "Previous Signal",
-    "fileName": "File Name"
+    "fileName": "File Name",
+
+    "newProject": "New Project",
+    "openProject": "Open Project",
+    "editPatientInfrmation": "Edit Patient Information",
+    "editProjectInformation": "Edit Project Information",
+    "medicalProfessional": "Medical Professional",
+    "exportAsPDF": "Export as PDF",
+
+    "next": "Next",
+    "previous": "Previous",
+    "create": "Create",
+    "selectProjectFolder": "Select Project Folder",
+    "setProjectName": "Set Project Name",
+    "projectFolder": "Project Folder",
+
+    "storagePermissionRequired": "Storage Permission Required",
+    "bluetoothPermissionRequired": "Bluetooth Permission Required",
+    "or": "or",
+    "bluetoothIsDisabled": "Bluetooth is disabled",
+    "firstLoadOrCreateNewProjectToUseToUseThisFunction": "To use this function, first load or create new project"
 }

@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:awecg/generated/i18n.dart';
+import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 
 import '../bloc/init_screen/init_screen_bloc.dart';
@@ -17,6 +21,14 @@ class SelectMode extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
+            BlocListener<InitScreenBloc, InitScreenState>(
+                listener: (context, state) {
+                  if (state is InitScreenError) {
+                    Navigator.pop(context);
+                    EasyLoading.showError(state.message);
+                  }
+                },
+                child: Container(height: 0.0, width: 0.0)),
             //Text(I18n().selectModeContent, style: TextStyle(fontSize: 18.dp)),
             Container(
               width: 20.w,
@@ -29,7 +41,7 @@ class SelectMode extends StatelessWidget {
               height: 2.dp,
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 BlocProvider.of<InitScreenBloc>(context)
                     .add(LoadECGFIleInitScreen());
                 Navigator.of(context).pop();

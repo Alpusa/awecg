@@ -1,6 +1,11 @@
 import 'dart:io';
 
 import 'package:awecg/generated/i18n.dart';
+import 'package:awecg/widget/signal_container.dart';
+import 'package:flutter/material.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
 
 class ArrhythmiaResult {
   String nameFile; // name of the file
@@ -68,6 +73,97 @@ class ArrhythmiaResult {
     ecg = getData(ecgPosition);
 
     return ecg;
+  }
+
+  Future<void> exportPDF() async {
+    //Create an instance of ScreenshotController
+    ScreenshotController screenshotController = ScreenshotController();
+    var pdf = pw.Document();
+    int sizeBox = ((80 * 1) / (0.004 * 25)).floor();
+    print("sizeBox = ${sizeBox}");
+    List<double> ecgShow = [];
+    for (var i = 0; i < pathFiles.length; i++) {
+      print("i = ${i}");
+      double speed = 25;
+      double zoom = 1;
+      bool show = true;
+      ecgShow.addAll(getData(i));
+      print("ecgShow.length = ${ecgShow.length}");
+      if (ecgShow.length < sizeBox + 1) {
+        show = false;
+      }
+      while (show) {
+        var signalContainer = await screenshotController.captureFromWidget(
+          MediaQuery(
+            data: MediaQueryData(
+              size: Size(3508, 2480),
+              devicePixelRatio: 3,
+            ),
+            child: SignalContainer(
+              height: 2480,
+              width: 3508,
+              ppi: 3,
+              ecgData: ecgShow.sublist(0, sizeBox + 1),
+              baselineX: 0,
+            ),
+          ),
+          pixelRatio: 3,
+        );
+        ecgShow = ecgShow.sublist(sizeBox);
+        var image = pw.MemoryImage(signalContainer);
+        pdf.addPage(
+          pw.Page(
+            pageFormat: PdfPageFormat.a4,
+            orientation: pw.PageOrientation.landscape,
+            margin: pw.EdgeInsets.all(0),
+            build: (context) {
+              return pw.Image(image, fit: pw.BoxFit.fill);
+            },
+          ),
+        );
+        if (ecgShow.length < sizeBox + 1) {
+          show = false;
+        }
+      }
+
+      if (i == pathFiles.length - 1) {
+        var signalContainer = await screenshotController.captureFromWidget(
+          MediaQuery(
+            data: MediaQueryData(
+              size: Size(3508, 2480),
+              devicePixelRatio: 3,
+            ),
+            child: SignalContainer(
+              height: 2480,
+              width: 3508,
+              ppi: 3,
+              ecgData: ecgShow,
+              baselineX: 0,
+            ),
+          ),
+          pixelRatio: 3,
+        );
+        ecgShow.clear();
+        var image = pw.MemoryImage(signalContainer);
+        pdf.addPage(
+          pw.Page(
+            pageFormat: PdfPageFormat.a4,
+            orientation: pw.PageOrientation.landscape,
+            margin: pw.EdgeInsets.all(0),
+            build: (context) {
+              return pw.Image(image, fit: pw.BoxFit.fill);
+            },
+          ),
+        );
+      }
+    }
+
+    // save the pdf
+    final file = File("${pathFolder}${nameFile}.pdf");
+    await file.writeAsBytes(await pdf.save());
+    print("pdf saved");
+
+    // liberate the memory
   }
 
   void addECG(List<double> ecg) {

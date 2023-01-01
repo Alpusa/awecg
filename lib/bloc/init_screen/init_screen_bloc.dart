@@ -3,10 +3,13 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:awecg/generated/i18n.dart';
 import 'package:awecg/models/arrhythmia_result.dart';
 import 'package:awecg/repository/classifier.dart';
 import 'package:bloc/bloc.dart';
+import 'package:file/local.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:meta/meta.dart';
 import 'package:iirjdart/butterworth.dart';
@@ -16,6 +19,7 @@ import 'package:quick_blue/quick_blue.dart';
 import 'package:scidart/numdart.dart';
 import 'package:scidart/scidart.dart';
 import 'package:uuid/uuid.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 part 'init_screen_event.dart';
 part 'init_screen_state.dart';
@@ -47,8 +51,14 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
 
   InitScreenBloc() : super(InitScreenInitial()) {
     on<InitScreenEvent>((event, emit) {
-      // TODO: implement event handler
+      checkStoragePermission();
     });
+
+    on<InitScreenInitialEvent>(
+      (event, emit) {
+        emit(InitScreenInitial());
+      },
+    );
 
     on<LoadECGFIleInitScreen>((event, emit) async {
       loaded = false;
@@ -70,41 +80,64 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       result = null;
 
       if (deviceId != null) {
-        QuickBlue.disconnect(deviceId!);
+        try {
+          QuickBlue.disconnect(deviceId!);
+        } catch (e) {
+          print(e);
+        }
         deviceId = null;
       }
-
-      QuickBlue.stopScan();
-
-      // load file from local storage
-      Directory appDocDir = await getApplicationDocumentsDirectory();
-      FilePickerResult? rr;
-      if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
-        rr = await FilePicker.platform.pickFiles(
-          initialDirectory: appDocDir.path,
-          type: FileType.custom,
-          allowedExtensions: [/*'txt', 'csv',*/ 'awecg'],
-        );
-      } else {
-        FilePicker.platform.clearTemporaryFiles();
-        rr = await FilePicker.platform.pickFiles(
-          //initialDirectory: appDocDir.path,
-          type: FileType.any,
-          allowMultiple: false,
-          //allowedExtensions: [/*'txt', 'csv',*/ 'awecg'],
-        );
-        print("rr: $rr");
+      try {
+        QuickBlue.stopScan();
+      } catch (e) {
+        print(e);
       }
 
-      if (rr != null) {
-        String path = rr.files.single.path!;
-        String name = rr.files.single.name;
-        print('path: $path name: $name');
+      bool storagePermission = await checkStoragePermission();
+      if (storagePermission) {
+        // load file from local storage
+        Directory appDocDir = await getApplicationDocumentsDirectory();
+        FilePickerResult? rr;
+        if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
+          rr = await FilePicker.platform.pickFiles(
+            initialDirectory: appDocDir.path,
+            type: FileType.custom,
+            allowedExtensions: [/*'txt', 'csv',*/ 'awecg'],
+          );
+        } else {
+          FilePicker.platform.clearTemporaryFiles();
 
-        result =
-            await ArrhythmiaResult(nameFile: name, pathFolder: path).init();
+          Directory? directory = await getExternalStorageDirectory();
+          print("directory: $directory");
+          rr = await FilePicker.platform.pickFiles(
+            //initialDirectory: appDocDir.path,
+            type: FileType.any,
+            allowMultiple: false,
+            //allowedExtensions: [/*'txt', 'csv',*/ 'awecg'],
+          );
 
-        /*File fileLoad = await File(rr.files.single.path!);
+          var name = rr!.names.first;
+          print("namefile: ${rr!.names.first} path: ${rr.files.first.path}}");
+          rr.files.clear();
+          rr.files.add(
+            PlatformFile(
+                name: name!,
+                path: directory!.path! + "/" + name,
+                size: 0,
+                bytes: null),
+          );
+          print("rr: $rr");
+        }
+
+        if (rr != null) {
+          String path = rr.files.single.path!;
+          String name = rr.files.single.name;
+          print('path: ${path} name: $name');
+
+          result =
+              await ArrhythmiaResult(nameFile: name, pathFolder: path).init();
+
+          /*File fileLoad = await File(rr.files.single.path!);
 
         // load de file like a text
         String text = await fileLoad.readAsString();
@@ -117,56 +150,59 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         ecgData.addAll(data);
         */
 
-        ecgData = result!.loadECG(0);
-        loaded = true;
-        updateSilver(ecgMaxLength);
-        updateSilverY();
-        //evaluate(data);
-        add(evaluateDataInitScreen(data: ecgData));
-        if (result != null) {
-          emit(
-            InitScreenTools(
-              scale: scale,
-              speed: speed,
-              data: ecgData,
-              data2: filterData,
-              zoom: zoom,
-              baselineX: baselineX,
-              baselineY: baselineY,
-              silverMaxY: silverMaxY,
-              silverMinY: silverMinY,
-              loaded: loaded,
-              file: file,
-              silverMax: silverMax,
-              initSpot: initSpot,
-              endSpot: endSpot,
-              stateRule: ruleState,
-              result: result!,
-              pause: pause,
-            ),
-          );
-        } else {
-          emit(
-            InitScreenTools(
-              scale: scale,
-              speed: speed,
-              data: ecgData,
-              data2: filterData,
-              zoom: zoom,
-              baselineX: baselineX,
-              baselineY: baselineY,
-              silverMaxY: silverMaxY,
-              silverMinY: silverMinY,
-              loaded: loaded,
-              file: file,
-              silverMax: silverMax,
-              initSpot: initSpot,
-              endSpot: endSpot,
-              stateRule: ruleState,
-              pause: pause,
-            ),
-          );
+          ecgData = result!.loadECG(0);
+          loaded = true;
+          updateSilver(ecgMaxLength);
+          updateSilverY();
+          //evaluate(data);
+          add(evaluateDataInitScreen(data: ecgData));
+          if (result != null) {
+            emit(
+              InitScreenTools(
+                scale: scale,
+                speed: speed,
+                data: ecgData,
+                data2: filterData,
+                zoom: zoom,
+                baselineX: baselineX,
+                baselineY: baselineY,
+                silverMaxY: silverMaxY,
+                silverMinY: silverMinY,
+                loaded: loaded,
+                file: file,
+                silverMax: silverMax,
+                initSpot: initSpot,
+                endSpot: endSpot,
+                stateRule: ruleState,
+                result: result!,
+                pause: pause,
+              ),
+            );
+          } else {
+            emit(
+              InitScreenTools(
+                scale: scale,
+                speed: speed,
+                data: ecgData,
+                data2: filterData,
+                zoom: zoom,
+                baselineX: baselineX,
+                baselineY: baselineY,
+                silverMaxY: silverMaxY,
+                silverMinY: silverMinY,
+                loaded: loaded,
+                file: file,
+                silverMax: silverMax,
+                initSpot: initSpot,
+                endSpot: endSpot,
+                stateRule: ruleState,
+                pause: pause,
+              ),
+            );
+          }
         }
+      } else {
+        emit(InitScreenError(I18n().storagePermissionRequired));
       }
     });
 
@@ -192,10 +228,20 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
 
       // start the bluetooth connection
       print('start scan');
-      getDeviceName();
-      emit(
-        SelectBluetoothDeviceInitScreen(),
-      );
+      bool storagePermission = await checkStoragePermission();
+      bool bluetoothPermission = await checkBluetoothPermission();
+      if (storagePermission && bluetoothPermission) {
+        getDeviceName();
+        emit(
+          SelectBluetoothDeviceInitScreen(),
+        );
+      } else {
+        emit(InitScreenError(I18n().storagePermissionRequired +
+            "." +
+            I18n().bluetoothPermissionRequired +
+            " ${I18n().or} " +
+            I18n().bluetoothIsDisabled));
+      }
     });
 
     on<ChangeScaleInitScreen>((event, emit) {
@@ -1099,6 +1145,57 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         ),
       );
     });
+
+    on<exportECGDataInitScreen>((event, emit) async {
+      if (result != null) {
+        result!.exportPDF();
+      } else {
+        emit(InitScreenError(
+            I18n().firstLoadOrCreateNewProjectToUseToUseThisFunction));
+      }
+    });
+
+    on<newProjectInitScreen>((event, emit) {
+      result = null;
+      ecgData = [];
+      filterData = [];
+      loaded = false;
+      file = true;
+      zoom = 1;
+      scale = 1;
+      speed = 1;
+      baselineX = 0;
+      baselineY = 0;
+      silverMaxY = 0;
+      silverMinY = 0;
+      silverMax = 0;
+      initSpot = null;
+      endSpot = null;
+      ruleState = 0;
+      pause = false;
+
+      emit(
+        InitScreenTools(
+          scale: scale,
+          speed: speed,
+          data: ecgData,
+          data2: filterData,
+          zoom: zoom,
+          baselineX: baselineX,
+          baselineY: baselineY,
+          silverMaxY: silverMaxY,
+          silverMinY: silverMinY,
+          loaded: loaded,
+          file: file,
+          silverMax: silverMax,
+          initSpot: initSpot,
+          endSpot: endSpot,
+          stateRule: ruleState,
+          pause: pause,
+        ),
+      );
+      emit(ShowNewProjectInitScreenState());
+    });
   }
 
   void _handleConnectionChange(String deviceId, BlueConnectionState state) {
@@ -1109,12 +1206,15 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       QuickBlue.setServiceHandler(_handleServiceDiscovery);
       //QuickBlue.discoverServices(deviceId);
       QuickBlue.setValueHandler(_handleValueChange);
-
-      QuickBlue.setNotifiable(
-          deviceId,
-          "832a0638-67db-11ed-9022-0242ac120002",
-          '00002b18-0000-1000-8000-00805f9b34fb',
-          BleInputProperty.notification);
+      if (Platform.isAndroid || Platform.isIOS) {
+        QuickBlue.discoverServices(deviceId);
+      } else {
+        QuickBlue.setNotifiable(
+            deviceId,
+            "832a0638-67db-11ed-9022-0242ac120002",
+            '00002b18-0000-1000-8000-00805f9b34fb',
+            BleInputProperty.notification);
+      }
     } else if (state == BlueConnectionState.disconnected) {
       print('disconnected from $deviceId');
     }
@@ -1122,6 +1222,13 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
 
   void _handleServiceDiscovery(String deviceId, String serviceId) {
     print('_handleServiceDiscovery $deviceId, $serviceId');
+    if (serviceId == '832a0638-67db-11ed-9022-0242ac120002') {
+      QuickBlue.setNotifiable(
+          deviceId,
+          serviceId,
+          '00002b18-0000-1000-8000-00805f9b34fb',
+          BleInputProperty.notification);
+    }
   }
 
   void _handleValueChange(
@@ -1282,5 +1389,45 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       //resultString = 'Noise';
     }
     return index;
+  }
+
+  Future<bool> checkStoragePermission() async {
+    if (await Permission.manageExternalStorage.isGranted) {
+      return true;
+    } else {
+      await [Permission.manageExternalStorage].request();
+      if (await Permission.manageExternalStorage.isGranted) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  Future<bool> checkBluetoothPermission() async {
+    if (!await QuickBlue.isBluetoothAvailable()) {
+      return false;
+    }
+    if (await Permission.bluetooth.isGranted &&
+        await Permission.bluetoothAdvertise.isGranted &&
+        await Permission.bluetoothConnect.isGranted &&
+        await Permission.bluetoothScan.isGranted) {
+      return true;
+    } else {
+      await [
+        Permission.bluetooth,
+        Permission.bluetoothAdvertise,
+        Permission.bluetoothConnect,
+        Permission.bluetoothScan
+      ].request();
+      if (await Permission.bluetooth.isGranted &&
+          await Permission.bluetoothAdvertise.isGranted &&
+          await Permission.bluetoothConnect.isGranted &&
+          await Permission.bluetoothScan.isGranted) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 }
