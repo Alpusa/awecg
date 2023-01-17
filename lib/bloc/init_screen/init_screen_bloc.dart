@@ -5,6 +5,8 @@ import 'dart:typed_data';
 
 import 'package:awecg/generated/i18n.dart';
 import 'package:awecg/models/arrhythmia_result.dart';
+import 'package:awecg/models/medical_professional.dart';
+import 'package:awecg/models/patient.dart';
 import 'package:awecg/repository/classifier.dart';
 import 'package:bloc/bloc.dart';
 import 'package:file/local.dart';
@@ -122,7 +124,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
           rr.files.add(
             PlatformFile(
                 name: name!,
-                path: directory!.path! + "/" + name,
+                path: "${directory!.path!}/$name",
                 size: 0,
                 bytes: null),
           );
@@ -202,7 +204,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
           }
         }
       } else {
-        emit(InitScreenError(I18n().storagePermissionRequired));
+        emit(InitScreenError(const I18n().storagePermissionRequired));
       }
     });
 
@@ -228,20 +230,6 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
 
       // start the bluetooth connection
       print('start scan');
-      bool storagePermission = await checkStoragePermission();
-      bool bluetoothPermission = await checkBluetoothPermission();
-      if (storagePermission && bluetoothPermission) {
-        getDeviceName();
-        emit(
-          SelectBluetoothDeviceInitScreen(),
-        );
-      } else {
-        emit(InitScreenError(I18n().storagePermissionRequired +
-            "." +
-            I18n().bluetoothPermissionRequired +
-            " ${I18n().or} " +
-            I18n().bluetoothIsDisabled));
-      }
     });
 
     on<ChangeScaleInitScreen>((event, emit) {
@@ -853,7 +841,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
             int count_2 = 0;*/
 
           //for (int i = 0; i < result.getIter; i++) {
-          int value = evaluate(event.data);
+          List<double> value = evaluate(event.data);
           /*if (value == 0) {
                 count_0++;
               } else if (value == 1) {
@@ -872,10 +860,12 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
                         : 0;*/
           print("value: $value");
           print("result: ${result}");
-          result!.addResult(value);
+          result!.addResult(value[0].toInt());
           print("result: ${result}");
+          emit(ArrhythmiaDetectionInitScreenState(
+              result: result!, value: value));
         }
-        emit(ArrhythmiaDetectionInitScreenState(result: result!));
+
         //}
       }
     });
@@ -1004,7 +994,8 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
     });
 
     on<ConnectBluetoothDeviceInitScreen>((event, emit) async {
-      emit(ConnectingBluetoothDeviceInitScreenState());
+      emit(StartLoadingIntiScreenState());
+      //emit(ConnectingBluetoothDeviceInitScreenState());
       QuickBlue.stopScan();
       QuickBlue.setConnectionHandler(_handleConnectionChange);
       QuickBlue.setServiceHandler(_handleServiceDiscovery);
@@ -1110,14 +1101,8 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
     });
 
     on<ConnectedBluetoothDeviceInitScreen>((event, emit) async {
-      Directory appDocDir = await getApplicationDocumentsDirectory();
-      // generate a random file name
-      String nameFile = Uuid().v4();
-      String appDocPath = '${appDocDir.path}/AWECG/$nameFile/';
-      print("appDocPath: $appDocPath nameFile: $nameFile");
-      Directory(appDocPath).createSync(recursive: true);
-
-      result = ArrhythmiaResult(nameFile: nameFile, pathFolder: appDocPath);
+      emit(StopLoadingIntiScreenState());
+      file = false;
       emit(ConnectedBluetoothDeviceInitScreenState());
     });
 
@@ -1147,73 +1132,331 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
     });
 
     on<exportECGDataInitScreen>((event, emit) async {
+      emit(StartLoadingIntiScreenState(message: I18n().exporingAsPDF));
       if (result != null) {
-        result!.exportPDF();
+        await result!.exportPDF();
+        emit(StopLoadingIntiScreenState());
       } else {
         emit(InitScreenError(
-            I18n().firstLoadOrCreateNewProjectToUseToUseThisFunction));
+            const I18n().firstLoadOrCreateNewProjectToUseToUseThisFunction));
       }
     });
 
-    on<newProjectInitScreen>((event, emit) {
-      result = null;
+    on<newProjectInitScreen>((event, emit) async {
+      scanResults = [];
+      loaded = false;
+      baselineX = 0.0;
+      baselineY = 0.0;
+      silverMaxY = 0.0;
+      speed = 25;
+      zoom = 1;
+      scale = 10;
       ecgData = [];
       filterData = [];
-      loaded = false;
-      file = true;
-      zoom = 1;
-      scale = 1;
-      speed = 1;
-      baselineX = 0;
-      baselineY = 0;
-      silverMaxY = 0;
-      silverMinY = 0;
-      silverMax = 0;
+      baselineX = 0.0;
+      silverMax = 0.0;
       initSpot = null;
       endSpot = null;
       ruleState = 0;
-      pause = false;
+      result = null;
 
-      emit(
-        InitScreenTools(
-          scale: scale,
-          speed: speed,
-          data: ecgData,
-          data2: filterData,
-          zoom: zoom,
-          baselineX: baselineX,
-          baselineY: baselineY,
-          silverMaxY: silverMaxY,
-          silverMinY: silverMinY,
-          loaded: loaded,
-          file: file,
-          silverMax: silverMax,
-          initSpot: initSpot,
-          endSpot: endSpot,
-          stateRule: ruleState,
-          pause: pause,
-        ),
-      );
-      emit(ShowNewProjectInitScreenState());
+      file = true;
+
+      bool storagePermission = await checkStoragePermission();
+      bool bluetoothPermission = await checkBluetoothPermission();
+      if (storagePermission && bluetoothPermission) {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            pause: pause,
+          ),
+        );
+        emit(ShowNewProjectInitScreenState());
+        //
+      } else {
+        emit(InitScreenError(
+            "${const I18n().storagePermissionRequired}.${I18n().bluetoothPermissionRequired} ${const I18n().or} ${I18n().bluetoothIsDisabled}"));
+      }
+    });
+
+    on<selectProjectFolderInitScreen>((event, emit) async {
+      String? directory = await FilePicker.platform.getDirectoryPath();
+      if (directory != null) {
+        print("path: $directory");
+        emit(ProjectFolderInitScreenState(folder: directory));
+      }
+    });
+
+    on<randomProjectNameInitScreen>((event, emit) {
+      String nameFile = const Uuid().v4();
+      emit(ProjectRandomNameInitScreenState(name: nameFile));
+    });
+
+    on<validateProjectLocationInitScreen>((event, emit) async {
+      emit(StartLoadingIntiScreenState());
+      if (event.projectFolder != null) {
+        if (event.projectName != null) {
+          // validate if the folder exists
+          Directory directory = Directory(event.projectFolder);
+          if (await directory.exists()) {
+            // check if a folder with the same name exists in the folder
+            Directory directory2 =
+                Directory('${event.projectFolder}/${event.projectName}');
+            if (await directory2.exists()) {
+              emit(InitScreenError(const I18n().projectIsAlreadyExist));
+            } else {
+              // create result object and set the folderpath and name
+              result = ArrhythmiaResult(
+                  nameFile: event.projectName, pathFolder: event.projectFolder);
+              emit(StopLoadingIntiScreenState());
+              emit(ShowPatientNewProjectInitScreenState());
+            }
+          } else {
+            emit(InitScreenError(const I18n().folderDoesNotExist));
+          }
+        } else {
+          emit(InitScreenError(const I18n().fieldsAreRequired));
+        }
+      } else {
+        emit(InitScreenError(const I18n().fieldsAreRequired));
+      }
+    });
+
+    on<addPatientProjectInitScreen>((event, emit) {
+      emit(StartLoadingIntiScreenState());
+      if (result != null) {
+        result!.setPatient(event.patient);
+        result!.setMedicalProfessional(
+          MedicalProfessional(
+              id: "0",
+              fullName: "test",
+              email: "test@test.com",
+              phone: "123",
+              address: "addddd",
+              age: "25",
+              specialty: "ING",
+              place: "home"),
+        );
+        emit(StopLoadingIntiScreenState());
+
+        emit(ShowSelectBluetoothDeviceInitScreenState());
+        add(startBluetoothScanInitScreen());
+      } else {
+        emit(InitScreenError(
+            const I18n().firstLoadOrCreateNewProjectToUseToUseThisFunction));
+      }
+    });
+
+    on<startBluetoothScanInitScreen>((event, emit) {
+      if (result != null) {
+        getDeviceName();
+      } else {
+        emit(InitScreenError(
+            const I18n().firstLoadOrCreateNewProjectToUseToUseThisFunction));
+      }
+    });
+
+    on<errorBluetoothScanInitScreen>((event, emit) {
+      emit(InitScreenError(const I18n().errorCreatingProject));
+    });
+
+    on<openProjectInitScreen>((event, emit) async {
+      scanResults = [];
+      loaded = false;
+      baselineX = 0.0;
+      baselineY = 0.0;
+      silverMaxY = 0.0;
+      speed = 25;
+      zoom = 1;
+      scale = 10;
+      ecgData = [];
+      filterData = [];
+      baselineX = 0.0;
+      silverMax = 0.0;
+      initSpot = null;
+      endSpot = null;
+      ruleState = 0;
+      result = null;
+
+      file = true;
+
+      if (deviceId != null) {
+        try {
+          QuickBlue.disconnect(deviceId!);
+        } catch (e) {
+          print(e);
+        }
+        deviceId = null;
+      }
+      try {
+        QuickBlue.stopScan();
+      } catch (e) {
+        print(e);
+      }
+
+      bool storagePermission = await checkStoragePermission();
+      if (storagePermission) {
+        emit(
+          InitScreenTools(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            pause: pause,
+          ),
+        );
+        emit(ShowOpenProjectInitScreenState());
+        //
+      } else {
+        result = null;
+        emit(InitScreenError("${const I18n().storagePermissionRequired}."));
+      }
+    });
+
+    on<loadProjectInitScreen>((event, emit) async {
+      emit(StartLoadingIntiScreenState());
+
+      result = ArrhythmiaResult(nameFile: "", pathFolder: "");
+
+      bool validateProject =
+          await result!.validateProjectFolder(event.projectPath);
+      print("validate: $validateProject");
+      if (validateProject) {
+        bool loadedProject = await result!.loadProject(event.projectPath);
+        print("loaded: $loadedProject");
+        if (loadedProject) {
+          emit(StopLoadingIntiScreenState());
+          ecgData = result!.loadECG(0);
+          loaded = true;
+          updateSilver(ecgMaxLength);
+          updateSilverY();
+          //evaluate(data);
+          add(evaluateDataInitScreen(data: ecgData));
+          if (result != null) {
+            emit(
+              InitScreenTools(
+                scale: scale,
+                speed: speed,
+                data: ecgData,
+                data2: filterData,
+                zoom: zoom,
+                baselineX: baselineX,
+                baselineY: baselineY,
+                silverMaxY: silverMaxY,
+                silverMinY: silverMinY,
+                loaded: loaded,
+                file: file,
+                silverMax: silverMax,
+                initSpot: initSpot,
+                endSpot: endSpot,
+                stateRule: ruleState,
+                result: result!,
+                pause: pause,
+              ),
+            );
+          } else {
+            emit(
+              InitScreenTools(
+                scale: scale,
+                speed: speed,
+                data: ecgData,
+                data2: filterData,
+                zoom: zoom,
+                baselineX: baselineX,
+                baselineY: baselineY,
+                silverMaxY: silverMaxY,
+                silverMinY: silverMinY,
+                loaded: loaded,
+                file: file,
+                silverMax: silverMax,
+                initSpot: initSpot,
+                endSpot: endSpot,
+                stateRule: ruleState,
+                pause: pause,
+              ),
+            );
+          }
+        } else {
+          result = null;
+          emit(StopLoadingIntiScreenState());
+          emit(InitScreenError(
+              "${const I18n().projectIsNotValid} or ${const I18n().projectIsBroken}"));
+        }
+      } else {
+        result = null;
+        emit(StopLoadingIntiScreenState());
+        emit(InitScreenError(
+            "${const I18n().projectIsNotValid} or ${const I18n().projectIsBroken}"));
+      }
+    });
+
+    on<patientInformationInitScreen>((event, emit) async {
+      if (result != null) {
+        emit(ShowPatientInformationInitScreenState(patient: result!.patient!));
+      } else {
+        emit(InitScreenError(
+            const I18n().firstLoadOrCreateNewProjectToUseToUseThisFunction));
+      }
+    });
+
+    on<medicalInformationInitScreen>((event, emit) async {
+      if (result != null) {
+        emit(ShowPatientInformationInitScreenState(patient: result!.patient!));
+      } else {
+        emit(InitScreenError(
+            const I18n().firstLoadOrCreateNewProjectToUseToUseThisFunction));
+      }
     });
   }
 
-  void _handleConnectionChange(String deviceId, BlueConnectionState state) {
+  Future<void> _handleConnectionChange(
+      String deviceId, BlueConnectionState state) async {
     print('_handleConnectionChange $deviceId, ${state.toString()}');
-    if (state == BlueConnectionState.connected) {
-      add(ConnectedBluetoothDeviceInitScreen());
-      print('connected to $deviceId');
-      QuickBlue.setServiceHandler(_handleServiceDiscovery);
-      //QuickBlue.discoverServices(deviceId);
-      QuickBlue.setValueHandler(_handleValueChange);
-      if (Platform.isAndroid || Platform.isIOS) {
-        QuickBlue.discoverServices(deviceId);
+    if (state == BlueConnectionState.connected && result != null) {
+      bool created = await result!.createProject();
+      if (created) {
+        add(ConnectedBluetoothDeviceInitScreen());
+        print('connected to $deviceId');
+        QuickBlue.setServiceHandler(_handleServiceDiscovery);
+        //QuickBlue.discoverServices(deviceId);
+        QuickBlue.setValueHandler(_handleValueChange);
+        if (Platform.isAndroid || Platform.isIOS) {
+          QuickBlue.discoverServices(deviceId);
+        } else {
+          QuickBlue.setNotifiable(
+              deviceId,
+              "832a0638-67db-11ed-9022-0242ac120002",
+              '00002b18-0000-1000-8000-00805f9b34fb',
+              BleInputProperty.notification);
+        }
       } else {
-        QuickBlue.setNotifiable(
-            deviceId,
-            "832a0638-67db-11ed-9022-0242ac120002",
-            '00002b18-0000-1000-8000-00805f9b34fb',
-            BleInputProperty.notification);
+        add(errorBluetoothScanInitScreen());
+        add(DisconnectBluetoothDeviceInitScreen());
       }
     } else if (state == BlueConnectionState.disconnected) {
       print('disconnected from $deviceId');
@@ -1233,7 +1476,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
 
   void _handleValueChange(
       String deviceId, String characteristicId, Uint8List value) {
-    final utf8Decoder = Utf8Decoder(allowMalformed: false);
+    final utf8Decoder = const Utf8Decoder(allowMalformed: false);
     var dat = utf8Decoder.convert(value);
     // split the string using the delimiter ','
     //var data = [dat.substring(0, 4), dat.substring(4, 84)];
@@ -1266,7 +1509,12 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
 
   void getDeviceName(/*ScanResult event*/) async {
     // Start scanning
-    QuickBlue.stopScan();
+    try {
+      QuickBlue.stopScan();
+    } catch (e) {
+      print(e);
+      add(errorBluetoothScanInitScreen());
+    }
     QuickBlue.setConnectionHandler(_handleConnectionChange);
     QuickBlue.setServiceHandler(_handleServiceDiscovery);
     QuickBlue.scanResultStream.listen((result) {
@@ -1292,7 +1540,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
     }
   }
 
-  int evaluate(List<double> data) {
+  List<double> evaluate(List<double> data) {
     print("data length: ${data.length}");
     Array ldata = Array.empty();
     // filter iir
@@ -1375,6 +1623,10 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
     // show the result
     // get the position of highest value in the result
     var index = result_.indexOf(result_.reduce(max));
+    // e^10/(e^10 + e^5 + e^2	)
+    double probability = exp(result_[index]) /
+        (exp(result_[0]) + exp(result_[1]) + exp(result_[2]));
+    print("Probability: $probability");
     // if the index is  0 resultString = Normal Signal
     // if the index is  1 resultString = Arrhythmia Signal
     // if the index is  2 resultString = Noise
@@ -1388,7 +1640,12 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       print("Noise");
       //resultString = 'Noise';
     }
-    return index;
+    return [
+      index.toDouble(),
+      exp(result_[0]) / (exp(result_[0]) + exp(result_[1]) + exp(result_[2])),
+      exp(result_[1]) / (exp(result_[0]) + exp(result_[1]) + exp(result_[2])),
+      exp(result_[2]) / (exp(result_[0]) + exp(result_[1]) + exp(result_[2]))
+    ];
   }
 
   Future<bool> checkStoragePermission() async {

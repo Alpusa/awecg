@@ -52,6 +52,7 @@ dependencies:
   pdf: ^3.8.4
   filesystem_picker: ^3.0.0
   screenshot: ^1.2.3
+  encrypt: ^5.0.1
 
 
   # The following adds the Cupertino Icons font to your application.

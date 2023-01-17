@@ -53,9 +53,11 @@ class InitScreenTools extends InitScreenState {
 }
 
 class ArrhythmiaDetectionInitScreenState extends InitScreenState {
+  List<double> value;
   ArrhythmiaResult result;
 
   ArrhythmiaDetectionInitScreenState({
+    required this.value,
     required this.result,
   });
 }
@@ -88,4 +90,40 @@ class InitScreenError extends InitScreenState {
 
 class ShowNewProjectInitScreenState extends InitScreenState {
   ShowNewProjectInitScreenState();
+}
+
+class ProjectFolderInitScreenState extends InitScreenState {
+  String folder;
+  ProjectFolderInitScreenState({required this.folder});
+}
+
+class ProjectRandomNameInitScreenState extends InitScreenState {
+  String name;
+  ProjectRandomNameInitScreenState({required this.name});
+}
+
+class StartLoadingIntiScreenState extends InitScreenState {
+  String? message;
+  StartLoadingIntiScreenState({this.message});
+}
+
+class StopLoadingIntiScreenState extends InitScreenState {
+  StopLoadingIntiScreenState();
+}
+
+class ShowPatientNewProjectInitScreenState extends InitScreenState {
+  ShowPatientNewProjectInitScreenState();
+}
+
+class ShowSelectBluetoothDeviceInitScreenState extends InitScreenState {
+  ShowSelectBluetoothDeviceInitScreenState();
+}
+
+class ShowOpenProjectInitScreenState extends InitScreenState {
+  ShowOpenProjectInitScreenState();
+}
+
+class ShowPatientInformationInitScreenState extends InitScreenState {
+  Patient patient;
+  ShowPatientInformationInitScreenState({required this.patient});
 }

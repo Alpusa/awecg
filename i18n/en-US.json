@@ -57,6 +57,7 @@
     "selectBluetoothDevice": "Select Bluetooth Device",
     "address": "Address",
     "rssi": "RSSI",
+    "errorConnectingToDevice": "Error connecting to {name}",
 
     "nextSignal": "Next Signal",
     "previousSignal": "Previous Signal",
@@ -64,21 +65,46 @@
 
     "newProject": "New Project",
     "openProject": "Open Project",
+    "open": "Open",
     "editPatientInfrmation": "Edit Patient Information",
     "editProjectInformation": "Edit Project Information",
     "medicalProfessional": "Medical Professional",
+    "medicalProfessionalInformation": "Medical Professional Information",
     "exportAsPDF": "Export as PDF",
+    "exporingAsPDF": "Exporting as PDF",
 
+    "fieldIsRequired": "This field is required",
+    "fieldsAreRequired": "Fields are required",
+    "loading": "Loading",
     "next": "Next",
     "previous": "Previous",
     "create": "Create",
     "selectProjectFolder": "Select Project Folder",
     "setProjectName": "Set Project Name",
     "projectFolder": "Project Folder",
+    "projectName": "Project Name",
+    "generate": "Generate",
+    "folderDoesNotExist": "Folder does not exist",
+    "projectIsAlreadyExist": "Project is already exist",
+    "patientInformation": "Patient Information",
+    "fullName": "Full Name",
+    "age": "Age",
+    "phoneNumber": "Phone Number",
+    "email": "Email",
+    "identityCard": "Identity Card",
+    "completeThePatientInformation": "Complete the patient information",
+    "allFieldsAreRequired": "All fields are required",
+    
+    "errorCreatingProject": "Error creating project",
+    
 
     "storagePermissionRequired": "Storage Permission Required",
     "bluetoothPermissionRequired": "Bluetooth Permission Required",
     "or": "or",
     "bluetoothIsDisabled": "Bluetooth is disabled",
-    "firstLoadOrCreateNewProjectToUseToUseThisFunction": "To use this function, first load or create new project"
+    "firstLoadOrCreateNewProjectToUseToUseThisFunction": "To use this function, first load or create new project",
+
+    "projectIsNotValid": "Project is not valid",
+    "projectIsBroken": "Project is broken"
+
 }

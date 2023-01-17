@@ -1,11 +1,16 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:awecg/generated/i18n.dart';
+import 'package:awecg/models/medical_professional.dart';
 import 'package:awecg/widget/signal_container.dart';
 import 'package:flutter/material.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:encrypt/encrypt.dart' as enc;
+
+import 'patient.dart';
 
 class ArrhythmiaResult {
   String nameFile; // name of the file
@@ -15,6 +20,9 @@ class ArrhythmiaResult {
   int iter = 10; // number of iterations
   int? frequency; // frequency of the arrhythmia
   int position = 0; // position of the file
+  Patient? patient; // patient
+  MedicalProfessional? medicalProfessional; // medical professional
+  DateTime? date; // date
 
   ArrhythmiaResult({required this.nameFile, required this.pathFolder});
 
@@ -64,6 +72,24 @@ class ArrhythmiaResult {
 
   bool get isStarted {
     return (position > 0);
+  }
+
+  // sette and getter of the patient
+  void setPatient(Patient patient) {
+    this.patient = patient;
+  }
+
+  Patient? get getPatient {
+    return patient;
+  }
+
+  // sette and getter of the medical professional
+  void setMedicalProfessional(MedicalProfessional medicalProfessional) {
+    this.medicalProfessional = medicalProfessional;
+  }
+
+  MedicalProfessional? get getMedicalProfessional {
+    return medicalProfessional;
   }
 
   List<double> loadECG(int ecgPosition) {
@@ -159,27 +185,207 @@ class ArrhythmiaResult {
     }
 
     // save the pdf
-    final file = File("${pathFolder}${nameFile}.pdf");
+    print("${pathFolder}/${nameFile}.pdf");
+    final file = File("${pathFolder}/${nameFile}.pdf");
     await file.writeAsBytes(await pdf.save());
     print("pdf saved");
 
     // liberate the memory
   }
 
+  Future<bool> createProject() async {
+    // create the folder namded with the name of the project
+    Directory dir = Directory(pathFolder);
+    if (!dir.existsSync()) {
+      dir.createSync();
+    }
+    // create the folder into folderpath named with the name of the project
+    Directory dir2 = Directory("$pathFolder/$nameFile");
+    if (!dir2.existsSync()) {
+      dir2.createSync();
+    }
+    // create a folder into folderpath/nameproject named "data" to save the ecg files
+    Directory dir3 = Directory("$pathFolder/$nameFile/data");
+    if (!dir3.existsSync()) {
+      dir3.createSync();
+    }
+    date = DateTime.now();
+    // write an encripted file into folderpath/nameproject named nameproject.awecg to save the project information
+    String pathFile = "$pathFolder/$nameFile/$nameFile.awecg";
+    File fileLoad = File(pathFile);
+    // create a json
+    Map<String, dynamic> json = {
+      "Project": nameFile,
+      "date": date.toString(),
+      "patient": patient!.toJson(),
+      "medicalProfessional": medicalProfessional!.toJson(),
+    };
+    // convert the json to a string
+    String jsonText = jsonEncode(json);
+    // encript the string with the key and save the file
+    final key = enc.Key.fromUtf8('Alejandro Pulido Saravia');
+    final iv = enc.IV.fromLength(16);
+    final encrypter = enc.Encrypter(enc.AES(key));
+
+    fileLoad.writeAsStringSync(encrypter.encrypt(jsonText, iv: iv).base64);
+
+    // check if the file was created, and check if the folder was created too and return true if all is ok and false if not
+    if (fileLoad.existsSync() && dir.existsSync() && dir2.existsSync()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<bool> validateProjectFolder(String proyectPathToCheck) async {
+    // check if the folder exists
+    Directory dir = Directory(proyectPathToCheck);
+    if (!dir.existsSync()) {
+      return false;
+    }
+    String nameFolder;
+    if (Platform.isAndroid || Platform.isIOS) {
+      // get the name of the folder
+      nameFolder = proyectPathToCheck.split('/').last;
+      print("nameFolder = $nameFolder");
+    } else {
+      // get the name of the folder
+      nameFolder = proyectPathToCheck.split('\\').last;
+      print("nameFolder = $nameFolder");
+    }
+    // check if the file exists
+    String pathFile = "$proyectPathToCheck/$nameFolder.awecg";
+    File fileLoad = File(pathFile);
+    if (!fileLoad.existsSync()) {
+      return false;
+    }
+    // read the file
+    String fileText = fileLoad.readAsStringSync();
+    // decrypt the file
+    final key = enc.Key.fromUtf8('Alejandro Pulido Saravia');
+    final iv = enc.IV.fromLength(16);
+    final encrypter = enc.Encrypter(enc.AES(key));
+    final decrypted = encrypter.decrypt64(fileText, iv: iv);
+    // convert the string to a json
+    Map<String, dynamic> json = jsonDecode(decrypted);
+    print("json = $json");
+    // get the pathFiles
+    String checkPathFilesJson = json["pathFiles"];
+    List<String> checkPathFiles = [];
+    if (checkPathFilesJson != null) {
+      // remove [ ]
+      checkPathFilesJson =
+          checkPathFilesJson.substring(1, checkPathFilesJson.length - 1);
+      // remove spaces
+      checkPathFilesJson = checkPathFilesJson.replaceAll(' ', '');
+      checkPathFiles = checkPathFilesJson.split(',');
+    }
+    // check if the files exists
+    for (var i = 0; i < checkPathFiles.length; i++) {
+      String pathFile = "$proyectPathToCheck/data/${checkPathFiles[i]}";
+      print("pathFile = $pathFile");
+      File fileLoad = File(pathFile);
+      if (!fileLoad.existsSync()) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  Future<bool> loadProject(String proyectPathToLoad) async {
+    // check if the folder exists
+    Directory dir = Directory(proyectPathToLoad);
+    if (!dir.existsSync()) {
+      return false;
+    }
+    String nameFolder;
+    if (Platform.isAndroid || Platform.isIOS) {
+      // get the name of the folder
+      nameFolder = proyectPathToLoad.split('/').last;
+      print("nameFolder = $nameFolder");
+    } else {
+      // get the name of the folder
+      nameFolder = proyectPathToLoad.split('\\').last;
+      print("nameFolder = $nameFolder");
+    }
+    // check if the file exists
+    String pathFile = "$proyectPathToLoad/$nameFolder.awecg";
+    pathFolder = proyectPathToLoad;
+
+    File fileLoad = File(pathFile);
+    if (!fileLoad.existsSync()) {
+      return false;
+    }
+    // read the file
+    String fileText = fileLoad.readAsStringSync();
+    // decrypt the file
+    final key = enc.Key.fromUtf8('Alejandro Pulido Saravia');
+    final iv = enc.IV.fromLength(16);
+    final encrypter = enc.Encrypter(enc.AES(key));
+    final decrypted = encrypter.decrypt64(fileText, iv: iv);
+    // convert the string to a json
+    Map<String, dynamic> json = jsonDecode(decrypted);
+    // get data from json
+    nameFile = json["Project"];
+    date = DateTime.parse(json["date"]);
+    patient = Patient.fromJson(json["patient"]);
+    medicalProfessional =
+        MedicalProfessional.fromJson(json["medicalProfessional"]);
+    // get the pathFiles
+    String pathFilesJson = json["pathFiles"] ?? "";
+    pathFiles = [];
+    if (pathFilesJson.isNotEmpty) {
+      // remove [ ]
+      pathFilesJson = pathFilesJson.substring(1, pathFilesJson.length - 1);
+      // remove spaces
+      pathFilesJson = pathFilesJson.replaceAll(' ', '');
+      pathFiles = pathFilesJson.split(',');
+      print("pathFiles = $pathFiles");
+    } else {
+      return false;
+    }
+    return true;
+  }
+
   void addECG(List<double> ecg) {
     print("adding ecg");
+
     int createPosition = pathFiles.length;
-    String pathFile = "$pathFolder${nameFile}_$createPosition.awecg";
+    String pathFile = "$pathFolder/${nameFile}/data/$createPosition.awecg";
+    print("pathFile = $pathFile");
     // add the ecg to the file
     File fileLoad = File(pathFile);
     // save the file
     fileLoad.writeAsStringSync(ecg.join(','));
-    pathFiles.add(pathFile);
+    pathFiles.add("$createPosition.datawecg");
+
+    String pathFileInfo = "$pathFolder/$nameFile/$nameFile.awecg";
+    File fileLoadInfo = File(pathFileInfo);
+    // create a json
+    Map<String, dynamic> json = {
+      "Project": nameFile,
+      "date": date.toString(),
+      "patient": patient!.toJson(),
+      "medicalProfessional": medicalProfessional!.toJson(),
+      "pathFiles": pathFiles.toString(),
+      "modify": DateTime.now().toString(),
+    };
+    // convert the json to a string
+    String jsonText = jsonEncode(json);
+    // encript the string with the key and save the file
+    final key = enc.Key.fromUtf8('Alejandro Pulido Saravia');
+    final iv = enc.IV.fromLength(16);
+    final encrypter = enc.Encrypter(enc.AES(key));
+
+    fileLoadInfo.writeAsStringSync(encrypter.encrypt(jsonText, iv: iv).base64);
   }
+
+  void reWriteFilesEncrypted() {}
 
   List<double> getData(int posInt) {
 // load the file
-    File fileLoad = File(pathFiles[posInt]);
+    File fileLoad = File("$pathFolder/data/${pathFiles[posInt]}");
     // load de file like a text
     String text = fileLoad.readAsStringSync();
     // split the text into a list of doubles separated by ','

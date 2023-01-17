@@ -18,9 +18,6 @@ class SelectBluetoothDevice extends StatelessWidget {
       icon: BlocListener<InitScreenBloc, InitScreenState>(
         listener: (context, state) {
           print(state);
-          if (state is ConnectedBluetoothDeviceInitScreenState) {
-            Navigator.pop(context);
-          }
         },
         child: Icon(
           Icons.bluetooth,
@@ -79,7 +76,7 @@ class SelectBluetoothDevice extends StatelessWidget {
                             BlocProvider.of<InitScreenBloc>(context).add(
                                 ConnectBluetoothDeviceInitScreen(
                                     deviceId: e.deviceId));
-                            //Navigator.of(context).pop();
+                            Navigator.of(context).pop();
                           },
                         ),
                       ),
@@ -95,7 +92,7 @@ class SelectBluetoothDevice extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             BlocProvider.of<InitScreenBloc>(context)
-                .add(LoadECGBluetoothInitScreen());
+                .add(startBluetoothScanInitScreen());
           },
           child: Icon(Icons.search),
         ),

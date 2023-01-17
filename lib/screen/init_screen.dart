@@ -5,8 +5,10 @@ import 'package:awecg/generated/i18n.dart';
 import 'package:awecg/models/arrhythmia_result.dart';
 import 'package:awecg/repository/my_colors.dart';
 import 'package:awecg/screen/splash_screen.dart';
+import 'package:awecg/widget/load_project.dart';
 import 'package:awecg/widget/menu_button.dart';
 import 'package:awecg/widget/new_project.dart';
+import 'package:awecg/widget/project_patient.dart';
 import 'package:awecg/widget/select_mode.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,7 @@ import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../bloc/init_screen/init_screen_bloc.dart';
+import '../widget/new_project_patient.dart';
 import '../widget/select_bluetooth_device.dart';
 
 class InitScreen extends StatelessWidget {
@@ -88,6 +91,56 @@ class InitScreen extends StatelessWidget {
                           return NewProject();
                         },
                       );
+                    }
+                    if (state is ShowPatientNewProjectInitScreenState) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return NewProjectPatient();
+                        },
+                      );
+                    }
+                    if (state is ShowSelectBluetoothDeviceInitScreenState) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return SelectBluetoothDevice();
+                        },
+                      );
+                    }
+                    if (state is ShowOpenProjectInitScreenState) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return LoadProject();
+                        },
+                      );
+                    }
+                    if (state is ShowPatientInformationInitScreenState) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ProjectPatient(
+                            patient: state.patient,
+                          );
+                        },
+                      );
+                    }
+                    if (state is StartLoadingIntiScreenState) {
+                      String? status = state.message;
+                      status != null
+                          ? EasyLoading.show(
+                              status: status,
+                              dismissOnTap: false,
+                              maskType: EasyLoadingMaskType.black,
+                            )
+                          : EasyLoading.show(
+                              dismissOnTap: false,
+                              maskType: EasyLoadingMaskType.black,
+                            );
+                    }
+                    if (state is StopLoadingIntiScreenState) {
+                      EasyLoading.dismiss();
                     }
                   },
                   child: Container(
@@ -184,7 +237,10 @@ class InitScreen extends StatelessWidget {
                         height: 35.dp,
                         color: MyColors.grayL,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        BlocProvider.of<InitScreenBloc>(context)
+                            .add(openProjectInitScreen());
+                      },
                     ),
                   ),
                 ),
@@ -201,7 +257,7 @@ class InitScreen extends StatelessWidget {
                     bottom: menuButtonPadding,
                   ),
                   child: Tooltip(
-                    message: I18n().editPatientInfrmation,
+                    message: I18n().patientInformation,
                     waitDuration: const Duration(seconds: 1),
                     child: TextButton(
                       style: ButtonStyle(
@@ -213,11 +269,14 @@ class InitScreen extends StatelessWidget {
                         ),
                       ),
                       child: Icon(
-                        Icons.manage_accounts_outlined, // Menu button
+                        Icons.assignment_ind_outlined, // Menu button
                         size: 40.dp,
                         color: MyColors.grayL,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        BlocProvider.of<InitScreenBloc>(context)
+                            .add(patientInformationInitScreen());
+                      },
                     ),
                   ),
                 ),
@@ -279,7 +338,7 @@ class InitScreen extends StatelessWidget {
                     bottom: menuButtonPadding,
                   ),
                   child: Tooltip(
-                    message: I18n().medicalProfessional,
+                    message: I18n().medicalProfessionalInformation,
                     waitDuration: const Duration(seconds: 1),
                     child: TextButton(
                       style: ButtonStyle(
@@ -919,82 +978,89 @@ class InitScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.favorite,
-                        color: MyColors.RedL,
-                        size: 35.dp,
-                      ),
-                      BlocBuilder<InitScreenBloc, InitScreenState>(
-                        builder: (context, state) {
-                          if (state is ArrhythmiaDetectionInitScreenState) {
-                            resultAr = state.result;
-                            print("arrhythmia detection state");
-                          }
-                          if (resultAr == null) {
-                            return Text(
-                              "N/A",
+                  Container(
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.favorite,
+                              color: MyColors.RedL,
+                              size: 35.dp,
+                            ),
+                            BlocBuilder<InitScreenBloc, InitScreenState>(
+                              builder: (context, state) {
+                                if (state
+                                    is ArrhythmiaDetectionInitScreenState) {
+                                  resultAr = state.result;
+                                  print("arrhythmia detection state");
+                                }
+                                if (resultAr == null) {
+                                  return Text(
+                                    "N/A",
+                                    style: TextStyle(
+                                      color: MyColors.RedL,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 40.dp,
+                                    ),
+                                  );
+                                }
+                                return Text(
+                                  resultAr!.frequency != null
+                                      ? resultAr!.frequency.toString()
+                                      : "N/A",
+                                  style: TextStyle(
+                                    color: MyColors.RedL,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 40.dp,
+                                  ),
+                                );
+                              },
+                              buildWhen: (previous, current) =>
+                                  current is ArrhythmiaDetectionInitScreenState,
+                            ),
+                            Text(
+                              'bpm',
                               style: TextStyle(
                                 color: MyColors.RedL,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 40.dp,
+                                fontSize: 25.dp,
+                              ),
+                            ),
+                          ],
+                        ),
+                        BlocBuilder<InitScreenBloc, InitScreenState>(
+                          builder: (context, state) {
+                            if (state is ArrhythmiaDetectionInitScreenState) {
+                              resultAr = state.result;
+                              print("arrhythmia detection state");
+                            }
+                            if (resultAr == null) {
+                              return Text(
+                                "",
+                                style: TextStyle(
+                                  color: MyColors.RedL,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15.dp,
+                                ),
+                              );
+                            }
+                            return Text(
+                              resultAr!.getFrequencyClassify ?? "",
+                              style: TextStyle(
+                                color: MyColors.RedL,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15.dp,
                               ),
                             );
-                          }
-                          return Text(
-                            resultAr!.frequency != null
-                                ? resultAr!.frequency.toString()
-                                : "N/A",
-                            style: TextStyle(
-                              color: MyColors.RedL,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 40.dp,
-                            ),
-                          );
-                        },
-                        buildWhen: (previous, current) =>
-                            current is ArrhythmiaDetectionInitScreenState,
-                      ),
-                      Text(
-                        'bpm',
-                        style: TextStyle(
-                          color: MyColors.RedL,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25.dp,
+                          },
+                          buildWhen: (previous, current) =>
+                              current is ArrhythmiaDetectionInitScreenState,
                         ),
-                      ),
-                    ],
-                  ),
-                  BlocBuilder<InitScreenBloc, InitScreenState>(
-                    builder: (context, state) {
-                      if (state is ArrhythmiaDetectionInitScreenState) {
-                        resultAr = state.result;
-                        print("arrhythmia detection state");
-                      }
-                      if (resultAr == null) {
-                        return Text(
-                          "",
-                          style: TextStyle(
-                            color: MyColors.RedL,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15.dp,
-                          ),
-                        );
-                      }
-                      return Text(
-                        resultAr!.getFrequencyClassify ?? "",
-                        style: TextStyle(
-                          color: MyColors.RedL,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15.dp,
-                        ),
-                      );
-                    },
-                    buildWhen: (previous, current) =>
-                        current is ArrhythmiaDetectionInitScreenState,
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -1254,9 +1320,12 @@ class InitScreen extends StatelessWidget {
                     child: BlocBuilder<InitScreenBloc, InitScreenState>(
                       builder: (context, state) {
                         String text = "";
+                        String probability = "";
                         //print("state: $state");
                         if (state is ArrhythmiaDetectionInitScreenState) {
                           resultAr = state.result;
+                          probability =
+                              "${(state.value[resultAr!.getResult + 1] * 100).toStringAsFixed(2)}%";
                           print(resultAr);
                           if (resultAr != null) {
                             print("result ${resultAr!.getResult}");
@@ -1274,13 +1343,25 @@ class InitScreen extends StatelessWidget {
                             }
                           }
                         }
-                        return Text(
-                          text,
-                          style: TextStyle(
-                            color: MyColors.RedL,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25.dp,
-                          ),
+                        return Column(
+                          children: [
+                            Text(
+                              text,
+                              style: TextStyle(
+                                color: MyColors.RedL,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25.dp,
+                              ),
+                            ),
+                            Text(
+                              probability,
+                              style: TextStyle(
+                                color: MyColors.grayL,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10.dp,
+                              ),
+                            ),
+                          ],
                         );
                       },
                       buildWhen: (previous, current) =>

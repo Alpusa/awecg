@@ -148,6 +148,8 @@ class I18n implements WidgetsLocalizations {
   String get address => "Address";
   /// "RSSI"
   String get rssi => "RSSI";
+  /// "Error connecting to ${name}"
+  String errorConnectingToDevice(String name) => "Error connecting to ${name}";
   /// "Next Signal"
   String get nextSignal => "Next Signal";
   /// "Previous Signal"
@@ -158,14 +160,26 @@ class I18n implements WidgetsLocalizations {
   String get newProject => "New Project";
   /// "Open Project"
   String get openProject => "Open Project";
+  /// "Open"
+  String get open => "Open";
   /// "Edit Patient Information"
   String get editPatientInfrmation => "Edit Patient Information";
   /// "Edit Project Information"
   String get editProjectInformation => "Edit Project Information";
   /// "Medical Professional"
   String get medicalProfessional => "Medical Professional";
+  /// "Medical Professional Information"
+  String get medicalProfessionalInformation => "Medical Professional Information";
   /// "Export as PDF"
   String get exportAsPDF => "Export as PDF";
+  /// "Exporting as PDF"
+  String get exporingAsPDF => "Exporting as PDF";
+  /// "This field is required"
+  String get fieldIsRequired => "This field is required";
+  /// "Fields are required"
+  String get fieldsAreRequired => "Fields are required";
+  /// "Loading"
+  String get loading => "Loading";
   /// "Next"
   String get next => "Next";
   /// "Previous"
@@ -178,6 +192,32 @@ class I18n implements WidgetsLocalizations {
   String get setProjectName => "Set Project Name";
   /// "Project Folder"
   String get projectFolder => "Project Folder";
+  /// "Project Name"
+  String get projectName => "Project Name";
+  /// "Generate"
+  String get generate => "Generate";
+  /// "Folder does not exist"
+  String get folderDoesNotExist => "Folder does not exist";
+  /// "Project is already exist"
+  String get projectIsAlreadyExist => "Project is already exist";
+  /// "Patient Information"
+  String get patientInformation => "Patient Information";
+  /// "Full Name"
+  String get fullName => "Full Name";
+  /// "Age"
+  String get age => "Age";
+  /// "Phone Number"
+  String get phoneNumber => "Phone Number";
+  /// "Email"
+  String get email => "Email";
+  /// "Identity Card"
+  String get identityCard => "Identity Card";
+  /// "Complete the patient information"
+  String get completeThePatientInformation => "Complete the patient information";
+  /// "All fields are required"
+  String get allFieldsAreRequired => "All fields are required";
+  /// "Error creating project"
+  String get errorCreatingProject => "Error creating project";
   /// "Storage Permission Required"
   String get storagePermissionRequired => "Storage Permission Required";
   /// "Bluetooth Permission Required"
@@ -188,6 +228,10 @@ class I18n implements WidgetsLocalizations {
   String get bluetoothIsDisabled => "Bluetooth is disabled";
   /// "To use this function, first load or create new project"
   String get firstLoadOrCreateNewProjectToUseToUseThisFunction => "To use this function, first load or create new project";
+  /// "Project is not valid"
+  String get projectIsNotValid => "Project is not valid";
+  /// "Project is broken"
+  String get projectIsBroken => "Project is broken";
 }
 
 class _I18n_en_US extends I18n {
