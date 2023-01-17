@@ -270,15 +270,17 @@ class ArrhythmiaResult {
     Map<String, dynamic> json = jsonDecode(decrypted);
     print("json = $json");
     // get the pathFiles
-    String checkPathFilesJson = json["pathFiles"];
+    String checkPathFilesJson = json["pathFiles"] ?? "";
     List<String> checkPathFiles = [];
-    if (checkPathFilesJson != null) {
+    if (checkPathFilesJson.isNotEmpty) {
       // remove [ ]
       checkPathFilesJson =
           checkPathFilesJson.substring(1, checkPathFilesJson.length - 1);
       // remove spaces
       checkPathFilesJson = checkPathFilesJson.replaceAll(' ', '');
       checkPathFiles = checkPathFilesJson.split(',');
+    } else {
+      return false;
     }
     // check if the files exists
     for (var i = 0; i < checkPathFiles.length; i++) {
@@ -350,14 +352,17 @@ class ArrhythmiaResult {
 
   void addECG(List<double> ecg) {
     print("adding ecg");
+    final key = enc.Key.fromUtf8('Alejandro Pulido Saravia');
+    final iv = enc.IV.fromLength(16);
+    final encrypter = enc.Encrypter(enc.AES(key));
 
     int createPosition = pathFiles.length;
-    String pathFile = "$pathFolder/${nameFile}/data/$createPosition.awecg";
+    String pathFile = "$pathFolder/$nameFile/data/$createPosition.datawecg";
     print("pathFile = $pathFile");
     // add the ecg to the file
     File fileLoad = File(pathFile);
-    // save the file
-    fileLoad.writeAsStringSync(ecg.join(','));
+    // save the file encrypted
+    fileLoad.writeAsStringSync(encrypter.encrypt(ecg.join(','), iv: iv).base64);
     pathFiles.add("$createPosition.datawecg");
 
     String pathFileInfo = "$pathFolder/$nameFile/$nameFile.awecg";
@@ -374,22 +379,42 @@ class ArrhythmiaResult {
     // convert the json to a string
     String jsonText = jsonEncode(json);
     // encript the string with the key and save the file
-    final key = enc.Key.fromUtf8('Alejandro Pulido Saravia');
-    final iv = enc.IV.fromLength(16);
-    final encrypter = enc.Encrypter(enc.AES(key));
 
     fileLoadInfo.writeAsStringSync(encrypter.encrypt(jsonText, iv: iv).base64);
   }
 
-  void reWriteFilesEncrypted() {}
+  void reWriteFilesEncrypted() {
+    print("encrypting ecg");
+    final key = enc.Key.fromUtf8('Alejandro Pulido Saravia');
+    final iv = enc.IV.fromLength(16);
+    final encrypter = enc.Encrypter(enc.AES(key));
+
+    // read and encrypt the files
+
+    for (var i = 0; i < pathFiles.length; i++) {
+      // load the file
+      File fileLoad = File("$pathFolder/data/${pathFiles[i]}");
+      // load de file like a text
+      String text = fileLoad.readAsStringSync();
+      // encrypt the text
+      String textEncrypted = encrypter.encrypt(text, iv: iv).base64;
+      // save the file
+      fileLoad.writeAsStringSync(textEncrypted);
+    }
+  }
 
   List<double> getData(int posInt) {
 // load the file
     File fileLoad = File("$pathFolder/data/${pathFiles[posInt]}");
     // load de file like a text
     String text = fileLoad.readAsStringSync();
+    // decrypt the text
+    final key = enc.Key.fromUtf8('Alejandro Pulido Saravia');
+    final iv = enc.IV.fromLength(16);
+    final encrypter = enc.Encrypter(enc.AES(key));
+    String textDecrypted = encrypter.decrypt64(text, iv: iv);
     // split the text into a list of doubles separated by ','
-    var fData = text.split(',').map((e) => double.parse(e)).toList();
+    var fData = textDecrypted.split(',').map((e) => double.parse(e)).toList();
     return fData;
   }
 

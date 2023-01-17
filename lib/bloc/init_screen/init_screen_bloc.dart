@@ -1426,7 +1426,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
 
     on<medicalInformationInitScreen>((event, emit) async {
       if (result != null) {
-        emit(ShowPatientInformationInitScreenState(patient: result!.patient!));
+        result!.reWriteFilesEncrypted();
       } else {
         emit(InitScreenError(
             const I18n().firstLoadOrCreateNewProjectToUseToUseThisFunction));

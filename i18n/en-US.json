@@ -80,6 +80,7 @@
     "previous": "Previous",
     "create": "Create",
     "selectProjectFolder": "Select Project Folder",
+    "selectFolderToSaveProject": "Select the folder to save project",
     "setProjectName": "Set Project Name",
     "projectFolder": "Project Folder",
     "projectName": "Project Name",

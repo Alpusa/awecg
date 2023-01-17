@@ -354,7 +354,10 @@ class InitScreen extends StatelessWidget {
                         size: 40.dp,
                         color: MyColors.grayL,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        BlocProvider.of<InitScreenBloc>(context)
+                            .add(medicalInformationInitScreen());
+                      },
                     ),
                   ),
                 ),

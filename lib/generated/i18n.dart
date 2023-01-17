@@ -188,6 +188,8 @@ class I18n implements WidgetsLocalizations {
   String get create => "Create";
   /// "Select Project Folder"
   String get selectProjectFolder => "Select Project Folder";
+  /// "Select the folder to save project"
+  String get selectFolderToSaveProject => "Select the folder to save project";
   /// "Set Project Name"
   String get setProjectName => "Set Project Name";
   /// "Project Folder"

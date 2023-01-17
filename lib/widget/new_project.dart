@@ -49,7 +49,7 @@ class NewProject extends StatelessWidget {
               Container(
                 width: 20.w,
                 child: Text(
-                  I18n().selectProjectFolder,
+                  I18n().selectFolderToSaveProject,
                   textAlign: TextAlign.justify,
                 ),
               ),
