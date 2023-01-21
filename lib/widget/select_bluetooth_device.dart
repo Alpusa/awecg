@@ -15,14 +15,6 @@ class SelectBluetoothDevice extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return AlertDialog(
-      icon: BlocListener<InitScreenBloc, InitScreenState>(
-        listener: (context, state) {
-          print(state);
-        },
-        child: Icon(
-          Icons.bluetooth,
-        ),
-      ),
       title: Text(I18n().selectBluetoothDevice),
       content: Scaffold(
         body: Container(
@@ -104,6 +96,8 @@ class SelectBluetoothDevice extends StatelessWidget {
           onPressed: () {
             BlocProvider.of<InitScreenBloc>(context)
                 .add(CancelBluetoothDeviceInitScreen());
+            BlocProvider.of<InitScreenBloc>(context)
+                .add(cancelNewProjectInitScreen());
             Navigator.of(context).pop();
           },
         ),

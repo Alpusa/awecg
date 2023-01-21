@@ -21,13 +21,18 @@ class LoadProject extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return AlertDialog(
-      title: Text(I18n().openProject),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              Text(
+                I18n().openProject,
+                style: TextStyle(
+                  fontSize: 25.dp,
+                ),
+              ),
               BlocListener<InitScreenBloc, InitScreenState>(
                 listener: (context, state) {
                   if (state is ProjectFolderInitScreenState) {

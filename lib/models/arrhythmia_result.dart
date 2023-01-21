@@ -3,13 +3,16 @@ import 'dart:io';
 
 import 'package:awecg/generated/i18n.dart';
 import 'package:awecg/models/medical_professional.dart';
+import 'package:awecg/widget/information_page.dart';
 import 'package:awecg/widget/signal_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:encrypt/encrypt.dart' as enc;
 
+import '../widget/information_page_pw.dart';
 import 'patient.dart';
 
 class ArrhythmiaResult {
@@ -104,7 +107,52 @@ class ArrhythmiaResult {
   Future<void> exportPDF() async {
     //Create an instance of ScreenshotController
     ScreenshotController screenshotController = ScreenshotController();
-    var pdf = pw.Document();
+    var pdf = pw.Document(
+      title: patient!.getFullName,
+      author: medicalProfessional!.getFullName,
+      subject: "ECG",
+      creator: "AWECG",
+      keywords: "ECG, PDF, AWECG",
+    );
+
+    /*var signalContainerInit = await screenshotController.captureFromWidget(
+      MediaQuery(
+        data: const MediaQueryData(
+          size: Size(3508, 2480),
+          devicePixelRatio: 3,
+        ),
+        child: InformationPage(
+          height: 2480,
+          width: 3508,
+          ppi: 3,
+          patient: patient!,
+          medicalProfessional: medicalProfessional!,
+          date: date!,
+        ),
+      ),
+      pixelRatio: 3,
+    );
+    var imageIni = pw.MemoryImage(signalContainerInit);*/
+    InformationPagePW informationPagePW = InformationPagePW(
+      height: 2480,
+      width: 3508,
+      ppi: 3,
+      patient: patient!,
+      medicalProfessional: medicalProfessional!,
+      date: date!,
+    );
+    await informationPagePW.init();
+    pdf.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        orientation: pw.PageOrientation.landscape,
+        margin: const pw.EdgeInsets.all(5),
+        build: (context) {
+          return informationPagePW.build(context);
+        },
+      ),
+    );
+
     int sizeBox = ((80 * 1) / (0.004 * 25)).floor();
     print("sizeBox = ${sizeBox}");
     List<double> ecgShow = [];
@@ -118,10 +166,11 @@ class ArrhythmiaResult {
       if (ecgShow.length < sizeBox + 1) {
         show = false;
       }
+
       while (show) {
         var signalContainer = await screenshotController.captureFromWidget(
           MediaQuery(
-            data: MediaQueryData(
+            data: const MediaQueryData(
               size: Size(3508, 2480),
               devicePixelRatio: 3,
             ),
@@ -141,7 +190,7 @@ class ArrhythmiaResult {
           pw.Page(
             pageFormat: PdfPageFormat.a4,
             orientation: pw.PageOrientation.landscape,
-            margin: pw.EdgeInsets.all(0),
+            margin: const pw.EdgeInsets.all(0),
             build: (context) {
               return pw.Image(image, fit: pw.BoxFit.fill);
             },
@@ -155,7 +204,7 @@ class ArrhythmiaResult {
       if (i == pathFiles.length - 1) {
         var signalContainer = await screenshotController.captureFromWidget(
           MediaQuery(
-            data: MediaQueryData(
+            data: const MediaQueryData(
               size: Size(3508, 2480),
               devicePixelRatio: 3,
             ),
@@ -175,7 +224,7 @@ class ArrhythmiaResult {
           pw.Page(
             pageFormat: PdfPageFormat.a4,
             orientation: pw.PageOrientation.landscape,
-            margin: pw.EdgeInsets.all(0),
+            margin: const pw.EdgeInsets.all(0),
             build: (context) {
               return pw.Image(image, fit: pw.BoxFit.fill);
             },
@@ -183,7 +232,6 @@ class ArrhythmiaResult {
         );
       }
     }
-
     // save the pdf
     print("${pathFolder}/${nameFile}.pdf");
     final file = File("${pathFolder}/${nameFile}.pdf");
@@ -482,11 +530,11 @@ class ArrhythmiaResult {
   get getFrequencyClassify {
     if (frequency != null) {
       if (frequency! >= 0 && frequency! <= 60) {
-        return I18n().bradycardia;
+        return const I18n().bradycardia;
       } else if (frequency! >= 61 && frequency! <= 99) {
-        return I18n().normal;
+        return const I18n().normal;
       } else if (frequency! >= 100) {
-        return I18n().tachycardia;
+        return const I18n().tachycardia;
       }
     }
     return null;

@@ -108,6 +108,8 @@ class I18n implements WidgetsLocalizations {
   String get save => "Save";
   /// "Load"
   String get load => "Load";
+  /// "Clear"
+  String get clear => "Clear";
   /// "Save As"
   String get saveAs => "Save As";
   /// "Load From"
@@ -156,6 +158,10 @@ class I18n implements WidgetsLocalizations {
   String get previousSignal => "Previous Signal";
   /// "File Name"
   String get fileName => "File Name";
+  /// "Project"
+  String get project => "Project";
+  /// "No Loaded"
+  String get noLoaded => "No Loaded";
   /// "New Project"
   String get newProject => "New Project";
   /// "Open Project"
@@ -210,10 +216,16 @@ class I18n implements WidgetsLocalizations {
   String get age => "Age";
   /// "Phone Number"
   String get phoneNumber => "Phone Number";
+  /// "Phone"
+  String get phoneTitle => "Phone";
   /// "Email"
   String get email => "Email";
   /// "Identity Card"
   String get identityCard => "Identity Card";
+  /// "Specialty"
+  String get specialty => "Specialty";
+  /// "Place"
+  String get place => "Place";
   /// "Complete the patient information"
   String get completeThePatientInformation => "Complete the patient information";
   /// "All fields are required"
@@ -234,6 +246,12 @@ class I18n implements WidgetsLocalizations {
   String get projectIsNotValid => "Project is not valid";
   /// "Project is broken"
   String get projectIsBroken => "Project is broken";
+  /// "Disconnected and saved"
+  String get disconnectedAndSaved => "Disconnected and saved";
+  /// "Medical Information"
+  String get medicalInformation => "Medical Information";
+  /// "Date"
+  String get date => "Date";
 }
 
 class _I18n_en_US extends I18n {

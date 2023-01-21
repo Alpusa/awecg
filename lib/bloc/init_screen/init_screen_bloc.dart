@@ -8,6 +8,7 @@ import 'package:awecg/models/arrhythmia_result.dart';
 import 'package:awecg/models/medical_professional.dart';
 import 'package:awecg/models/patient.dart';
 import 'package:awecg/repository/classifier.dart';
+import 'package:awecg/repository/save_data.dart';
 import 'package:bloc/bloc.dart';
 import 'package:file/local.dart';
 import 'package:file_picker/file_picker.dart';
@@ -1009,15 +1010,78 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       if (deviceId != null) {
         QuickBlue.disconnect(deviceId!);
       }
-      emit(DisconnectBluetoothDeviceInitScreenState());
     });
 
     on<DisconnectBluetoothDeviceInitScreen>((event, emit) async {
       //QuickBlue.stopScan();
+      print("Disconnecting from device");
       if (deviceId != null) {
         QuickBlue.disconnect(deviceId!);
       }
-      emit(DisconnectBluetoothDeviceInitScreenState());
+
+      loaded = false;
+      baselineX = 0.0;
+      baselineY = 0.0;
+      silverMaxY = 0.0;
+
+      speed = 25;
+      zoom = 1;
+      scale = 10;
+      ecgData = [];
+      filterData = [];
+      baselineX = 0.0;
+      silverMax = 0.0;
+      initSpot = null;
+      endSpot = null;
+      ruleState = 0;
+      file = true;
+      result = null;
+      if (result != null) {
+        emit(
+          DisconnectBluetoothDeviceInitScreenState(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            result: result!,
+            pause: pause,
+          ),
+        );
+      } else {
+        emit(
+          DisconnectBluetoothDeviceInitScreenState(
+            scale: scale,
+            speed: speed,
+            data: ecgData,
+            data2: filterData,
+            zoom: zoom,
+            baselineX: baselineX,
+            baselineY: baselineY,
+            silverMaxY: silverMaxY,
+            silverMinY: silverMinY,
+            loaded: loaded,
+            file: file,
+            silverMax: silverMax,
+            initSpot: initSpot,
+            endSpot: endSpot,
+            stateRule: ruleState,
+            pause: pause,
+          ),
+        );
+      }
+      //emit(DisconnectBluetoothDeviceInitScreenState());
+      emit(InitScreenError(I18n().disconnected));
     });
 
     on<AddECGMonitorValue>((event, emit) {
@@ -1193,6 +1257,27 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       }
     });
 
+    on<cancelNewProjectInitScreen>((event, emit) {
+      scanResults = [];
+      loaded = false;
+      baselineX = 0.0;
+      baselineY = 0.0;
+      silverMaxY = 0.0;
+      speed = 25;
+      zoom = 1;
+      scale = 10;
+      ecgData = [];
+      filterData = [];
+      baselineX = 0.0;
+      silverMax = 0.0;
+      initSpot = null;
+      endSpot = null;
+      ruleState = 0;
+      result = null;
+
+      file = true;
+    });
+
     on<selectProjectFolderInitScreen>((event, emit) async {
       String? directory = await FilePicker.platform.getDirectoryPath();
       if (directory != null) {
@@ -1236,21 +1321,13 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       }
     });
 
-    on<addPatientProjectInitScreen>((event, emit) {
+    on<addPatientProjectInitScreen>((event, emit) async {
       emit(StartLoadingIntiScreenState());
       if (result != null) {
         result!.setPatient(event.patient);
-        result!.setMedicalProfessional(
-          MedicalProfessional(
-              id: "0",
-              fullName: "test",
-              email: "test@test.com",
-              phone: "123",
-              address: "addddd",
-              age: "25",
-              specialty: "ING",
-              place: "home"),
-        );
+        MedicalProfessional medicalProfessional =
+            await SaveData().getMedicalProfessional();
+        result!.setMedicalProfessional(medicalProfessional);
         emit(StopLoadingIntiScreenState());
 
         emit(ShowSelectBluetoothDeviceInitScreenState());
@@ -1426,11 +1503,29 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
 
     on<medicalInformationInitScreen>((event, emit) async {
       if (result != null) {
-        result!.reWriteFilesEncrypted();
+        emit(ShowMedicalProfessionalInformationInitScreenState(
+            loaded: true, medicalProfessional: result!.medicalProfessional!));
       } else {
-        emit(InitScreenError(
-            const I18n().firstLoadOrCreateNewProjectToUseToUseThisFunction));
+        // get medical professional information using SaveData
+        MedicalProfessional medicalProfessional =
+            await SaveData().getMedicalProfessional();
+        emit(ShowMedicalProfessionalInformationInitScreenState(
+            loaded: false, medicalProfessional: medicalProfessional));
       }
+    });
+
+    on<saveMedicalProfessionalInitScreen>((event, emit) async {
+      // save medical professional information using SaveData
+      emit(StartLoadingIntiScreenState());
+      await SaveData().saveMedicalProfessional(event.medicalProfessional);
+      emit(StopLoadingIntiScreenState());
+    });
+
+    on<deleteMedicalProfessionalInitScreen>((event, emit) async {
+      // delete medical professional information using SaveData
+      emit(StartLoadingIntiScreenState());
+      await SaveData().removeMedicalProfessional();
+      emit(StopLoadingIntiScreenState());
     });
   }
 
@@ -1460,6 +1555,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       }
     } else if (state == BlueConnectionState.disconnected) {
       print('disconnected from $deviceId');
+      add(DisconnectBluetoothDeviceInitScreen());
     }
   }
 
@@ -1486,10 +1582,20 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
     //print("data $data");
     // convert the string to double
     var valueF = data.map((e) {
-      double temp = double.parse(e);
-      temp = (temp * (3.3 / 4095.0));
-      temp = temp - 1.65;
-      temp = temp / 1.1;
+      print(e);
+      double temp = 0.0;
+
+      try {
+        temp = double.parse(e);
+        temp = (temp * (3.3 / 4095.0));
+        temp = temp - 1.65;
+        temp = temp / 1.1;
+      } catch (e) {
+        print(e);
+        print("error");
+        temp = 0.0;
+      }
+
       return temp;
     }).toList();
 
@@ -1665,25 +1771,52 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
     if (!await QuickBlue.isBluetoothAvailable()) {
       return false;
     }
-    if (await Permission.bluetooth.isGranted &&
-        await Permission.bluetoothAdvertise.isGranted &&
-        await Permission.bluetoothConnect.isGranted &&
-        await Permission.bluetoothScan.isGranted) {
-      return true;
-    } else {
-      await [
-        Permission.bluetooth,
-        Permission.bluetoothAdvertise,
-        Permission.bluetoothConnect,
-        Permission.bluetoothScan
-      ].request();
+    // validate the api version of android
+
+    try {
       if (await Permission.bluetooth.isGranted &&
           await Permission.bluetoothAdvertise.isGranted &&
           await Permission.bluetoothConnect.isGranted &&
           await Permission.bluetoothScan.isGranted) {
         return true;
       } else {
-        return false;
+        await [
+          Permission.bluetooth,
+          Permission.bluetoothAdvertise,
+          Permission.bluetoothConnect,
+          Permission.bluetoothScan
+        ].request();
+        if (await Permission.bluetooth.isGranted &&
+            await Permission.bluetoothAdvertise.isGranted &&
+            await Permission.bluetoothConnect.isGranted &&
+            await Permission.bluetoothScan.isGranted) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    } catch (e) {
+      print(e);
+      if ( //await Permission.bluetooth.isGranted &&
+          await Permission.bluetoothAdvertise.isGranted &&
+              await Permission.bluetoothConnect.isGranted &&
+              await Permission.bluetoothScan.isGranted) {
+        return true;
+      } else {
+        await [
+          //Permission.bluetooth,
+          Permission.bluetoothAdvertise,
+          Permission.bluetoothConnect,
+          Permission.bluetoothScan
+        ].request();
+        if ( //await Permission.bluetooth.isGranted &&
+            await Permission.bluetoothAdvertise.isGranted &&
+                await Permission.bluetoothConnect.isGranted &&
+                await Permission.bluetoothScan.isGranted) {
+          return true;
+        } else {
+          return false;
+        }
       }
     }
   }

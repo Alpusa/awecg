@@ -46,7 +46,6 @@ class ProjectPatient extends StatelessWidget {
     _patientIdentityCard.value = TextEditingValue(text: patient.id);
 
     return AlertDialog(
-      title: Text(I18n().patientInformation),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -55,6 +54,10 @@ class ProjectPatient extends StatelessWidget {
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
+                  Text(
+                    I18n().patientInformation,
+                    style: TextStyle(fontSize: 25.dp),
+                  ),
                   // full name
                   Container(
                     width: 20.w,

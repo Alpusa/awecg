@@ -37,6 +37,7 @@
     "saveFile": "Save File",
     "save": "Save",
     "load": "Load",
+    "clear": "Clear",
     "saveAs": "Save As",
     "loadFrom": "Load From",
     "saveTo": "Save To",
@@ -62,6 +63,8 @@
     "nextSignal": "Next Signal",
     "previousSignal": "Previous Signal",
     "fileName": "File Name",
+    "project": "Project",
+    "noLoaded": "No Loaded",
 
     "newProject": "New Project",
     "openProject": "Open Project",
@@ -91,8 +94,11 @@
     "fullName": "Full Name",
     "age": "Age",
     "phoneNumber": "Phone Number",
+    "phoneTitle": "Phone",
     "email": "Email",
     "identityCard": "Identity Card",
+    "specialty": "Specialty",
+    "place": "Place",
     "completeThePatientInformation": "Complete the patient information",
     "allFieldsAreRequired": "All fields are required",
     
@@ -106,6 +112,11 @@
     "firstLoadOrCreateNewProjectToUseToUseThisFunction": "To use this function, first load or create new project",
 
     "projectIsNotValid": "Project is not valid",
-    "projectIsBroken": "Project is broken"
+    "projectIsBroken": "Project is broken",
+
+    "disconnectedAndSaved": "Disconnected and saved",
+
+    "medicalInformation": "Medical Information",
+    "date": "Date"
 
 }

@@ -38,13 +38,18 @@ class NewProjectPatient extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return AlertDialog(
-      title: Text(I18n().patientInformation),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              Text(
+                I18n().patientInformation,
+                style: TextStyle(
+                  fontSize: 25.dp,
+                ),
+              ),
               Container(
                 width: 20.w,
                 child: Text(
@@ -206,6 +211,8 @@ class NewProjectPatient extends StatelessWidget {
         ElevatedButton(
           child: Text(I18n().cancel),
           onPressed: () {
+            BlocProvider.of<InitScreenBloc>(context)
+                .add(cancelNewProjectInitScreen());
             Navigator.of(context).pop();
           },
         ),

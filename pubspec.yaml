@@ -43,7 +43,6 @@ dependencies:
   tflite_flutter: ^0.9.0
   iirjdart: ^0.1.0
   scidart: ^0.0.2-dev.12
-  #flutter_blue_plugin: ^0.9.2
   quick_blue: ^0.4.1+1
   bluetooth_identifiers: ^1.0.5
   path_provider: ^2.0.11
@@ -53,6 +52,7 @@ dependencies:
   filesystem_picker: ^3.0.0
   screenshot: ^1.2.3
   encrypt: ^5.0.1
+  shared_preferences: ^2.0.16
 
 
   # The following adds the Cupertino Icons font to your application.

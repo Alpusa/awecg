@@ -6,7 +6,6 @@ class MedicalProfessional {
   String email;
   String phone;
   String address;
-  String age;
   String specialty;
   String place;
 
@@ -16,7 +15,6 @@ class MedicalProfessional {
     required this.email,
     required this.phone,
     required this.address,
-    required this.age,
     required this.specialty,
     required this.place,
   });
@@ -28,7 +26,6 @@ class MedicalProfessional {
       email: this.email,
       phone: this.phone,
       address: this.address,
-      age: this.age,
       specialty: this.specialty,
       place: this.place,
     );
@@ -41,7 +38,6 @@ class MedicalProfessional {
       email: this.email,
       phone: this.phone,
       address: this.address,
-      age: this.age,
       specialty: this.specialty,
       place: this.place,
     );
@@ -54,7 +50,6 @@ class MedicalProfessional {
       email: email,
       phone: this.phone,
       address: this.address,
-      age: this.age,
       specialty: this.specialty,
       place: this.place,
     );
@@ -67,7 +62,6 @@ class MedicalProfessional {
       email: this.email,
       phone: phone,
       address: this.address,
-      age: this.age,
       specialty: this.specialty,
       place: this.place,
     );
@@ -80,7 +74,6 @@ class MedicalProfessional {
       email: this.email,
       phone: this.phone,
       address: address,
-      age: this.age,
       specialty: this.specialty,
       place: this.place,
     );
@@ -93,7 +86,6 @@ class MedicalProfessional {
       email: this.email,
       phone: this.phone,
       address: this.address,
-      age: age,
       specialty: this.specialty,
       place: this.place,
     );
@@ -106,7 +98,6 @@ class MedicalProfessional {
       email: this.email,
       phone: this.phone,
       address: this.address,
-      age: this.age,
       specialty: specialty,
       place: this.place,
     );
@@ -119,7 +110,6 @@ class MedicalProfessional {
       email: this.email,
       phone: this.phone,
       address: this.address,
-      age: this.age,
       specialty: this.specialty,
       place: place,
     );
@@ -131,7 +121,6 @@ class MedicalProfessional {
     String? email,
     String? phone,
     String? address,
-    String? age,
     String? specialty,
     String? place,
   }) {
@@ -141,7 +130,6 @@ class MedicalProfessional {
       email: email ?? this.email,
       phone: phone ?? this.phone,
       address: address ?? this.address,
-      age: age ?? this.age,
       specialty: specialty ?? this.specialty,
       place: place ?? this.place,
     );
@@ -154,7 +142,6 @@ class MedicalProfessional {
       'email': email,
       'phone': phone,
       'address': address,
-      'age': age,
       'specialty': specialty,
       'place': place,
     };
@@ -167,7 +154,6 @@ class MedicalProfessional {
       email: map['email'],
       phone: map['phone'],
       address: map['address'],
-      age: map['age'],
       specialty: map['specialty'],
       place: map['place'],
     );
@@ -180,7 +166,7 @@ class MedicalProfessional {
 
   @override
   String toString() {
-    return 'MedicalProfessional(id: $id, fullName: $fullName, email: $email, phone: $phone, address: $address, age: $age, specialty: $specialty, place: $place)';
+    return 'MedicalProfessional(id: $id, fullName: $fullName, email: $email, phone: $phone, address: $address, specialty: $specialty, place: $place)';
   }
 
   @override
@@ -193,7 +179,6 @@ class MedicalProfessional {
         other.email == email &&
         other.phone == phone &&
         other.address == address &&
-        other.age == age &&
         other.specialty == specialty &&
         other.place == place;
   }
@@ -205,7 +190,6 @@ class MedicalProfessional {
         email.hashCode ^
         phone.hashCode ^
         address.hashCode ^
-        age.hashCode ^
         specialty.hashCode ^
         place.hashCode;
   }
@@ -225,9 +209,6 @@ class MedicalProfessional {
 
   String get getAddress => address;
   set setAddress(String address) => this.address = address;
-
-  String get getAge => age;
-  set setAge(String age) => this.age = age;
 
   String get getSpecialty => specialty;
   set setSpecialty(String specialty) => this.specialty = specialty;

@@ -92,6 +92,10 @@ class newProjectInitScreen extends InitScreenEvent {
   newProjectInitScreen();
 }
 
+class cancelNewProjectInitScreen extends InitScreenEvent {
+  cancelNewProjectInitScreen();
+}
+
 class newProjectPatientInformationInitScreen extends InitScreenEvent {
   newProjectPatientInformationInitScreen();
 }
@@ -143,4 +147,13 @@ class patientInformationInitScreen extends InitScreenEvent {
 
 class medicalInformationInitScreen extends InitScreenEvent {
   medicalInformationInitScreen();
+}
+
+class saveMedicalProfessionalInitScreen extends InitScreenEvent {
+  MedicalProfessional medicalProfessional;
+  saveMedicalProfessionalInitScreen({required this.medicalProfessional});
+}
+
+class deleteMedicalProfessionalInitScreen extends InitScreenEvent {
+  deleteMedicalProfessionalInitScreen();
 }

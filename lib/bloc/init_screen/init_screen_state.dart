@@ -76,7 +76,43 @@ class ConnectingBluetoothDeviceInitScreenState extends InitScreenState {
 }
 
 class DisconnectBluetoothDeviceInitScreenState extends InitScreenState {
-  DisconnectBluetoothDeviceInitScreenState();
+  double scale;
+  double speed;
+  double zoom;
+  final List<double> data;
+  final List<double> data2;
+  double baselineX;
+  double baselineY;
+  double silverMaxY;
+  double silverMinY;
+  bool loaded;
+  bool file;
+  double silverMax;
+  bool pause;
+
+  FlSpot? initSpot;
+  FlSpot? endSpot;
+  int stateRule;
+  ArrhythmiaResult? result;
+  DisconnectBluetoothDeviceInitScreenState({
+    required this.scale,
+    required this.speed,
+    required this.data,
+    required this.data2,
+    required this.zoom,
+    required this.baselineX,
+    required this.baselineY,
+    required this.silverMaxY,
+    required this.silverMinY,
+    required this.loaded,
+    required this.file,
+    required this.silverMax,
+    required this.pause,
+    this.result,
+    this.initSpot,
+    this.endSpot,
+    this.stateRule = 0,
+  });
 }
 
 class ConnectedBluetoothDeviceInitScreenState extends InitScreenState {
@@ -85,7 +121,9 @@ class ConnectedBluetoothDeviceInitScreenState extends InitScreenState {
 
 class InitScreenError extends InitScreenState {
   final String message;
-  InitScreenError(this.message);
+  InitScreenError(
+    this.message,
+  );
 }
 
 class ShowNewProjectInitScreenState extends InitScreenState {
@@ -126,4 +164,13 @@ class ShowOpenProjectInitScreenState extends InitScreenState {
 class ShowPatientInformationInitScreenState extends InitScreenState {
   Patient patient;
   ShowPatientInformationInitScreenState({required this.patient});
+}
+
+class ShowMedicalProfessionalInformationInitScreenState
+    extends InitScreenState {
+  bool loaded;
+  MedicalProfessional medicalProfessional;
+
+  ShowMedicalProfessionalInformationInitScreenState(
+      {required this.medicalProfessional, this.loaded = false});
 }
