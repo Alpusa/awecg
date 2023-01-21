@@ -1591,7 +1591,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         temp = temp - 1.65;
         temp = temp / 1.1;
       } catch (e) {
-        print(e);
+        print("error: $e");
         print("error");
         temp = 0.0;
       }
@@ -1755,6 +1755,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
   }
 
   Future<bool> checkStoragePermission() async {
+    return true;
     if (await Permission.manageExternalStorage.isGranted) {
       return true;
     } else {
@@ -1771,48 +1772,48 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
     if (!await QuickBlue.isBluetoothAvailable()) {
       return false;
     }
-    // validate the api version of android
-
     try {
       if (await Permission.bluetooth.isGranted &&
           await Permission.bluetoothAdvertise.isGranted &&
           await Permission.bluetoothConnect.isGranted &&
-          await Permission.bluetoothScan.isGranted) {
+          await Permission.bluetoothScan.isGranted &&
+          await Permission.location.isGranted) {
         return true;
       } else {
         await [
           Permission.bluetooth,
           Permission.bluetoothAdvertise,
           Permission.bluetoothConnect,
-          Permission.bluetoothScan
+          Permission.bluetoothScan,
+          Permission.location
         ].request();
         if (await Permission.bluetooth.isGranted &&
             await Permission.bluetoothAdvertise.isGranted &&
             await Permission.bluetoothConnect.isGranted &&
-            await Permission.bluetoothScan.isGranted) {
+            await Permission.bluetoothScan.isGranted &&
+            await Permission.location.isGranted) {
           return true;
         } else {
           return false;
         }
       }
     } catch (e) {
-      print(e);
-      if ( //await Permission.bluetooth.isGranted &&
-          await Permission.bluetoothAdvertise.isGranted &&
-              await Permission.bluetoothConnect.isGranted &&
-              await Permission.bluetoothScan.isGranted) {
+      if (await Permission.bluetoothAdvertise.isGranted &&
+          await Permission.bluetoothConnect.isGranted &&
+          await Permission.bluetoothScan.isGranted &&
+          await Permission.location.isGranted) {
         return true;
       } else {
         await [
-          //Permission.bluetooth,
           Permission.bluetoothAdvertise,
           Permission.bluetoothConnect,
-          Permission.bluetoothScan
+          Permission.bluetoothScan,
+          Permission.location
         ].request();
-        if ( //await Permission.bluetooth.isGranted &&
-            await Permission.bluetoothAdvertise.isGranted &&
-                await Permission.bluetoothConnect.isGranted &&
-                await Permission.bluetoothScan.isGranted) {
+        if (await Permission.bluetoothAdvertise.isGranted &&
+            await Permission.bluetoothConnect.isGranted &&
+            await Permission.bluetoothScan.isGranted &&
+            await Permission.location.isGranted) {
           return true;
         } else {
           return false;

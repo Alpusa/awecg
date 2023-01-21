@@ -1,4 +1,4 @@
-package com.example.awecg
+package com.jakslab.awecg
 
 import io.flutter.embedding.android.FlutterActivity
 
