@@ -180,7 +180,9 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        patient.fullName,
+                        patient.fullName.isEmpty
+                            ? I18n().noData
+                            : patient.fullName,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -188,7 +190,7 @@ class InformationPagePW {
                     ),
                   ),
                   pw.Expanded(
-                    flex: 5,
+                    flex: 6,
                     child: pw.Container(
                       decoration: pw.BoxDecoration(
                         color: PdfColor.fromHex("74DBE899"),
@@ -207,7 +209,7 @@ class InformationPagePW {
                     ),
                   ),
                   pw.Expanded(
-                    flex: 10,
+                    flex: 9,
                     child: pw.Container(
                       decoration: pw.BoxDecoration(
                         border: pw.Border.all(
@@ -216,7 +218,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        patient.age,
+                        patient.age.isEmpty ? I18n().noData : patient.age,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -252,7 +254,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        patient.phone,
+                        patient.phone.isEmpty ? I18n().noData : patient.phone,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -295,7 +297,9 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        patient.address,
+                        patient.address.isEmpty
+                            ? I18n().noData
+                            : patient.address,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -334,7 +338,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        patient.id,
+                        patient.id.isEmpty ? I18n().noData : patient.id,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -377,7 +381,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        patient.email,
+                        patient.email.isEmpty ? I18n().noData : patient.email,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -440,7 +444,9 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        medicalProfessional.fullName,
+                        medicalProfessional.fullName.isEmpty
+                            ? I18n().noData
+                            : medicalProfessional.fullName,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -476,7 +482,9 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        medicalProfessional.specialty,
+                        medicalProfessional.specialty.isEmpty
+                            ? I18n().noData
+                            : medicalProfessional.specialty,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -519,7 +527,9 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        medicalProfessional.email,
+                        medicalProfessional.email.isEmpty
+                            ? I18n().noData
+                            : medicalProfessional.email,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -555,7 +565,9 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        medicalProfessional.phone,
+                        medicalProfessional.phone.isEmpty
+                            ? I18n().noData
+                            : medicalProfessional.phone,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -598,7 +610,9 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        medicalProfessional.address,
+                        medicalProfessional.address.isEmpty
+                            ? I18n().noData
+                            : medicalProfessional.address,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -637,7 +651,9 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        medicalProfessional.id,
+                        medicalProfessional.id.isEmpty
+                            ? I18n().noData
+                            : medicalProfessional.id,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -681,7 +697,9 @@ class InformationPagePW {
                       ),
                       width: getWidth(90),
                       child: pw.Text(
-                        medicalProfessional.place,
+                        medicalProfessional.place.isEmpty
+                            ? I18n().noData
+                            : medicalProfessional.place,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -713,14 +731,18 @@ class InformationPagePW {
                     ),
                   ),
                   pw.Text(
-                    medicalProfessional.fullName,
+                    medicalProfessional.fullName.isEmpty
+                        ? I18n().noData
+                        : medicalProfessional.fullName,
                     textAlign: pw.TextAlign.center,
                     style: const pw.TextStyle(
                       fontSize: (16),
                     ),
                   ),
                   pw.Text(
-                    medicalProfessional.specialty,
+                    medicalProfessional.specialty.isEmpty
+                        ? I18n().noData
+                        : medicalProfessional.specialty,
                     textAlign: pw.TextAlign.center,
                     style: const pw.TextStyle(
                       fontSize: (16),

@@ -10,7 +10,7 @@ class Awecg extends CustomPainter {
   Awecg(this.time);
   @override
   void paint(Canvas canvas, Size size) {
-    print(time);
+    //print(time);
     canvas.scale((size.width) / 700, (size.height) / 700);
     canvas.translate(56.208557, -233.4988);
     Paint paint = Paint()
@@ -71,24 +71,17 @@ class Awecg extends CustomPainter {
 
     Path path_rect = Path();
     // Adds a rectangle
-    print(time * 10);
     if ((time * 10 >= 30) && (time * 10 <= 36)) {
       var pos = 178.169 + 40.50583 * ((time * 10) - 30);
-      print(
-        "pos = $pos",
-      );
+
       path_rect.addRect(Rect.fromLTWH(pos, 471.2286, 435.528, 149.309));
     } else if ((time * 10 > 36)) {
       var pos = 421.204 + 5.4216 * ((time * 10) - 36);
-      print(
-        "pos = $pos",
-      );
+
       path_rect.addRect(Rect.fromLTWH(pos, 471.2286, 435.528, 149.309));
     } else {
       var pos = 18.206 + 5.42165 * (time * 10);
-      print(
-        "pos = $pos",
-      );
+
       path_rect.addRect(Rect.fromLTWH(pos, 471.2286, 435.528, 149.309));
     }
 
@@ -117,15 +110,12 @@ class Awecg extends CustomPainter {
     canvas.save();
     canvas.translate(0, 0);
     var module = time * 10 % 6;
-    print("module: $module");
     if (module <= 3) {
       var scale = (0.01 * (module - 3) + 1.03);
-      print("scale: $scale");
       canvas.scale(scale, scale);
       canvas.drawPath(path_layer6, paint_layer6);
     } else {
       var scale = (-0.01 * (module - 3) + 1.03);
-      print("scale: $scale");
       canvas.scale(scale, scale);
       canvas.drawPath(path_layer6, paint_layer6);
     }

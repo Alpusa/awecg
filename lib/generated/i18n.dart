@@ -252,6 +252,8 @@ class I18n implements WidgetsLocalizations {
   String get medicalInformation => "Medical Information";
   /// "Date"
   String get date => "Date";
+  /// "No Data"
+  String get noData => "No Data";
 }
 
 class _I18n_en_US extends I18n {

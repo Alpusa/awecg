@@ -16,7 +16,7 @@ class SelectMode extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return AlertDialog(
-      title: Text(I18n().selectMode),
+      title: Text(I18n.of(context).selectMode),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -29,11 +29,11 @@ class SelectMode extends StatelessWidget {
                   }
                 },
                 child: Container(height: 0.0, width: 0.0)),
-            //Text(I18n().selectModeContent, style: TextStyle(fontSize: 18.dp)),
+            //Text(I18n.of(context).selectModeContent, style: TextStyle(fontSize: 18.dp)),
             Container(
               width: 20.w,
               child: Text(
-                I18n().selectModeFile,
+                I18n.of(context).selectModeFile,
                 textAlign: TextAlign.justify,
               ),
             ),
@@ -47,7 +47,7 @@ class SelectMode extends StatelessWidget {
                 Navigator.of(context).pop();
               },
               child: Text(
-                I18n().loadFile,
+                I18n.of(context).loadFile,
               ),
             ),
             SizedBox(
@@ -57,7 +57,7 @@ class SelectMode extends StatelessWidget {
             Container(
               width: 20.w,
               child: Text(
-                I18n().selectModeBluetooth,
+                I18n.of(context).selectModeBluetooth,
                 textAlign: TextAlign.justify,
               ),
             ),
@@ -71,7 +71,7 @@ class SelectMode extends StatelessWidget {
                 //Navigator.of(context).pop();
               },
               child: Text(
-                I18n().connectToBluetooth,
+                I18n.of(context).connectToBluetooth,
               ),
             ),
             SizedBox(
@@ -84,7 +84,7 @@ class SelectMode extends StatelessWidget {
       actionsAlignment: MainAxisAlignment.center,
       actions: <Widget>[
         ElevatedButton(
-          child: Text(I18n().cancel),
+          child: Text(I18n.of(context).cancel),
           onPressed: () {
             Navigator.of(context).pop();
           },

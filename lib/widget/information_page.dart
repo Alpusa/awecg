@@ -71,7 +71,7 @@ class InformationPage extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      const I18n().medicalInformation,
+                      I18n.of(context).medicalInformation,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -81,7 +81,7 @@ class InformationPage extends StatelessWidget {
                 ),
                 // show the date of the medical information
                 Text(
-                  '${const I18n().date}: ${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}',
+                  '${I18n.of(context).date}: ${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}',
                   style: TextStyle(
                     fontSize: (20),
                     fontWeight: FontWeight.bold,
@@ -102,7 +102,7 @@ class InformationPage extends StatelessWidget {
                 ),
               ),
               child: Text(
-                const I18n().patientInformation,
+                I18n.of(context).patientInformation,
                 style: TextStyle(
                   fontSize: (16),
                   fontWeight: FontWeight.bold,
@@ -124,7 +124,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${const I18n().fullName}:',
+                        '${I18n.of(context).fullName}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -160,7 +160,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${const I18n().age}:',
+                        '${I18n.of(context).age}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -196,7 +196,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${I18n().phoneTitle}:',
+                        '${I18n.of(context).phoneTitle}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -239,7 +239,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${const I18n().address}:',
+                        '${I18n.of(context).address}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -277,7 +277,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${const I18n().identityCard}:',
+                        '${I18n.of(context).identityCard}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -321,7 +321,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${const I18n().email}:',
+                        '${I18n.of(context).email}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -362,7 +362,7 @@ class InformationPage extends StatelessWidget {
                 ),
               ),
               child: Text(
-                const I18n().medicalProfessionalInformation,
+                I18n.of(context).medicalProfessionalInformation,
                 style: TextStyle(
                   fontSize: (16),
                   fontWeight: FontWeight.bold,
@@ -384,7 +384,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${const I18n().fullName}:',
+                        '${I18n.of(context).fullName}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -420,7 +420,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${const I18n().specialty}:',
+                        '${I18n.of(context).specialty}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -463,7 +463,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${const I18n().email}:',
+                        '${I18n.of(context).email}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -499,7 +499,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${const I18n().phoneTitle}:',
+                        '${I18n.of(context).phoneTitle}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -542,7 +542,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${const I18n().address}:',
+                        '${I18n.of(context).address}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -580,7 +580,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${const I18n().identityCard}:',
+                        '${I18n.of(context).identityCard}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -624,7 +624,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${const I18n().place}:',
+                        '${I18n.of(context).place}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,

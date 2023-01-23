@@ -30,7 +30,7 @@ class NewProject extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
-                I18n().newProject,
+                I18n.of(context).newProject,
                 style: TextStyle(
                   fontSize: 25.dp,
                 ),
@@ -54,7 +54,7 @@ class NewProject extends StatelessWidget {
               Container(
                 width: 20.w,
                 child: Text(
-                  I18n().selectFolderToSaveProject,
+                  I18n.of(context).selectFolderToSaveProject,
                   textAlign: TextAlign.justify,
                 ),
               ),
@@ -69,11 +69,11 @@ class NewProject extends StatelessWidget {
                         controller: _projectFolderController,
                         obscureText: false,
                         decoration: InputDecoration(
-                          labelText: I18n().projectFolder,
+                          labelText: I18n.of(context).projectFolder,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return I18n().fieldIsRequired;
+                            return I18n.of(context).fieldIsRequired;
                           }
                           return null;
                         },
@@ -101,7 +101,7 @@ class NewProject extends StatelessWidget {
               Container(
                 width: 20.w,
                 child: Text(
-                  I18n().setProjectName,
+                  I18n.of(context).setProjectName,
                   textAlign: TextAlign.justify,
                 ),
               ),
@@ -116,11 +116,11 @@ class NewProject extends StatelessWidget {
                         controller: _projectNameController,
                         obscureText: false,
                         decoration: InputDecoration(
-                          labelText: I18n().projectName,
+                          labelText: I18n.of(context).projectName,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return I18n().fieldIsRequired;
+                            return I18n.of(context).fieldIsRequired;
                           }
                           return null;
                         },
@@ -135,7 +135,7 @@ class NewProject extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        I18n().generate,
+                        I18n.of(context).generate,
                         style: TextStyle(
                           color: Colors.black,
                         ),
@@ -156,7 +156,7 @@ class NewProject extends StatelessWidget {
       actions: <Widget>[
         ElevatedButton(
           focusNode: _nextFocusNode,
-          child: Text(I18n().next),
+          child: Text(I18n.of(context).next),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               BlocProvider.of<InitScreenBloc>(context).add(
@@ -168,7 +168,7 @@ class NewProject extends StatelessWidget {
           },
         ),
         ElevatedButton(
-          child: Text(I18n().cancel),
+          child: Text(I18n.of(context).cancel),
           onPressed: () {
             BlocProvider.of<InitScreenBloc>(context)
                 .add(cancelNewProjectInitScreen());

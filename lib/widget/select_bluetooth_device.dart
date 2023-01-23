@@ -15,7 +15,7 @@ class SelectBluetoothDevice extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return AlertDialog(
-      title: Text(I18n().selectBluetoothDevice),
+      title: Text(I18n.of(context).selectBluetoothDevice),
       content: Scaffold(
         body: Container(
           //width: 20.w,
@@ -44,7 +44,7 @@ class SelectBluetoothDevice extends StatelessWidget {
                           ),
                           title: Row(
                             children: [
-                              //Text("${I18n().address}: "),
+                              //Text("${I18n.of(context).address}: "),
                               // show the name separated with ":" when count 2 caracter
 
                               Text(
@@ -59,7 +59,7 @@ class SelectBluetoothDevice extends StatelessWidget {
                           ),
                           subtitle: Row(
                             children: [
-                              Text("${I18n().rssi}: "),
+                              Text("${I18n.of(context).rssi}: "),
                               Text("${e.rssi}"),
                             ],
                           ),
@@ -92,7 +92,7 @@ class SelectBluetoothDevice extends StatelessWidget {
       actionsAlignment: MainAxisAlignment.center,
       actions: <Widget>[
         ElevatedButton(
-          child: Text(I18n().cancel),
+          child: Text(I18n.of(context).cancel),
           onPressed: () {
             BlocProvider.of<InitScreenBloc>(context)
                 .add(CancelBluetoothDeviceInitScreen());

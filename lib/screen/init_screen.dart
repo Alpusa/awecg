@@ -147,7 +147,7 @@ class InitScreen extends StatelessWidget {
                     bottom: menuButtonPadding,
                   ),
                   child: Tooltip(
-                    message: const I18n().newProject,
+                    message: I18n.of(context).newProject,
                     waitDuration: const Duration(seconds: 1),
                     child: TextButton(
                       style: ButtonStyle(
@@ -206,7 +206,7 @@ class InitScreen extends StatelessWidget {
                     bottom: menuButtonPadding,
                   ),
                   child: Tooltip(
-                    message: const I18n().openProject,
+                    message: I18n.of(context).openProject,
                     waitDuration: const Duration(seconds: 1),
                     child: TextButton(
                       style: ButtonStyle(
@@ -243,7 +243,7 @@ class InitScreen extends StatelessWidget {
                     bottom: menuButtonPadding,
                   ),
                   child: Tooltip(
-                    message: const I18n().patientInformation,
+                    message: I18n.of(context).patientInformation,
                     waitDuration: const Duration(seconds: 1),
                     child: TextButton(
                       style: ButtonStyle(
@@ -279,7 +279,7 @@ class InitScreen extends StatelessWidget {
                     bottom: menuButtonPadding,
                   ),
                   child: Tooltip(
-                    message: const I18n().exportAsPDF,
+                    message: I18n.of(context).exportAsPDF,
                     waitDuration: const Duration(seconds: 1),
                     child: TextButton(
                       style: ButtonStyle(
@@ -343,7 +343,7 @@ class InitScreen extends StatelessWidget {
                     bottom: menuButtonPadding,
                   ),
                   child: Tooltip(
-                    message: const I18n().medicalProfessionalInformation,
+                    message: I18n.of(context).medicalProfessionalInformation,
                     waitDuration: const Duration(seconds: 1),
                     child: TextButton(
                       style: ButtonStyle(
@@ -525,10 +525,10 @@ class InitScreen extends StatelessWidget {
                                               double endY = endSpot.y / scale!;
                                               return [
                                                 LineTooltipItem(
-                                                    '${const I18n().timeDifference}: ${((end - init).abs()).toStringAsFixed(3)} s\n${const I18n().voltageDifference}: ${((endY - initY).abs()).toStringAsFixed(2)} mV',
+                                                    '${I18n.of(context).timeDifference}: ${((end - init).abs()).toStringAsFixed(3)} s\n${I18n.of(context).voltageDifference}: ${((endY - initY).abs()).toStringAsFixed(2)} mV',
                                                     textStyle),
                                                 LineTooltipItem(
-                                                    '${const I18n().time}: ${(touchedSpots[1].x / speed!).toStringAsFixed(3)} s\n${const I18n().voltage}: ${(touchedSpots[1].y / scale!).toStringAsFixed(2)} mV',
+                                                    '${I18n.of(context).time}: ${(touchedSpots[1].x / speed!).toStringAsFixed(3)} s\n${I18n.of(context).voltage}: ${(touchedSpots[1].y / scale!).toStringAsFixed(2)} mV',
                                                     textStyle),
                                               ];
                                             }
@@ -538,7 +538,7 @@ class InitScreen extends StatelessWidget {
                                             return touchedSpots
                                                 .map((LineBarSpot touchedSpot) {
                                               return LineTooltipItem(
-                                                  '${const I18n().time}: ${(touchedSpot.x / speed!).toStringAsFixed(3)} s\n${const I18n().voltage}: ${(touchedSpot.y / scale!).toStringAsFixed(2)} mV',
+                                                  '${I18n.of(context).time}: ${(touchedSpot.x / speed!).toStringAsFixed(3)} s\n${I18n.of(context).voltage}: ${(touchedSpot.y / scale!).toStringAsFixed(2)} mV',
                                                   textStyle);
                                             }).toList();
                                           },
@@ -758,7 +758,8 @@ class InitScreen extends StatelessWidget {
                                 zoom ??= 1;
                                 if (file && loaded) {
                                   return Tooltip(
-                                    message: const I18n().horizontalAlignment,
+                                    message:
+                                        I18n.of(context).horizontalAlignment,
                                     child: Slider(
                                       onChanged: (value) {
                                         BlocProvider.of<InitScreenBloc>(context)
@@ -802,8 +803,8 @@ class InitScreen extends StatelessWidget {
 
                                   return Text(
                                     resultAr != null
-                                        ? "${const I18n().project}: ${resultAr!.nameFile}"
-                                        : "${const I18n().project}: ${const I18n().noLoaded}",
+                                        ? "${I18n.of(context).project}: ${resultAr!.nameFile}"
+                                        : "${I18n.of(context).project}: ${I18n.of(context).noLoaded}",
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                     style: TextStyle(
@@ -873,7 +874,7 @@ class InitScreen extends StatelessWidget {
                                               BorderRadius.circular(5.dp),
                                         ),
                                         child: Text(
-                                          '${const I18n().ecgSignal} \t ${const I18n().scale}: $scaleText div/mV \t ${const I18n().speed}: $speedText div/s',
+                                          '${I18n.of(context).ecgSignal} \t ${I18n.of(context).scale}: $scaleText div/mV \t ${I18n.of(context).speed}: $speedText div/s',
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold,
@@ -907,7 +908,7 @@ class InitScreen extends StatelessWidget {
                                     left: 0,
                                     top: 60.dp,
                                     child: Tooltip(
-                                      message: const I18n().previousSignal,
+                                      message: I18n.of(context).previousSignal,
                                       waitDuration: const Duration(seconds: 1),
                                       child: Container(
                                         decoration: BoxDecoration(
@@ -966,7 +967,7 @@ class InitScreen extends StatelessWidget {
                                     right: 0,
                                     top: 60.dp,
                                     child: Tooltip(
-                                      message: const I18n().nextSignal,
+                                      message: I18n.of(context).nextSignal,
                                       waitDuration: const Duration(seconds: 1),
                                       child: Container(
                                         decoration: BoxDecoration(
@@ -1021,7 +1022,7 @@ class InitScreen extends StatelessWidget {
                                   top: 5.dp,
                                   right: 5.dp,
                                   child: Tooltip(
-                                    message: const I18n().disconnect,
+                                    message: I18n.of(context).disconnect,
                                     waitDuration: const Duration(seconds: 1),
                                     child: IconButton(
                                       style: ButtonStyle(
@@ -1101,7 +1102,7 @@ class InitScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5.dp),
                     ),
                     child: Text(
-                      const I18n().frequency.toUpperCase(),
+                      I18n.of(context).frequency.toUpperCase(),
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -1230,7 +1231,7 @@ class InitScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Tooltip(
-                              message: const I18n().changeSpeed,
+                              message: I18n.of(context).changeSpeed,
                               waitDuration: const Duration(seconds: 1),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -1257,7 +1258,7 @@ class InitScreen extends StatelessWidget {
                               ),
                             ),
                             Tooltip(
-                              message: const I18n().resetZoom,
+                              message: I18n.of(context).resetZoom,
                               waitDuration: const Duration(seconds: 1),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -1281,7 +1282,7 @@ class InitScreen extends StatelessWidget {
                               ),
                             ),
                             Tooltip(
-                              message: const I18n().zoomIn,
+                              message: I18n.of(context).zoomIn,
                               waitDuration: const Duration(seconds: 1),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -1313,7 +1314,7 @@ class InitScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Tooltip(
-                                  message: const I18n().changeScale,
+                                  message: I18n.of(context).changeScale,
                                   waitDuration: const Duration(seconds: 1),
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -1335,7 +1336,7 @@ class InitScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Tooltip(
-                                  message: const I18n().resetScale,
+                                  message: I18n.of(context).resetScale,
                                   waitDuration: const Duration(seconds: 1),
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -1357,7 +1358,7 @@ class InitScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Tooltip(
-                                  message: const I18n().zoomOut,
+                                  message: I18n.of(context).zoomOut,
                                   waitDuration: const Duration(seconds: 1),
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -1398,7 +1399,7 @@ class InitScreen extends StatelessWidget {
                       baselineY ??= 0;
                       zoom ??= 1;
                       return Tooltip(
-                        message: const I18n().verticalAlignment,
+                        message: I18n.of(context).verticalAlignment,
                         child: Slider(
                           onChanged: (value) {
                             BlocProvider.of<InitScreenBloc>(context).add(
@@ -1437,7 +1438,7 @@ class InitScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5.dp),
                     ),
                     child: Text(
-                      const I18n().arrhythmiaDetection.toUpperCase(),
+                      I18n.of(context).arrhythmiaDetection.toUpperCase(),
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -1461,13 +1462,14 @@ class InitScreen extends StatelessWidget {
                             print("result ${resultAr!.getResult}");
                             switch (resultAr!.getResult) {
                               case 0:
-                                text = const I18n().normal.toUpperCase();
+                                text = I18n.of(context).normal.toUpperCase();
                                 break;
                               case 1:
-                                text = const I18n().arrhythmia.toUpperCase();
+                                text =
+                                    I18n.of(context).arrhythmia.toUpperCase();
                                 break;
                               case 2:
-                                text = const I18n().noise.toUpperCase();
+                                text = I18n.of(context).noise.toUpperCase();
                                 break;
                               default:
                             }
@@ -1538,7 +1540,7 @@ class InitScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5.dp),
                     ),
                     child: Text(
-                      const I18n().frequency.toUpperCase(),
+                      I18n.of(context).frequency.toUpperCase(),
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -1667,7 +1669,7 @@ class InitScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Tooltip(
-                              message: const I18n().changeSpeed,
+                              message: I18n.of(context).changeSpeed,
                               waitDuration: const Duration(seconds: 1),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -1694,7 +1696,7 @@ class InitScreen extends StatelessWidget {
                               ),
                             ),
                             Tooltip(
-                              message: const I18n().resetZoom,
+                              message: I18n.of(context).resetZoom,
                               waitDuration: const Duration(seconds: 1),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -1718,7 +1720,7 @@ class InitScreen extends StatelessWidget {
                               ),
                             ),
                             Tooltip(
-                              message: const I18n().zoomIn,
+                              message: I18n.of(context).zoomIn,
                               waitDuration: const Duration(seconds: 1),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -1750,7 +1752,7 @@ class InitScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Tooltip(
-                                  message: const I18n().changeScale,
+                                  message: I18n.of(context).changeScale,
                                   waitDuration: const Duration(seconds: 1),
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -1772,7 +1774,7 @@ class InitScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Tooltip(
-                                  message: const I18n().resetScale,
+                                  message: I18n.of(context).resetScale,
                                   waitDuration: const Duration(seconds: 1),
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -1794,7 +1796,7 @@ class InitScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Tooltip(
-                                  message: const I18n().zoomOut,
+                                  message: I18n.of(context).zoomOut,
                                   waitDuration: const Duration(seconds: 1),
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -1835,7 +1837,7 @@ class InitScreen extends StatelessWidget {
                       baselineY ??= 0;
                       zoom ??= 1;
                       return Tooltip(
-                        message: const I18n().verticalAlignment,
+                        message: I18n.of(context).verticalAlignment,
                         child: Slider(
                           onChanged: (value) {
                             BlocProvider.of<InitScreenBloc>(context).add(
@@ -1876,7 +1878,7 @@ class InitScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5.dp),
                     ),
                     child: Text(
-                      const I18n().arrhythmiaDetection.toUpperCase(),
+                      I18n.of(context).arrhythmiaDetection.toUpperCase(),
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -1900,13 +1902,14 @@ class InitScreen extends StatelessWidget {
                             print("result ${resultAr!.getResult}");
                             switch (resultAr!.getResult) {
                               case 0:
-                                text = const I18n().normal.toUpperCase();
+                                text = I18n.of(context).normal.toUpperCase();
                                 break;
                               case 1:
-                                text = const I18n().arrhythmia.toUpperCase();
+                                text =
+                                    I18n.of(context).arrhythmia.toUpperCase();
                                 break;
                               case 2:
-                                text = const I18n().noise.toUpperCase();
+                                text = I18n.of(context).noise.toUpperCase();
                                 break;
                               default:
                             }

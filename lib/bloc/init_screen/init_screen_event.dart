@@ -5,13 +5,9 @@ abstract class InitScreenEvent {}
 
 class InitScreenInitialEvent extends InitScreenEvent {}
 
-class LoadECGFIleInitScreen extends InitScreenEvent {
-  LoadECGFIleInitScreen();
-}
+class LoadECGFIleInitScreen extends InitScreenEvent {}
 
-class LoadECGBluetoothInitScreen extends InitScreenEvent {
-  LoadECGBluetoothInitScreen();
-}
+class LoadECGBluetoothInitScreen extends InitScreenEvent {}
 
 class ChangeScaleInitScreen extends InitScreenEvent {}
 
@@ -27,6 +23,7 @@ class ResetZoomInitScreen extends InitScreenEvent {}
 
 class ChangeBaselineXInitScreen extends InitScreenEvent {
   double baselineX;
+
   ChangeBaselineXInitScreen({required this.baselineX});
 }
 
@@ -40,9 +37,7 @@ class SetRulePointInitScreen extends InitScreenEvent {
   SetRulePointInitScreen({required this.spot});
 }
 
-class ResetRulePointInitScreen extends InitScreenEvent {
-  ResetRulePointInitScreen();
-}
+class ResetRulePointInitScreen extends InitScreenEvent {}
 
 class evaluateDataInitScreen extends InitScreenEvent {
   List<double> data;
@@ -59,60 +54,40 @@ class ConnectBluetoothDeviceInitScreen extends InitScreenEvent {
   ConnectBluetoothDeviceInitScreen({required this.deviceId});
 }
 
-class ConnectedBluetoothDeviceInitScreen extends InitScreenEvent {
-  ConnectedBluetoothDeviceInitScreen();
-}
+class ConnectedBluetoothDeviceInitScreen extends InitScreenEvent {}
 
 class AddECGMonitorValue extends InitScreenEvent {
   List<double> value;
   AddECGMonitorValue({required this.value});
 }
 
-class CancelBluetoothDeviceInitScreen extends InitScreenEvent {
-  CancelBluetoothDeviceInitScreen();
-}
+class CancelBluetoothDeviceInitScreen extends InitScreenEvent {}
 
-class DisconnectBluetoothDeviceInitScreen extends InitScreenEvent {
-  DisconnectBluetoothDeviceInitScreen();
-}
+class DisconnectBluetoothDeviceInitScreen extends InitScreenEvent {}
 
-class NextECGDataInitScreen extends InitScreenEvent {
-  NextECGDataInitScreen();
-}
+class NextECGDataInitScreen extends InitScreenEvent {}
 
-class PreviousECGDataInitScreen extends InitScreenEvent {
-  PreviousECGDataInitScreen();
-}
+class PreviousECGDataInitScreen extends InitScreenEvent {}
 
-class changePlayECGBluetoothInitScreen extends InitScreenEvent {
-  changePlayECGBluetoothInitScreen();
-}
+class changePlayECGBluetoothInitScreen extends InitScreenEvent {}
 
-class newProjectInitScreen extends InitScreenEvent {
-  newProjectInitScreen();
-}
+class newProjectInitScreen extends InitScreenEvent {}
 
-class cancelNewProjectInitScreen extends InitScreenEvent {
-  cancelNewProjectInitScreen();
-}
+class cancelNewProjectInitScreen extends InitScreenEvent {}
 
-class newProjectPatientInformationInitScreen extends InitScreenEvent {
-  newProjectPatientInformationInitScreen();
-}
+class newProjectPatientInformationInitScreen extends InitScreenEvent {}
 
-class selectProjectFolderInitScreen extends InitScreenEvent {
-  selectProjectFolderInitScreen();
-}
+class selectProjectFolderInitScreen extends InitScreenEvent {}
 
-class randomProjectNameInitScreen extends InitScreenEvent {
-  randomProjectNameInitScreen();
-}
+class randomProjectNameInitScreen extends InitScreenEvent {}
 
 class validateProjectLocationInitScreen extends InitScreenEvent {
   String projectName;
   String projectFolder;
-  validateProjectLocationInitScreen(
-      {required this.projectName, required this.projectFolder});
+  validateProjectLocationInitScreen({
+    required this.projectName,
+    required this.projectFolder,
+  });
 }
 
 class addPatientProjectInitScreen extends InitScreenEvent {
@@ -120,40 +95,28 @@ class addPatientProjectInitScreen extends InitScreenEvent {
   addPatientProjectInitScreen({required this.patient});
 }
 
-class startBluetoothScanInitScreen extends InitScreenEvent {
-  startBluetoothScanInitScreen();
-}
+class startBluetoothScanInitScreen extends InitScreenEvent {}
 
-class errorBluetoothScanInitScreen extends InitScreenEvent {
-  errorBluetoothScanInitScreen();
-}
+class errorBluetoothScanInitScreen extends InitScreenEvent {}
 
-class openProjectInitScreen extends InitScreenEvent {
-  openProjectInitScreen();
-}
+class openProjectInitScreen extends InitScreenEvent {}
 
 class loadProjectInitScreen extends InitScreenEvent {
   String projectPath;
   loadProjectInitScreen({required this.projectPath});
 }
 
-class exportECGDataInitScreen extends InitScreenEvent {
-  exportECGDataInitScreen();
-}
+class exportECGDataInitScreen extends InitScreenEvent {}
 
-class patientInformationInitScreen extends InitScreenEvent {
-  patientInformationInitScreen();
-}
+class patientInformationInitScreen extends InitScreenEvent {}
 
-class medicalInformationInitScreen extends InitScreenEvent {
-  medicalInformationInitScreen();
-}
+class medicalInformationInitScreen extends InitScreenEvent {}
 
 class saveMedicalProfessionalInitScreen extends InitScreenEvent {
   MedicalProfessional medicalProfessional;
-  saveMedicalProfessionalInitScreen({required this.medicalProfessional});
+  saveMedicalProfessionalInitScreen({
+    required this.medicalProfessional,
+  });
 }
 
-class deleteMedicalProfessionalInitScreen extends InitScreenEvent {
-  deleteMedicalProfessionalInitScreen();
-}
+class deleteMedicalProfessionalInitScreen extends InitScreenEvent {}

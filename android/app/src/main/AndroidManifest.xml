@@ -1,5 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jakslab.awecg">
+
+
+    <uses-sdk android:minSdkVersion="21"
+                 android:targetSdkVersion="30" />
         <!-- Request legacy Bluetooth permissions on older devices. -->
     <uses-permission android:name="android.permission.BLUETOOTH"
                      android:maxSdkVersion="30" />
@@ -30,7 +34,8 @@
    <application
         android:label="awecg"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/launcher_icon"
+         android:maxSdkVersion="30" >
         <activity
             android:name=".MainActivity"
             android:exported="true"

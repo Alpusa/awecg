@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'bloc/init_screen/init_screen_bloc.dart';
 import 'generated/i18n.dart';
@@ -24,7 +25,7 @@ Future<void> main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
-  runApp(const AppState());
+  runApp(AppState());
   configLoading();
 }
 
@@ -42,7 +43,7 @@ void configLoading() {
 }
 
 class AppState extends StatelessWidget {
-  const AppState({super.key});
+  AppState({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +53,7 @@ class AppState extends StatelessWidget {
           create: (_) => InitScreenBloc(),
         ),
       ],
-      child: const MyApp(),
+      child: MyApp(),
     );
   }
 }
@@ -73,6 +74,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const i18n = I18n.delegate;
+
     return FlutterSizer(
       builder: (context, orientation, deviceType) {
         return MaterialApp(
@@ -80,24 +82,15 @@ class MyApp extends StatelessWidget {
           initialRoute: "/splash",
           routes: routes,
           theme: ThemeData(
-            // This is the theme of your application.
-            //
-            // Try running your application with "flutter run". You'll see the
-            // application has a blue toolbar. Then, without quitting the app, try
-            // changing the primarySwatch below to Colors.green and then invoke
-            // "hot reload" (press "r" in the console where you ran "flutter run",
-            // or simply save your changes to "hot reload" in a Flutter IDE).
-            // Notice that the counter didn't reset back to zero; the application
-            // is not restarted.
             useMaterial3: true,
           ),
-          localizationsDelegates: const [
+          localizationsDelegates: [
             i18n,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: i18n.supportedLocales,
-          localeResolutionCallback: i18n.resolution(
-            fallback: const Locale("en", "US"),
-          ),
           debugShowCheckedModeBanner: false,
           builder: EasyLoading.init(),
         );

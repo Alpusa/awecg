@@ -68,7 +68,7 @@ class MedicalProfessionalInformation extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    const I18n().medicalProfessionalInformation,
+                    I18n.of(context).medicalProfessionalInformation,
                     style: const TextStyle(
                       fontSize: 25,
                     ),
@@ -82,11 +82,11 @@ class MedicalProfessionalInformation extends StatelessWidget {
                       obscureText: false,
                       readOnly: loaded,
                       decoration: InputDecoration(
-                        labelText: const I18n().fullName,
+                        labelText: I18n.of(context).fullName,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return const I18n().fieldIsRequired;
+                          return I18n.of(context).fieldIsRequired;
                         }
                         return null;
                       },
@@ -103,12 +103,12 @@ class MedicalProfessionalInformation extends StatelessWidget {
                       obscureText: false,
                       readOnly: loaded,
                       decoration: InputDecoration(
-                        labelText: const I18n().phoneNumber,
+                        labelText: I18n.of(context).phoneNumber,
                       ),
                       keyboardType: TextInputType.phone,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return const I18n().fieldIsRequired;
+                          return I18n.of(context).fieldIsRequired;
                         }
                         return null;
                       },
@@ -125,11 +125,11 @@ class MedicalProfessionalInformation extends StatelessWidget {
                       obscureText: false,
                       readOnly: loaded,
                       decoration: InputDecoration(
-                        labelText: const I18n().address,
+                        labelText: I18n.of(context).address,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return const I18n().fieldIsRequired;
+                          return I18n.of(context).fieldIsRequired;
                         }
                         return null;
                       },
@@ -146,12 +146,12 @@ class MedicalProfessionalInformation extends StatelessWidget {
                       obscureText: false,
                       readOnly: loaded,
                       decoration: InputDecoration(
-                        labelText: const I18n().email,
+                        labelText: I18n.of(context).email,
                       ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return const I18n().fieldIsRequired;
+                          return I18n.of(context).fieldIsRequired;
                         }
                         return null;
                       },
@@ -168,11 +168,11 @@ class MedicalProfessionalInformation extends StatelessWidget {
                       obscureText: false,
                       readOnly: loaded,
                       decoration: InputDecoration(
-                        labelText: const I18n().identityCard,
+                        labelText: I18n.of(context).identityCard,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return const I18n().fieldIsRequired;
+                          return I18n.of(context).fieldIsRequired;
                         }
                         return null;
                       },
@@ -189,11 +189,11 @@ class MedicalProfessionalInformation extends StatelessWidget {
                       obscureText: false,
                       readOnly: loaded,
                       decoration: InputDecoration(
-                        labelText: const I18n().specialty,
+                        labelText: I18n.of(context).specialty,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return const I18n().fieldIsRequired;
+                          return I18n.of(context).fieldIsRequired;
                         }
                         return null;
                       },
@@ -210,11 +210,11 @@ class MedicalProfessionalInformation extends StatelessWidget {
                         obscureText: false,
                         readOnly: loaded,
                         decoration: InputDecoration(
-                          labelText: const I18n().place,
+                          labelText: I18n.of(context).place,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return const I18n().fieldIsRequired;
+                            return I18n.of(context).fieldIsRequired;
                           }
                           return null;
                         },
@@ -238,7 +238,7 @@ class MedicalProfessionalInformation extends StatelessWidget {
               )
             : ElevatedButton(
                 focusNode: _medicalProfessionalSaveButtonFocus,
-                child: Text(const I18n().save),
+                child: Text(I18n.of(context).save),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     medicalProfessional.fullName =
@@ -272,7 +272,7 @@ class MedicalProfessionalInformation extends StatelessWidget {
             : ElevatedButton(
                 focusNode: _medicalProfessionalClearButtonFocus,
                 child: Text(
-                  const I18n().clear,
+                  I18n.of(context).clear,
                   style: TextStyle(
                     color: Colors.white,
                   ),
@@ -306,7 +306,7 @@ class MedicalProfessionalInformation extends StatelessWidget {
                 },
               ),
         ElevatedButton(
-          child: Text(const I18n().cancel),
+          child: Text(I18n.of(context).cancel),
           onPressed: () {
             Navigator.of(context).pop();
           },

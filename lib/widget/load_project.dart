@@ -28,7 +28,7 @@ class LoadProject extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
-                I18n().openProject,
+                I18n.of(context).openProject,
                 style: TextStyle(
                   fontSize: 25.dp,
                 ),
@@ -47,7 +47,7 @@ class LoadProject extends StatelessWidget {
               Container(
                 width: 20.w,
                 child: Text(
-                  I18n().selectProjectFolder,
+                  I18n.of(context).selectProjectFolder,
                   textAlign: TextAlign.justify,
                 ),
               ),
@@ -62,11 +62,11 @@ class LoadProject extends StatelessWidget {
                         controller: _projectFolderController,
                         obscureText: false,
                         decoration: InputDecoration(
-                          labelText: I18n().projectFolder,
+                          labelText: I18n.of(context).projectFolder,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return I18n().fieldIsRequired;
+                            return I18n.of(context).fieldIsRequired;
                           }
                           return null;
                         },
@@ -99,7 +99,7 @@ class LoadProject extends StatelessWidget {
       actions: <Widget>[
         ElevatedButton(
           focusNode: _nextFocusNode,
-          child: Text(I18n().open),
+          child: Text(I18n.of(context).open),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               BlocProvider.of<InitScreenBloc>(context).add(
@@ -110,7 +110,7 @@ class LoadProject extends StatelessWidget {
           },
         ),
         ElevatedButton(
-          child: Text(I18n().cancel),
+          child: Text(I18n.of(context).cancel),
           onPressed: () {
             Navigator.of(context).pop();
           },

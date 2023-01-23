@@ -45,7 +45,7 @@ class NewProjectPatient extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
-                I18n().patientInformation,
+                I18n.of(context).patientInformation,
                 style: TextStyle(
                   fontSize: 25.dp,
                 ),
@@ -53,9 +53,9 @@ class NewProjectPatient extends StatelessWidget {
               Container(
                 width: 20.w,
                 child: Text(
-                  I18n().completeThePatientInformation +
+                  I18n.of(context).completeThePatientInformation +
                       ". " +
-                      I18n().allFieldsAreRequired,
+                      I18n.of(context).allFieldsAreRequired,
                   textAlign: TextAlign.justify,
                 ),
               ),
@@ -67,11 +67,11 @@ class NewProjectPatient extends StatelessWidget {
                   controller: _patientFullName,
                   obscureText: false,
                   decoration: InputDecoration(
-                    labelText: I18n().fullName,
+                    labelText: I18n.of(context).fullName,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return I18n().fieldIsRequired;
+                      return I18n.of(context).fieldIsRequired;
                     }
                     return null;
                   },
@@ -87,12 +87,12 @@ class NewProjectPatient extends StatelessWidget {
                   controller: _patientAge,
                   obscureText: false,
                   decoration: InputDecoration(
-                    labelText: I18n().age,
+                    labelText: I18n.of(context).age,
                   ),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return I18n().fieldIsRequired;
+                      return I18n.of(context).fieldIsRequired;
                     }
                     return null;
                   },
@@ -108,12 +108,12 @@ class NewProjectPatient extends StatelessWidget {
                   controller: _patientPhoneNumber,
                   obscureText: false,
                   decoration: InputDecoration(
-                    labelText: I18n().phoneNumber,
+                    labelText: I18n.of(context).phoneNumber,
                   ),
                   keyboardType: TextInputType.phone,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return I18n().fieldIsRequired;
+                      return I18n.of(context).fieldIsRequired;
                     }
                     return null;
                   },
@@ -129,11 +129,11 @@ class NewProjectPatient extends StatelessWidget {
                   controller: _patientAddress,
                   obscureText: false,
                   decoration: InputDecoration(
-                    labelText: I18n().address,
+                    labelText: I18n.of(context).address,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return I18n().fieldIsRequired;
+                      return I18n.of(context).fieldIsRequired;
                     }
                     return null;
                   },
@@ -149,12 +149,12 @@ class NewProjectPatient extends StatelessWidget {
                   controller: _patientEmail,
                   obscureText: false,
                   decoration: InputDecoration(
-                    labelText: I18n().email,
+                    labelText: I18n.of(context).email,
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return I18n().fieldIsRequired;
+                      return I18n.of(context).fieldIsRequired;
                     }
                     return null;
                   },
@@ -170,11 +170,11 @@ class NewProjectPatient extends StatelessWidget {
                   controller: _patientIdentityCard,
                   obscureText: false,
                   decoration: InputDecoration(
-                    labelText: I18n().identityCard,
+                    labelText: I18n.of(context).identityCard,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return I18n().fieldIsRequired;
+                      return I18n.of(context).fieldIsRequired;
                     }
                     return null;
                   },
@@ -190,7 +190,7 @@ class NewProjectPatient extends StatelessWidget {
       actions: <Widget>[
         ElevatedButton(
           focusNode: _nextButtonFocus,
-          child: Text(I18n().next),
+          child: Text(I18n.of(context).next),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               BlocProvider.of<InitScreenBloc>(context).add(
@@ -209,7 +209,7 @@ class NewProjectPatient extends StatelessWidget {
           },
         ),
         ElevatedButton(
-          child: Text(I18n().cancel),
+          child: Text(I18n.of(context).cancel),
           onPressed: () {
             BlocProvider.of<InitScreenBloc>(context)
                 .add(cancelNewProjectInitScreen());

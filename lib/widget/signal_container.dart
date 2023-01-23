@@ -228,7 +228,7 @@ class SignalContainer extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5.dp),
               ),
               child: Text(
-                '${const I18n().ecgSignal} \t ${const I18n().scale}: ${scaleText} div/mV \t ${const I18n().speed}: ${speedText} div/s',
+                '${I18n().ecgSignal} \t ${I18n().scale}: ${scaleText} div/mV \t ${I18n().speed}: ${speedText} div/s',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
