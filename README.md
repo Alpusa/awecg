@@ -1,17 +1,6 @@
 # awecg
 
-A new Flutter project.
+This is a flutter project named AWECG. It is an application to Windows and Android that allows you to view the ECG signal in real time and save it in a file, as well as the heart rate and classification of the signal into normal, noise or atrial fibrillation arrhythmia.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# awecg
+This application was developed as a degree project for the degree in Electronic Engineering at the Idustrial University of Santander (UIS) in Bucaramanga, Colombia.
