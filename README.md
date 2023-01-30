@@ -7,8 +7,8 @@ This application was developed as a degree project for the degree in Electronic 
 
 ## 
 
-Industrial University of Santander (UIS) [https://www.uis.edu.co/]__
-Alejandro Pulido Saravia [https://www.linkedin.com/in/pulidosaravia/]__
-Electronic Engineering__
-Bucaramanga, Colombia__
+Industrial University of Santander (UIS) [https://www.uis.edu.co/] <br />
+Alejandro Pulido Saravia [https://www.linkedin.com/in/pulidosaravia/] <br />
+Electronic Engineering <br />
+Bucaramanga, Colombia <br />
 2023
