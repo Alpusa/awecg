@@ -4,3 +4,6 @@ This is a flutter project named AWECG. It is an application to Windows and Andro
 
 
 This application was developed as a degree project for the degree in Electronic Engineering at the Idustrial University of Santander (UIS) in Bucaramanga, Colombia.
+
+## Information
+
