@@ -1,4 +1,3 @@
-import 'package:awecg/generated/i18n.dart';
 import 'package:awecg/repository/my_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +5,7 @@ import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:quick_blue/quick_blue.dart';
 
 import '../bloc/init_screen/init_screen_bloc.dart';
+import '../repository/I18n.dart';
 
 class SelectBluetoothDevice extends StatelessWidget {
   List<BlueScanResult> scanResults = [];
@@ -15,7 +15,7 @@ class SelectBluetoothDevice extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return AlertDialog(
-      title: Text(I18n.of(context).selectBluetoothDevice),
+      title: Text(I18n.translate("selectBluetoothDevice")!),
       content: Scaffold(
         body: Container(
           //width: 20.w,
@@ -44,7 +44,7 @@ class SelectBluetoothDevice extends StatelessWidget {
                           ),
                           title: Row(
                             children: [
-                              //Text("${I18n.of(context).address}: "),
+                              //Text("${I18n.translate("address")!}: "),
                               // show the name separated with ":" when count 2 caracter
 
                               Text(
@@ -59,7 +59,7 @@ class SelectBluetoothDevice extends StatelessWidget {
                           ),
                           subtitle: Row(
                             children: [
-                              Text("${I18n.of(context).rssi}: "),
+                              Text("${I18n.translate("rssi")!}: "),
                               Text("${e.rssi}"),
                             ],
                           ),
@@ -92,7 +92,7 @@ class SelectBluetoothDevice extends StatelessWidget {
       actionsAlignment: MainAxisAlignment.center,
       actions: <Widget>[
         ElevatedButton(
-          child: Text(I18n.of(context).cancel),
+          child: Text(I18n.translate("cancel")!),
           onPressed: () {
             BlocProvider.of<InitScreenBloc>(context)
                 .add(CancelBluetoothDeviceInitScreen());

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:awecg/generated/i18n.dart';
 import 'package:awecg/repository/my_colors.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +10,7 @@ import 'package:flutter_sizer/flutter_sizer.dart';
 import '../bloc/init_screen/init_screen_bloc.dart';
 import '../models/medical_professional.dart';
 import '../models/patient.dart';
+import '../repository/I18n.dart';
 
 class MedicalProfessionalInformation extends StatelessWidget {
   MedicalProfessional medicalProfessional;
@@ -68,7 +68,7 @@ class MedicalProfessionalInformation extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    I18n.of(context).medicalProfessionalInformation,
+                    I18n.translate("medicalProfessionalInformation")!,
                     style: const TextStyle(
                       fontSize: 25,
                     ),
@@ -82,11 +82,11 @@ class MedicalProfessionalInformation extends StatelessWidget {
                       obscureText: false,
                       readOnly: loaded,
                       decoration: InputDecoration(
-                        labelText: I18n.of(context).fullName,
+                        labelText: I18n.translate("fullName")!,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return I18n.of(context).fieldIsRequired;
+                          return I18n.translate("fieldIsRequired")!;
                         }
                         return null;
                       },
@@ -103,12 +103,12 @@ class MedicalProfessionalInformation extends StatelessWidget {
                       obscureText: false,
                       readOnly: loaded,
                       decoration: InputDecoration(
-                        labelText: I18n.of(context).phoneNumber,
+                        labelText: I18n.translate("phoneNumber")!,
                       ),
                       keyboardType: TextInputType.phone,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return I18n.of(context).fieldIsRequired;
+                          return I18n.translate("fieldIsRequired")!;
                         }
                         return null;
                       },
@@ -125,11 +125,11 @@ class MedicalProfessionalInformation extends StatelessWidget {
                       obscureText: false,
                       readOnly: loaded,
                       decoration: InputDecoration(
-                        labelText: I18n.of(context).address,
+                        labelText: I18n.translate("address")!,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return I18n.of(context).fieldIsRequired;
+                          return I18n.translate("fieldIsRequired")!;
                         }
                         return null;
                       },
@@ -146,12 +146,12 @@ class MedicalProfessionalInformation extends StatelessWidget {
                       obscureText: false,
                       readOnly: loaded,
                       decoration: InputDecoration(
-                        labelText: I18n.of(context).email,
+                        labelText: I18n.translate("email")!,
                       ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return I18n.of(context).fieldIsRequired;
+                          return I18n.translate("fieldIsRequired")!;
                         }
                         return null;
                       },
@@ -168,11 +168,11 @@ class MedicalProfessionalInformation extends StatelessWidget {
                       obscureText: false,
                       readOnly: loaded,
                       decoration: InputDecoration(
-                        labelText: I18n.of(context).identityCard,
+                        labelText: I18n.translate("identityCard")!,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return I18n.of(context).fieldIsRequired;
+                          return I18n.translate("fieldIsRequired")!;
                         }
                         return null;
                       },
@@ -189,11 +189,11 @@ class MedicalProfessionalInformation extends StatelessWidget {
                       obscureText: false,
                       readOnly: loaded,
                       decoration: InputDecoration(
-                        labelText: I18n.of(context).specialty,
+                        labelText: I18n.translate("specialty")!,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return I18n.of(context).fieldIsRequired;
+                          return I18n.translate("fieldIsRequired")!;
                         }
                         return null;
                       },
@@ -210,11 +210,11 @@ class MedicalProfessionalInformation extends StatelessWidget {
                         obscureText: false,
                         readOnly: loaded,
                         decoration: InputDecoration(
-                          labelText: I18n.of(context).place,
+                          labelText: I18n.translate("place")!,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return I18n.of(context).fieldIsRequired;
+                            return I18n.translate("fieldIsRequired")!;
                           }
                           return null;
                         },
@@ -238,7 +238,7 @@ class MedicalProfessionalInformation extends StatelessWidget {
               )
             : ElevatedButton(
                 focusNode: _medicalProfessionalSaveButtonFocus,
-                child: Text(I18n.of(context).save),
+                child: Text(I18n.translate("save")!),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     medicalProfessional.fullName =
@@ -272,7 +272,7 @@ class MedicalProfessionalInformation extends StatelessWidget {
             : ElevatedButton(
                 focusNode: _medicalProfessionalClearButtonFocus,
                 child: Text(
-                  I18n.of(context).clear,
+                  I18n.translate("clear")!,
                   style: TextStyle(
                     color: Colors.white,
                   ),
@@ -306,7 +306,7 @@ class MedicalProfessionalInformation extends StatelessWidget {
                 },
               ),
         ElevatedButton(
-          child: Text(I18n.of(context).cancel),
+          child: Text(I18n.translate("cancel")!),
           onPressed: () {
             Navigator.of(context).pop();
           },

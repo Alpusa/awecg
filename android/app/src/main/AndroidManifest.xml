@@ -3,7 +3,7 @@
 
 
     <uses-sdk android:minSdkVersion="21"
-                 android:targetSdkVersion="30" />
+                  />
         <!-- Request legacy Bluetooth permissions on older devices. -->
     <uses-permission android:name="android.permission.BLUETOOTH"
                      android:maxSdkVersion="30" />
@@ -30,12 +30,21 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+
+
+
+
+
     
    <application
-        android:label="awecg"
+     android:requestLegacyExternalStorage="true"
+     android:label="awecg"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
-         android:maxSdkVersion="30" >
+         >
         <activity
             android:name=".MainActivity"
             android:exported="true"

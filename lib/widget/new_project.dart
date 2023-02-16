@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:awecg/generated/i18n.dart';
 import 'package:awecg/repository/my_colors.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 
 import '../bloc/init_screen/init_screen_bloc.dart';
+import '../repository/I18n.dart';
 
 class NewProject extends StatelessWidget {
   NewProject({super.key});
@@ -30,7 +30,7 @@ class NewProject extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
-                I18n.of(context).newProject,
+                I18n.translate("newProject")!,
                 style: TextStyle(
                   fontSize: 25.dp,
                 ),
@@ -54,7 +54,7 @@ class NewProject extends StatelessWidget {
               Container(
                 width: 20.w,
                 child: Text(
-                  I18n.of(context).selectFolderToSaveProject,
+                  I18n.translate("selectFolderToSaveProject")!,
                   textAlign: TextAlign.justify,
                 ),
               ),
@@ -69,11 +69,11 @@ class NewProject extends StatelessWidget {
                         controller: _projectFolderController,
                         obscureText: false,
                         decoration: InputDecoration(
-                          labelText: I18n.of(context).projectFolder,
+                          labelText: I18n.translate("projectFolder")!,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return I18n.of(context).fieldIsRequired;
+                            return I18n.translate("fieldIsRequired")!;
                           }
                           return null;
                         },
@@ -101,7 +101,7 @@ class NewProject extends StatelessWidget {
               Container(
                 width: 20.w,
                 child: Text(
-                  I18n.of(context).setProjectName,
+                  I18n.translate("setProjectName")!,
                   textAlign: TextAlign.justify,
                 ),
               ),
@@ -116,11 +116,11 @@ class NewProject extends StatelessWidget {
                         controller: _projectNameController,
                         obscureText: false,
                         decoration: InputDecoration(
-                          labelText: I18n.of(context).projectName,
+                          labelText: I18n.translate("projectName")!,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return I18n.of(context).fieldIsRequired;
+                            return I18n.translate("fieldIsRequired")!;
                           }
                           return null;
                         },
@@ -135,7 +135,7 @@ class NewProject extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        I18n.of(context).generate,
+                        I18n.translate("generate")!,
                         style: TextStyle(
                           color: Colors.black,
                         ),
@@ -156,7 +156,7 @@ class NewProject extends StatelessWidget {
       actions: <Widget>[
         ElevatedButton(
           focusNode: _nextFocusNode,
-          child: Text(I18n.of(context).next),
+          child: Text(I18n.translate("next")!),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               BlocProvider.of<InitScreenBloc>(context).add(
@@ -168,7 +168,7 @@ class NewProject extends StatelessWidget {
           },
         ),
         ElevatedButton(
-          child: Text(I18n.of(context).cancel),
+          child: Text(I18n.translate("cancel")!),
           onPressed: () {
             BlocProvider.of<InitScreenBloc>(context)
                 .add(cancelNewProjectInitScreen());

@@ -1,4 +1,3 @@
-import 'package:awecg/generated/I18n.dart';
 import 'package:awecg/models/medical_professional.dart';
 import 'package:awecg/models/patient.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:math' as math;
 import 'package:pdf/widgets.dart' as pw;
 
+import '../repository/I18n.dart';
 import '../repository/my_colors.dart';
 
 class InformationPage extends StatelessWidget {
@@ -71,7 +71,7 @@ class InformationPage extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      I18n.of(context).medicalInformation,
+                      I18n.translate("medicalInformation")!,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -81,7 +81,7 @@ class InformationPage extends StatelessWidget {
                 ),
                 // show the date of the medical information
                 Text(
-                  '${I18n.of(context).date}: ${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}',
+                  '${I18n.translate("date")!}: ${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}',
                   style: TextStyle(
                     fontSize: (20),
                     fontWeight: FontWeight.bold,
@@ -102,7 +102,7 @@ class InformationPage extends StatelessWidget {
                 ),
               ),
               child: Text(
-                I18n.of(context).patientInformation,
+                I18n.translate("patientInformation")!,
                 style: TextStyle(
                   fontSize: (16),
                   fontWeight: FontWeight.bold,
@@ -124,7 +124,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${I18n.of(context).fullName}:',
+                        '${I18n.translate("fullName")!}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -160,7 +160,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${I18n.of(context).age}:',
+                        '${I18n.translate("age")!}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -196,7 +196,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${I18n.of(context).phoneTitle}:',
+                        '${I18n.translate("phoneTitle")!}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -239,7 +239,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${I18n.of(context).address}:',
+                        '${I18n.translate("address")!}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -277,7 +277,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${I18n.of(context).identityCard}:',
+                        '${I18n.translate("identityCard")!}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -321,7 +321,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${I18n.of(context).email}:',
+                        '${I18n.translate("email")!}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -362,7 +362,7 @@ class InformationPage extends StatelessWidget {
                 ),
               ),
               child: Text(
-                I18n.of(context).medicalProfessionalInformation,
+                I18n.translate("medicalProfessionalInformation")!,
                 style: TextStyle(
                   fontSize: (16),
                   fontWeight: FontWeight.bold,
@@ -384,7 +384,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${I18n.of(context).fullName}:',
+                        '${I18n.translate("fullName")!}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -420,7 +420,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${I18n.of(context).specialty}:',
+                        '${I18n.translate("specialty")!}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -463,7 +463,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${I18n.of(context).email}:',
+                        '${I18n.translate("email")!}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -499,7 +499,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${I18n.of(context).phoneTitle}:',
+                        '${I18n.translate("phoneTitle")!}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -542,7 +542,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${I18n.of(context).address}:',
+                        '${I18n.translate("address")!}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -580,7 +580,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${I18n.of(context).identityCard}:',
+                        '${I18n.translate("identityCard")!}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,
@@ -624,7 +624,7 @@ class InformationPage extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        '${I18n.of(context).place}:',
+                        '${I18n.translate("place")!}:',
                         style: TextStyle(
                           fontSize: (16),
                           fontWeight: FontWeight.bold,

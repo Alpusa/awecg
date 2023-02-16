@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:awecg/generated/i18n.dart';
 import 'package:awecg/repository/my_colors.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 
 import '../bloc/init_screen/init_screen_bloc.dart';
+import '../repository/I18n.dart';
 
 class LoadProject extends StatelessWidget {
   LoadProject({super.key});
@@ -28,7 +28,7 @@ class LoadProject extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
-                I18n.of(context).openProject,
+                I18n.translate("openProject")!,
                 style: TextStyle(
                   fontSize: 25.dp,
                 ),
@@ -47,7 +47,7 @@ class LoadProject extends StatelessWidget {
               Container(
                 width: 20.w,
                 child: Text(
-                  I18n.of(context).selectProjectFolder,
+                  I18n.translate("selectProjectFolder")!,
                   textAlign: TextAlign.justify,
                 ),
               ),
@@ -62,11 +62,11 @@ class LoadProject extends StatelessWidget {
                         controller: _projectFolderController,
                         obscureText: false,
                         decoration: InputDecoration(
-                          labelText: I18n.of(context).projectFolder,
+                          labelText: I18n.translate("projectFolder")!,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return I18n.of(context).fieldIsRequired;
+                            return I18n.translate("fieldIsRequired")!;
                           }
                           return null;
                         },
@@ -99,7 +99,7 @@ class LoadProject extends StatelessWidget {
       actions: <Widget>[
         ElevatedButton(
           focusNode: _nextFocusNode,
-          child: Text(I18n.of(context).open),
+          child: Text(I18n.translate("open")!),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               BlocProvider.of<InitScreenBloc>(context).add(
@@ -110,7 +110,7 @@ class LoadProject extends StatelessWidget {
           },
         ),
         ElevatedButton(
-          child: Text(I18n.of(context).cancel),
+          child: Text(I18n.translate("cancel")!),
           onPressed: () {
             Navigator.of(context).pop();
           },

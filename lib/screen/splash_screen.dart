@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../repository/I18n.dart';
 import '../repository/logo.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -42,6 +43,9 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+    var defaultLocale = Localizations.localeOf(context);
+    print('El idioma por defecto del sistema es ${defaultLocale.languageCode}');
+    I18n.setLocale(Locale(defaultLocale.languageCode));
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(

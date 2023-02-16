@@ -3,13 +3,13 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:awecg/generated/i18n.dart';
 import 'package:awecg/models/arrhythmia_result.dart';
 import 'package:awecg/models/medical_professional.dart';
 import 'package:awecg/models/patient.dart';
 import 'package:awecg/repository/classifier.dart';
 import 'package:awecg/repository/save_data.dart';
 import 'package:bloc/bloc.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:file/local.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -22,6 +22,8 @@ import 'package:scidart/numdart.dart';
 import 'package:scidart/scidart.dart';
 import 'package:uuid/uuid.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import '../../repository/I18n.dart';
 
 part 'init_screen_event.dart';
 part 'init_screen_state.dart';
@@ -53,7 +55,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
 
   InitScreenBloc() : super(InitScreenInitial()) {
     on<InitScreenEvent>((event, emit) {
-      checkStoragePermission();
+      //checkStoragePermission();
     });
 
     on<InitScreenInitialEvent>(
@@ -204,7 +206,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
           }
         }
       } else {
-        emit(InitScreenError(I18n().storagePermissionRequired));
+        emit(InitScreenError(I18n.translate("storagePermissionRequired")!));
       }
     });
 
@@ -1098,7 +1100,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         );
       }
       //emit(DisconnectBluetoothDeviceInitScreenState());
-      emit(InitScreenError(I18n().disconnected));
+      emit(InitScreenError(I18n.translate("disconnected")!));
     });
 
     on<AddECGMonitorValue>((event, emit) {
@@ -1213,13 +1215,14 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
     });
 
     on<exportECGDataInitScreen>((event, emit) async {
-      emit(StartLoadingIntiScreenState(message: I18n().exporingAsPDF));
+      emit(StartLoadingIntiScreenState(
+          message: I18n.translate("exporingAsPDF")!));
       if (result != null) {
         await result!.exportPDF();
         emit(StopLoadingIntiScreenState());
       } else {
-        emit(InitScreenError(
-            I18n().firstLoadOrCreateNewProjectToUseToUseThisFunction));
+        emit(InitScreenError(I18n.translate(
+            "firstLoadOrCreateNewProjectToUseToUseThisFunction")!));
       }
     });
 
@@ -1270,7 +1273,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         //
       } else {
         emit(InitScreenError(
-            "${I18n().storagePermissionRequired}.${I18n().bluetoothPermissionRequired} ${I18n().or} ${I18n().bluetoothIsDisabled}"));
+            "${I18n.translate("storagePermissionRequired")!}.${I18n.translate("bluetoothPermissionRequired")!} ${I18n.translate("or")!} ${I18n.translate("bluetoothIsDisabled")!}"));
       }
     });
 
@@ -1319,7 +1322,7 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
             Directory directory2 =
                 Directory('${event.projectFolder}/${event.projectName}');
             if (await directory2.exists()) {
-              emit(InitScreenError(I18n().projectIsAlreadyExist));
+              emit(InitScreenError(I18n.translate("projectIsAlreadyExist")!));
             } else {
               // create result object and set the folderpath and name
               result = ArrhythmiaResult(
@@ -1328,13 +1331,13 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
               emit(ShowPatientNewProjectInitScreenState());
             }
           } else {
-            emit(InitScreenError(I18n().folderDoesNotExist));
+            emit(InitScreenError(I18n.translate("folderDoesNotExist")!));
           }
         } else {
-          emit(InitScreenError(I18n().fieldsAreRequired));
+          emit(InitScreenError(I18n.translate("fieldsAreRequired")!));
         }
       } else {
-        emit(InitScreenError(I18n().fieldsAreRequired));
+        emit(InitScreenError(I18n.translate("fieldsAreRequired")!));
       }
     });
 
@@ -1350,8 +1353,8 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         emit(ShowSelectBluetoothDeviceInitScreenState());
         add(startBluetoothScanInitScreen());
       } else {
-        emit(InitScreenError(
-            I18n().firstLoadOrCreateNewProjectToUseToUseThisFunction));
+        emit(InitScreenError(I18n.translate(
+            "firstLoadOrCreateNewProjectToUseToUseThisFunction")!));
       }
     });
 
@@ -1359,13 +1362,13 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       if (result != null) {
         getDeviceName();
       } else {
-        emit(InitScreenError(
-            I18n().firstLoadOrCreateNewProjectToUseToUseThisFunction));
+        emit(InitScreenError(I18n.translate(
+            "firstLoadOrCreateNewProjectToUseToUseThisFunction")!));
       }
     });
 
     on<errorBluetoothScanInitScreen>((event, emit) {
-      emit(InitScreenError(I18n().errorCreatingProject));
+      emit(InitScreenError(I18n.translate("errorCreatingProject")!));
     });
 
     on<openProjectInitScreen>((event, emit) async {
@@ -1428,7 +1431,8 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
         //
       } else {
         result = null;
-        emit(InitScreenError("${I18n().storagePermissionRequired}."));
+        emit(InitScreenError(
+            "${I18n.translate("storagePermissionRequired")!}."));
       }
     });
 
@@ -1499,13 +1503,13 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
           result = null;
           emit(StopLoadingIntiScreenState());
           emit(InitScreenError(
-              "${I18n().projectIsNotValid} or ${I18n().projectIsBroken}"));
+              "${I18n.translate("projectIsNotValid")!} or ${I18n.translate("projectIsBroken")!}"));
         }
       } else {
         result = null;
         emit(StopLoadingIntiScreenState());
         emit(InitScreenError(
-            "${I18n().projectIsNotValid} or ${I18n().projectIsBroken}"));
+            "${I18n.translate("projectIsNotValid")!} or ${I18n.translate("projectIsBroken")!}"));
       }
     });
 
@@ -1513,8 +1517,8 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
       if (result != null) {
         emit(ShowPatientInformationInitScreenState(patient: result!.patient!));
       } else {
-        emit(InitScreenError(
-            I18n().firstLoadOrCreateNewProjectToUseToUseThisFunction));
+        emit(InitScreenError(I18n.translate(
+            "firstLoadOrCreateNewProjectToUseToUseThisFunction")!));
       }
     });
 
@@ -1772,63 +1776,94 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
   }
 
   Future<bool> checkStoragePermission() async {
-    return true;
-    if (await Permission.manageExternalStorage.isGranted) {
+    print("Checking permission to access storage");
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      print("sdkVersion: ${androidInfo.version.sdkInt}");
+      if (androidInfo.version.sdkInt! < 30) {
+        if (await Permission.storage.isGranted) {
+          return true;
+        } else {
+          print("Requesting permission to access storage");
+          await [Permission.storage].request();
+          if (await Permission.storage.isGranted) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      } else {
+        if (await Permission.manageExternalStorage.isGranted) {
+          return true;
+        } else {
+          print("Requesting permission to access storage");
+          await [Permission.manageExternalStorage].request();
+          if (await Permission.manageExternalStorage.isGranted) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      }
+    } else {
+      if (await Permission.storage.isGranted) {
+        return true;
+      } else {
+        print("Requesting permission to access storage");
+        await [Permission.storage].request();
+        if (await Permission.storage.isGranted) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    /*if (await Permission.manageExternalStorage.isGranted) {
       return true;
     } else {
+      print("Requesting permission to access storage");
       await [Permission.manageExternalStorage].request();
       if (await Permission.manageExternalStorage.isGranted) {
         return true;
       } else {
         return false;
       }
-    }
+    }*/
   }
 
   Future<bool> checkBluetoothPermission() async {
     if (!await QuickBlue.isBluetoothAvailable()) {
       return false;
     }
-    //const version = String.fromEnvironment("sdkVersion", defaultValue: "30");
-    const version = "30"; // 31 for sdk 31+ and 30 for sdk 30
-    if (version == "31") {
-      if (await Permission.bluetoothAdvertise.isGranted &&
-              await Permission.bluetoothConnect.isGranted &&
-              await Permission.bluetoothScan.isGranted //&&
-          /*await Permission.location.isGranted*/) {
-        return true;
-      } else {
-        await [
-          Permission.bluetoothAdvertise,
-          Permission.bluetoothConnect,
-          Permission.bluetoothScan,
-          //Permission.location
-        ].request();
+
+    if (Platform.isAndroid) {
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      if (androidInfo.version.sdkInt! > 30) {
         if (await Permission.bluetoothAdvertise.isGranted &&
                 await Permission.bluetoothConnect.isGranted &&
                 await Permission.bluetoothScan.isGranted //&&
             /*await Permission.location.isGranted*/) {
           return true;
         } else {
-          return false;
+          await [
+            Permission.bluetoothAdvertise,
+            Permission.bluetoothConnect,
+            Permission.bluetoothScan,
+            //Permission.location
+          ].request();
+          if (await Permission.bluetoothAdvertise.isGranted &&
+                  await Permission.bluetoothConnect.isGranted &&
+                  await Permission.bluetoothScan.isGranted //&&
+              /*await Permission.location.isGranted*/) {
+            return true;
+          } else {
+            return false;
+          }
         }
-      }
-    } else {
-      if (await Permission.bluetooth
-              .isGranted && // disable bluetooth permission for sdk 30+
-          await Permission.bluetoothAdvertise.isGranted &&
-          await Permission.bluetoothConnect.isGranted &&
-          await Permission.bluetoothScan.isGranted &&
-          await Permission.location.isGranted) {
-        return true;
       } else {
-        await [
-          Permission.bluetooth, // disable bluetooth permission for sdk 30+
-          Permission.bluetoothAdvertise,
-          Permission.bluetoothConnect,
-          Permission.bluetoothScan,
-          Permission.location
-        ].request();
         if (await Permission.bluetooth
                 .isGranted && // disable bluetooth permission for sdk 30+
             await Permission.bluetoothAdvertise.isGranted &&
@@ -1837,8 +1872,50 @@ class InitScreenBloc extends Bloc<InitScreenEvent, InitScreenState> {
             await Permission.location.isGranted) {
           return true;
         } else {
-          return false;
+          await [
+            Permission.bluetooth, // disable bluetooth permission for sdk 30+
+            Permission.bluetoothAdvertise,
+            Permission.bluetoothConnect,
+            Permission.bluetoothScan,
+            Permission.location
+          ].request();
+          if (await Permission.bluetooth
+                  .isGranted && // disable bluetooth permission for sdk 30+
+              await Permission.bluetoothAdvertise.isGranted &&
+              await Permission.bluetoothConnect.isGranted &&
+              await Permission.bluetoothScan.isGranted &&
+              await Permission.location.isGranted) {
+            return true;
+          } else {
+            return false;
+          }
         }
+      }
+    }
+    if (await Permission
+            .bluetooth.isGranted && // disable bluetooth permission for sdk 30+
+        await Permission.bluetoothAdvertise.isGranted &&
+        await Permission.bluetoothConnect.isGranted &&
+        await Permission.bluetoothScan.isGranted &&
+        await Permission.location.isGranted) {
+      return true;
+    } else {
+      await [
+        Permission.bluetooth, // disable bluetooth permission for sdk 30+
+        Permission.bluetoothAdvertise,
+        Permission.bluetoothConnect,
+        Permission.bluetoothScan,
+        Permission.location
+      ].request();
+      if (await Permission.bluetooth
+              .isGranted && // disable bluetooth permission for sdk 30+
+          await Permission.bluetoothAdvertise.isGranted &&
+          await Permission.bluetoothConnect.isGranted &&
+          await Permission.bluetoothScan.isGranted &&
+          await Permission.location.isGranted) {
+        return true;
+      } else {
+        return false;
       }
     }
   }

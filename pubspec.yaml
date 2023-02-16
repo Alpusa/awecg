@@ -119,6 +119,7 @@ flutter:
     - lib/assets/svg_files/
     - lib/assets/tflite/
     - assets/
+    - lib/i18n/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:awecg/generated/i18n.dart';
 import 'package:awecg/repository/my_colors.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +9,7 @@ import 'package:flutter_sizer/flutter_sizer.dart';
 
 import '../bloc/init_screen/init_screen_bloc.dart';
 import '../models/patient.dart';
+import '../repository/I18n.dart';
 
 class NewProjectPatient extends StatelessWidget {
   NewProjectPatient({super.key});
@@ -45,7 +45,7 @@ class NewProjectPatient extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Text(
-                I18n.of(context).patientInformation,
+                I18n.translate("patientInformation")!,
                 style: TextStyle(
                   fontSize: 25.dp,
                 ),
@@ -53,9 +53,9 @@ class NewProjectPatient extends StatelessWidget {
               Container(
                 width: 20.w,
                 child: Text(
-                  I18n.of(context).completeThePatientInformation +
+                  I18n.translate("completeThePatientInformation")! +
                       ". " +
-                      I18n.of(context).allFieldsAreRequired,
+                      I18n.translate("allFieldsAreRequired")!,
                   textAlign: TextAlign.justify,
                 ),
               ),
@@ -67,11 +67,11 @@ class NewProjectPatient extends StatelessWidget {
                   controller: _patientFullName,
                   obscureText: false,
                   decoration: InputDecoration(
-                    labelText: I18n.of(context).fullName,
+                    labelText: I18n.translate("fullName")!,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return I18n.of(context).fieldIsRequired;
+                      return I18n.translate("fieldIsRequired")!;
                     }
                     return null;
                   },
@@ -87,12 +87,12 @@ class NewProjectPatient extends StatelessWidget {
                   controller: _patientAge,
                   obscureText: false,
                   decoration: InputDecoration(
-                    labelText: I18n.of(context).age,
+                    labelText: I18n.translate("age")!,
                   ),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return I18n.of(context).fieldIsRequired;
+                      return I18n.translate("fieldIsRequired")!;
                     }
                     return null;
                   },
@@ -108,12 +108,12 @@ class NewProjectPatient extends StatelessWidget {
                   controller: _patientPhoneNumber,
                   obscureText: false,
                   decoration: InputDecoration(
-                    labelText: I18n.of(context).phoneNumber,
+                    labelText: I18n.translate("phoneNumber")!,
                   ),
                   keyboardType: TextInputType.phone,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return I18n.of(context).fieldIsRequired;
+                      return I18n.translate("fieldIsRequired")!;
                     }
                     return null;
                   },
@@ -129,11 +129,11 @@ class NewProjectPatient extends StatelessWidget {
                   controller: _patientAddress,
                   obscureText: false,
                   decoration: InputDecoration(
-                    labelText: I18n.of(context).address,
+                    labelText: I18n.translate("address")!,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return I18n.of(context).fieldIsRequired;
+                      return I18n.translate("fieldIsRequired")!;
                     }
                     return null;
                   },
@@ -149,12 +149,12 @@ class NewProjectPatient extends StatelessWidget {
                   controller: _patientEmail,
                   obscureText: false,
                   decoration: InputDecoration(
-                    labelText: I18n.of(context).email,
+                    labelText: I18n.translate("email")!,
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return I18n.of(context).fieldIsRequired;
+                      return I18n.translate("fieldIsRequired")!;
                     }
                     return null;
                   },
@@ -170,11 +170,11 @@ class NewProjectPatient extends StatelessWidget {
                   controller: _patientIdentityCard,
                   obscureText: false,
                   decoration: InputDecoration(
-                    labelText: I18n.of(context).identityCard,
+                    labelText: I18n.translate("identityCard")!,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return I18n.of(context).fieldIsRequired;
+                      return I18n.translate("fieldIsRequired")!;
                     }
                     return null;
                   },
@@ -190,7 +190,7 @@ class NewProjectPatient extends StatelessWidget {
       actions: <Widget>[
         ElevatedButton(
           focusNode: _nextButtonFocus,
-          child: Text(I18n.of(context).next),
+          child: Text(I18n.translate("next")!),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               BlocProvider.of<InitScreenBloc>(context).add(
@@ -209,7 +209,7 @@ class NewProjectPatient extends StatelessWidget {
           },
         ),
         ElevatedButton(
-          child: Text(I18n.of(context).cancel),
+          child: Text(I18n.translate("cancel")!),
           onPressed: () {
             BlocProvider.of<InitScreenBloc>(context)
                 .add(cancelNewProjectInitScreen());

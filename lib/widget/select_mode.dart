@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:awecg/generated/i18n.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 
 import '../bloc/init_screen/init_screen_bloc.dart';
+import '../repository/I18n.dart';
 
 class SelectMode extends StatelessWidget {
   const SelectMode({super.key});
@@ -16,7 +16,7 @@ class SelectMode extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return AlertDialog(
-      title: Text(I18n.of(context).selectMode),
+      title: Text(I18n.translate("selectMode")!),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -29,11 +29,11 @@ class SelectMode extends StatelessWidget {
                   }
                 },
                 child: Container(height: 0.0, width: 0.0)),
-            //Text(I18n.of(context).selectModeContent, style: TextStyle(fontSize: 18.dp)),
+            //Text(I18n.translate("selectModeContent")!, style: TextStyle(fontSize: 18.dp)),
             Container(
               width: 20.w,
               child: Text(
-                I18n.of(context).selectModeFile,
+                I18n.translate("selectModeFile")!,
                 textAlign: TextAlign.justify,
               ),
             ),
@@ -47,7 +47,7 @@ class SelectMode extends StatelessWidget {
                 Navigator.of(context).pop();
               },
               child: Text(
-                I18n.of(context).loadFile,
+                I18n.translate("loadFile")!,
               ),
             ),
             SizedBox(
@@ -57,7 +57,7 @@ class SelectMode extends StatelessWidget {
             Container(
               width: 20.w,
               child: Text(
-                I18n.of(context).selectModeBluetooth,
+                I18n.translate("selectModeBluetooth")!,
                 textAlign: TextAlign.justify,
               ),
             ),
@@ -71,7 +71,7 @@ class SelectMode extends StatelessWidget {
                 //Navigator.of(context).pop();
               },
               child: Text(
-                I18n.of(context).connectToBluetooth,
+                I18n.translate("connectToBluetooth")!,
               ),
             ),
             SizedBox(
@@ -84,7 +84,7 @@ class SelectMode extends StatelessWidget {
       actionsAlignment: MainAxisAlignment.center,
       actions: <Widget>[
         ElevatedButton(
-          child: Text(I18n.of(context).cancel),
+          child: Text(I18n.translate("cancel")!),
           onPressed: () {
             Navigator.of(context).pop();
           },

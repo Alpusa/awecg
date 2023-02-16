@@ -1,4 +1,3 @@
-import 'package:awecg/generated/i18n.dart';
 import 'package:awecg/models/medical_professional.dart';
 import 'package:awecg/models/patient.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ import 'package:pdf/pdf.dart';
 import 'dart:math' as math;
 import 'package:pdf/widgets.dart' as pw;
 
+import '../repository/I18n.dart';
 import '../repository/my_colors.dart';
 
 class InformationPagePW {
@@ -103,7 +103,7 @@ class InformationPagePW {
                         ),
                       ),
                       pw.Text(
-                        const I18n().medicalInformation,
+                        I18n.translate("medicalInformation")!,
                         textAlign: pw.TextAlign.center,
                         style: pw.TextStyle(
                           fontSize: 20,
@@ -117,7 +117,7 @@ class InformationPagePW {
                 pw.Expanded(
                   flex: 1,
                   child: pw.Text(
-                    '${const I18n().date}: ${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}',
+                    '${I18n.translate("date")!}: ${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}',
                     textAlign: pw.TextAlign.center,
                     style: pw.TextStyle(
                       fontSize: (20),
@@ -140,7 +140,7 @@ class InformationPagePW {
                 ),
               ),
               child: pw.Text(
-                const I18n().patientInformation,
+                I18n.translate("patientInformation")!,
                 style: pw.TextStyle(
                   fontSize: (16),
                   fontWeight: pw.FontWeight.bold,
@@ -162,7 +162,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        '${const I18n().fullName}:',
+                        '${I18n.translate("fullName")!}:',
                         style: pw.TextStyle(
                           fontSize: (16),
                           fontWeight: pw.FontWeight.bold,
@@ -181,7 +181,7 @@ class InformationPagePW {
                       ),
                       child: pw.Text(
                         patient.fullName.isEmpty
-                            ? I18n().noData
+                            ? I18n.translate("noData")!
                             : patient.fullName,
                         style: const pw.TextStyle(
                           fontSize: (16),
@@ -200,7 +200,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        '${const I18n().age}:',
+                        '${I18n.translate("age")!}:',
                         style: pw.TextStyle(
                           fontSize: (16),
                           fontWeight: pw.FontWeight.bold,
@@ -218,7 +218,9 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        patient.age.isEmpty ? I18n().noData : patient.age,
+                        patient.age.isEmpty
+                            ? I18n.translate("noData")!
+                            : patient.age,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -236,7 +238,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        '${const I18n().phoneTitle}:',
+                        '${I18n.translate("phoneTitle")!}:',
                         style: pw.TextStyle(
                           fontSize: (16),
                           fontWeight: pw.FontWeight.bold,
@@ -254,7 +256,9 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        patient.phone.isEmpty ? I18n().noData : patient.phone,
+                        patient.phone.isEmpty
+                            ? I18n.translate("noData")!
+                            : patient.phone,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -279,7 +283,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        '${const I18n().address}:',
+                        '${I18n.translate("address")!}:',
                         style: pw.TextStyle(
                           fontSize: (16),
                           fontWeight: pw.FontWeight.bold,
@@ -298,7 +302,7 @@ class InformationPagePW {
                       ),
                       child: pw.Text(
                         patient.address.isEmpty
-                            ? I18n().noData
+                            ? I18n.translate("noData")!
                             : patient.address,
                         style: const pw.TextStyle(
                           fontSize: (16),
@@ -319,7 +323,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        '${const I18n().identityCard}:',
+                        '${I18n.translate("identityCard")!}:',
                         style: pw.TextStyle(
                           fontSize: (16),
                           fontWeight: pw.FontWeight.bold,
@@ -338,7 +342,9 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        patient.id.isEmpty ? I18n().noData : patient.id,
+                        patient.id.isEmpty
+                            ? I18n.translate("noData")!
+                            : patient.id,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -363,7 +369,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        '${const I18n().email}:',
+                        '${I18n.translate("email")!}:',
                         style: pw.TextStyle(
                           fontSize: (16),
                           fontWeight: pw.FontWeight.bold,
@@ -381,7 +387,9 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        patient.email.isEmpty ? I18n().noData : patient.email,
+                        patient.email.isEmpty
+                            ? I18n.translate("noData")!
+                            : patient.email,
                         style: const pw.TextStyle(
                           fontSize: (16),
                         ),
@@ -404,7 +412,7 @@ class InformationPagePW {
                 ),
               ),
               child: pw.Text(
-                const I18n().medicalProfessionalInformation,
+                I18n.translate("medicalProfessionalInformation")!,
                 style: pw.TextStyle(
                   fontSize: (16),
                   fontWeight: pw.FontWeight.bold,
@@ -426,7 +434,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        '${const I18n().fullName}:',
+                        '${I18n.translate("fullName")!}:',
                         style: pw.TextStyle(
                           fontSize: (16),
                           fontWeight: pw.FontWeight.bold,
@@ -445,7 +453,7 @@ class InformationPagePW {
                       ),
                       child: pw.Text(
                         medicalProfessional.fullName.isEmpty
-                            ? I18n().noData
+                            ? I18n.translate("noData")!
                             : medicalProfessional.fullName,
                         style: const pw.TextStyle(
                           fontSize: (16),
@@ -464,7 +472,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        '${const I18n().specialty}:',
+                        '${I18n.translate("specialty")!}:',
                         style: pw.TextStyle(
                           fontSize: (16),
                           fontWeight: pw.FontWeight.bold,
@@ -483,7 +491,7 @@ class InformationPagePW {
                       ),
                       child: pw.Text(
                         medicalProfessional.specialty.isEmpty
-                            ? I18n().noData
+                            ? I18n.translate("noData")!
                             : medicalProfessional.specialty,
                         style: const pw.TextStyle(
                           fontSize: (16),
@@ -509,7 +517,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        '${const I18n().email}:',
+                        '${I18n.translate("email")!}:',
                         style: pw.TextStyle(
                           fontSize: (16),
                           fontWeight: pw.FontWeight.bold,
@@ -528,7 +536,7 @@ class InformationPagePW {
                       ),
                       child: pw.Text(
                         medicalProfessional.email.isEmpty
-                            ? I18n().noData
+                            ? I18n.translate("noData")!
                             : medicalProfessional.email,
                         style: const pw.TextStyle(
                           fontSize: (16),
@@ -547,7 +555,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        '${const I18n().phoneTitle}:',
+                        '${I18n.translate("phoneTitle")!}:',
                         style: pw.TextStyle(
                           fontSize: (16),
                           fontWeight: pw.FontWeight.bold,
@@ -566,7 +574,7 @@ class InformationPagePW {
                       ),
                       child: pw.Text(
                         medicalProfessional.phone.isEmpty
-                            ? I18n().noData
+                            ? I18n.translate("noData")!
                             : medicalProfessional.phone,
                         style: const pw.TextStyle(
                           fontSize: (16),
@@ -592,7 +600,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        '${const I18n().address}:',
+                        '${I18n.translate("address")!}:',
                         style: pw.TextStyle(
                           fontSize: (16),
                           fontWeight: pw.FontWeight.bold,
@@ -611,7 +619,7 @@ class InformationPagePW {
                       ),
                       child: pw.Text(
                         medicalProfessional.address.isEmpty
-                            ? I18n().noData
+                            ? I18n.translate("noData")!
                             : medicalProfessional.address,
                         style: const pw.TextStyle(
                           fontSize: (16),
@@ -632,7 +640,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        '${const I18n().identityCard}:',
+                        '${I18n.translate("identityCard")!}:',
                         style: pw.TextStyle(
                           fontSize: (16),
                           fontWeight: pw.FontWeight.bold,
@@ -652,7 +660,7 @@ class InformationPagePW {
                       ),
                       child: pw.Text(
                         medicalProfessional.id.isEmpty
-                            ? I18n().noData
+                            ? I18n.translate("noData")!
                             : medicalProfessional.id,
                         style: const pw.TextStyle(
                           fontSize: (16),
@@ -678,7 +686,7 @@ class InformationPagePW {
                         ),
                       ),
                       child: pw.Text(
-                        '${const I18n().place}:',
+                        '${I18n.translate("place")!}:',
                         style: pw.TextStyle(
                           fontSize: (16),
                           fontWeight: pw.FontWeight.bold,
@@ -698,7 +706,7 @@ class InformationPagePW {
                       width: getWidth(90),
                       child: pw.Text(
                         medicalProfessional.place.isEmpty
-                            ? I18n().noData
+                            ? I18n.translate("noData")!
                             : medicalProfessional.place,
                         style: const pw.TextStyle(
                           fontSize: (16),
@@ -732,7 +740,7 @@ class InformationPagePW {
                   ),
                   pw.Text(
                     medicalProfessional.fullName.isEmpty
-                        ? I18n().noData
+                        ? I18n.translate("noData")!
                         : medicalProfessional.fullName,
                     textAlign: pw.TextAlign.center,
                     style: const pw.TextStyle(
@@ -741,7 +749,7 @@ class InformationPagePW {
                   ),
                   pw.Text(
                     medicalProfessional.specialty.isEmpty
-                        ? I18n().noData
+                        ? I18n.translate("noData")!
                         : medicalProfessional.specialty,
                     textAlign: pw.TextAlign.center,
                     style: const pw.TextStyle(

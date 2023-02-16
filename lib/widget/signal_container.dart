@@ -1,10 +1,10 @@
-import 'package:awecg/generated/i18n.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sizer/flutter_sizer.dart';
 import 'dart:math' as math;
 
+import '../repository/I18n.dart';
 import '../repository/my_colors.dart';
 
 class SignalContainer extends StatelessWidget {
@@ -228,7 +228,7 @@ class SignalContainer extends StatelessWidget {
                 borderRadius: BorderRadius.circular(5.dp),
               ),
               child: Text(
-                '${I18n().ecgSignal} \t ${I18n().scale}: ${scaleText} div/mV \t ${I18n().speed}: ${speedText} div/s',
+                '${I18n.translate("ecgSignal")!} \t ${I18n.translate("scale")!}: $scaleText div/mV \t ${I18n.translate("speed")!}: $speedText div/s',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

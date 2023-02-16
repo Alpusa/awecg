@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:awecg/generated/i18n.dart';
 import 'package:awecg/models/medical_professional.dart';
 import 'package:awecg/widget/information_page.dart';
 import 'package:awecg/widget/signal_container.dart';
@@ -12,6 +11,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:encrypt/encrypt.dart' as enc;
 
+import '../repository/I18n.dart';
 import '../widget/information_page_pw.dart';
 import 'patient.dart';
 
@@ -530,11 +530,11 @@ class ArrhythmiaResult {
   get getFrequencyClassify {
     if (frequency != null) {
       if (frequency! >= 0 && frequency! <= 60) {
-        return const I18n().bradycardia;
+        return I18n.translate("bradycardia")!;
       } else if (frequency! >= 61 && frequency! <= 99) {
-        return const I18n().normal;
+        return I18n.translate("normal")!;
       } else if (frequency! >= 100) {
-        return const I18n().tachycardia;
+        return I18n.translate("tachycardia")!;
       }
     }
     return null;

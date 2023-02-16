@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:awecg/generated/i18n.dart';
 import 'package:awecg/models/arrhythmia_result.dart';
 import 'package:awecg/models/patient.dart';
 import 'package:awecg/repository/my_colors.dart';
@@ -21,6 +20,7 @@ import 'package:flutter_sizer/flutter_sizer.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../bloc/init_screen/init_screen_bloc.dart';
+import '../repository/I18n.dart';
 import '../widget/new_project_patient.dart';
 import '../widget/select_bluetooth_device.dart';
 
@@ -147,7 +147,7 @@ class InitScreen extends StatelessWidget {
                     bottom: menuButtonPadding,
                   ),
                   child: Tooltip(
-                    message: I18n.of(context).newProject,
+                    message: I18n.translate("newProject"),
                     waitDuration: const Duration(seconds: 1),
                     child: TextButton(
                       style: ButtonStyle(
@@ -206,7 +206,7 @@ class InitScreen extends StatelessWidget {
                     bottom: menuButtonPadding,
                   ),
                   child: Tooltip(
-                    message: I18n.of(context).openProject,
+                    message: I18n.translate("openProject"),
                     waitDuration: const Duration(seconds: 1),
                     child: TextButton(
                       style: ButtonStyle(
@@ -243,7 +243,7 @@ class InitScreen extends StatelessWidget {
                     bottom: menuButtonPadding,
                   ),
                   child: Tooltip(
-                    message: I18n.of(context).patientInformation,
+                    message: I18n.translate("patientInformation"),
                     waitDuration: const Duration(seconds: 1),
                     child: TextButton(
                       style: ButtonStyle(
@@ -279,7 +279,7 @@ class InitScreen extends StatelessWidget {
                     bottom: menuButtonPadding,
                   ),
                   child: Tooltip(
-                    message: I18n.of(context).exportAsPDF,
+                    message: I18n.translate("exportAsPDF"),
                     waitDuration: const Duration(seconds: 1),
                     child: TextButton(
                       style: ButtonStyle(
@@ -343,7 +343,7 @@ class InitScreen extends StatelessWidget {
                     bottom: menuButtonPadding,
                   ),
                   child: Tooltip(
-                    message: I18n.of(context).medicalProfessionalInformation,
+                    message: I18n.translate("medicalProfessionalInformation"),
                     waitDuration: const Duration(seconds: 1),
                     child: TextButton(
                       style: ButtonStyle(
@@ -525,10 +525,10 @@ class InitScreen extends StatelessWidget {
                                               double endY = endSpot.y / scale!;
                                               return [
                                                 LineTooltipItem(
-                                                    '${I18n.of(context).timeDifference}: ${((end - init).abs()).toStringAsFixed(3)} s\n${I18n.of(context).voltageDifference}: ${((endY - initY).abs()).toStringAsFixed(2)} mV',
+                                                    '${I18n.translate("timeDifference")}: ${((end - init).abs()).toStringAsFixed(3)} s\n${I18n.translate("voltageDifference")}: ${((endY - initY).abs()).toStringAsFixed(2)} mV',
                                                     textStyle),
                                                 LineTooltipItem(
-                                                    '${I18n.of(context).time}: ${(touchedSpots[1].x / speed!).toStringAsFixed(3)} s\n${I18n.of(context).voltage}: ${(touchedSpots[1].y / scale!).toStringAsFixed(2)} mV',
+                                                    '${I18n.translate("time")}: ${(touchedSpots[1].x / speed!).toStringAsFixed(3)} s\n${I18n.translate("voltage")}: ${(touchedSpots[1].y / scale!).toStringAsFixed(2)} mV',
                                                     textStyle),
                                               ];
                                             }
@@ -538,7 +538,7 @@ class InitScreen extends StatelessWidget {
                                             return touchedSpots
                                                 .map((LineBarSpot touchedSpot) {
                                               return LineTooltipItem(
-                                                  '${I18n.of(context).time}: ${(touchedSpot.x / speed!).toStringAsFixed(3)} s\n${I18n.of(context).voltage}: ${(touchedSpot.y / scale!).toStringAsFixed(2)} mV',
+                                                  '${I18n.translate("time")}: ${(touchedSpot.x / speed!).toStringAsFixed(3)} s\n${I18n.translate("voltage")}: ${(touchedSpot.y / scale!).toStringAsFixed(2)} mV',
                                                   textStyle);
                                             }).toList();
                                           },
@@ -759,7 +759,7 @@ class InitScreen extends StatelessWidget {
                                 if (file && loaded) {
                                   return Tooltip(
                                     message:
-                                        I18n.of(context).horizontalAlignment,
+                                        I18n.translate("horizontalAlignment"),
                                     child: Slider(
                                       onChanged: (value) {
                                         BlocProvider.of<InitScreenBloc>(context)
@@ -803,8 +803,8 @@ class InitScreen extends StatelessWidget {
 
                                   return Text(
                                     resultAr != null
-                                        ? "${I18n.of(context).project}: ${resultAr!.nameFile}"
-                                        : "${I18n.of(context).project}: ${I18n.of(context).noLoaded}",
+                                        ? "${I18n.translate("project")}: ${resultAr!.nameFile}"
+                                        : "${I18n.translate("project")}: ${I18n.translate("noLoaded")}",
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                     style: TextStyle(
@@ -874,7 +874,7 @@ class InitScreen extends StatelessWidget {
                                               BorderRadius.circular(5.dp),
                                         ),
                                         child: Text(
-                                          '${I18n.of(context).ecgSignal} \t ${I18n.of(context).scale}: $scaleText div/mV \t ${I18n.of(context).speed}: $speedText div/s',
+                                          '${I18n.translate("ecgSignal")} \t ${I18n.translate("scale")}: $scaleText div/mV \t ${I18n.translate("speed")}: $speedText div/s',
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontWeight: FontWeight.bold,
@@ -908,7 +908,7 @@ class InitScreen extends StatelessWidget {
                                     left: 0,
                                     top: 60.dp,
                                     child: Tooltip(
-                                      message: I18n.of(context).previousSignal,
+                                      message: I18n.translate("previousSignal"),
                                       waitDuration: const Duration(seconds: 1),
                                       child: Container(
                                         decoration: BoxDecoration(
@@ -967,7 +967,7 @@ class InitScreen extends StatelessWidget {
                                     right: 0,
                                     top: 60.dp,
                                     child: Tooltip(
-                                      message: I18n.of(context).nextSignal,
+                                      message: I18n.translate("nextSignal"),
                                       waitDuration: const Duration(seconds: 1),
                                       child: Container(
                                         decoration: BoxDecoration(
@@ -1022,7 +1022,7 @@ class InitScreen extends StatelessWidget {
                                   top: 5.dp,
                                   right: 5.dp,
                                   child: Tooltip(
-                                    message: I18n.of(context).disconnect,
+                                    message: I18n.translate("disconnect"),
                                     waitDuration: const Duration(seconds: 1),
                                     child: IconButton(
                                       style: ButtonStyle(
@@ -1102,7 +1102,7 @@ class InitScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5.dp),
                     ),
                     child: Text(
-                      I18n.of(context).frequency.toUpperCase(),
+                      I18n.translate("frequency")!.toUpperCase(),
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -1231,7 +1231,7 @@ class InitScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Tooltip(
-                              message: I18n.of(context).changeSpeed,
+                              message: I18n.translate("changeSpeed"),
                               waitDuration: const Duration(seconds: 1),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -1258,7 +1258,7 @@ class InitScreen extends StatelessWidget {
                               ),
                             ),
                             Tooltip(
-                              message: I18n.of(context).resetZoom,
+                              message: I18n.translate("resetZoom"),
                               waitDuration: const Duration(seconds: 1),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -1282,7 +1282,7 @@ class InitScreen extends StatelessWidget {
                               ),
                             ),
                             Tooltip(
-                              message: I18n.of(context).zoomIn,
+                              message: I18n.translate("zoomIn"),
                               waitDuration: const Duration(seconds: 1),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -1314,7 +1314,7 @@ class InitScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Tooltip(
-                                  message: I18n.of(context).changeScale,
+                                  message: I18n.translate("changeScale"),
                                   waitDuration: const Duration(seconds: 1),
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -1336,7 +1336,7 @@ class InitScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Tooltip(
-                                  message: I18n.of(context).resetScale,
+                                  message: I18n.translate("resetScale"),
                                   waitDuration: const Duration(seconds: 1),
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -1358,7 +1358,7 @@ class InitScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Tooltip(
-                                  message: I18n.of(context).zoomOut,
+                                  message: I18n.translate("zoomOut"),
                                   waitDuration: const Duration(seconds: 1),
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -1399,7 +1399,7 @@ class InitScreen extends StatelessWidget {
                       baselineY ??= 0;
                       zoom ??= 1;
                       return Tooltip(
-                        message: I18n.of(context).verticalAlignment,
+                        message: I18n.translate("verticalAlignment"),
                         child: Slider(
                           onChanged: (value) {
                             BlocProvider.of<InitScreenBloc>(context).add(
@@ -1438,7 +1438,7 @@ class InitScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5.dp),
                     ),
                     child: Text(
-                      I18n.of(context).arrhythmiaDetection.toUpperCase(),
+                      I18n.translate("arrhythmiaDetection")!.toUpperCase(),
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -1462,14 +1462,14 @@ class InitScreen extends StatelessWidget {
                             print("result ${resultAr!.getResult}");
                             switch (resultAr!.getResult) {
                               case 0:
-                                text = I18n.of(context).normal.toUpperCase();
+                                text = I18n.translate("normal")!.toUpperCase();
                                 break;
                               case 1:
                                 text =
-                                    I18n.of(context).arrhythmia.toUpperCase();
+                                    I18n.translate("arrhythmia")!.toUpperCase();
                                 break;
                               case 2:
-                                text = I18n.of(context).noise.toUpperCase();
+                                text = I18n.translate("noise")!.toUpperCase();
                                 break;
                               default:
                             }
@@ -1540,7 +1540,7 @@ class InitScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5.dp),
                     ),
                     child: Text(
-                      I18n.of(context).frequency.toUpperCase(),
+                      I18n.translate("frequency")!.toUpperCase(),
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -1669,7 +1669,7 @@ class InitScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Tooltip(
-                              message: I18n.of(context).changeSpeed,
+                              message: I18n.translate("changeSpeed"),
                               waitDuration: const Duration(seconds: 1),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -1696,7 +1696,7 @@ class InitScreen extends StatelessWidget {
                               ),
                             ),
                             Tooltip(
-                              message: I18n.of(context).resetZoom,
+                              message: I18n.translate("resetZoom"),
                               waitDuration: const Duration(seconds: 1),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -1720,7 +1720,7 @@ class InitScreen extends StatelessWidget {
                               ),
                             ),
                             Tooltip(
-                              message: I18n.of(context).zoomIn,
+                              message: I18n.translate("zoomIn"),
                               waitDuration: const Duration(seconds: 1),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
@@ -1752,7 +1752,7 @@ class InitScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Tooltip(
-                                  message: I18n.of(context).changeScale,
+                                  message: I18n.translate("changeScale"),
                                   waitDuration: const Duration(seconds: 1),
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -1774,7 +1774,7 @@ class InitScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Tooltip(
-                                  message: I18n.of(context).resetScale,
+                                  message: I18n.translate("resetScale"),
                                   waitDuration: const Duration(seconds: 1),
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -1796,7 +1796,7 @@ class InitScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Tooltip(
-                                  message: I18n.of(context).zoomOut,
+                                  message: I18n.translate("zoomOut"),
                                   waitDuration: const Duration(seconds: 1),
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -1837,7 +1837,7 @@ class InitScreen extends StatelessWidget {
                       baselineY ??= 0;
                       zoom ??= 1;
                       return Tooltip(
-                        message: I18n.of(context).verticalAlignment,
+                        message: I18n.translate("verticalAlignment"),
                         child: Slider(
                           onChanged: (value) {
                             BlocProvider.of<InitScreenBloc>(context).add(
@@ -1878,7 +1878,7 @@ class InitScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(5.dp),
                     ),
                     child: Text(
-                      I18n.of(context).arrhythmiaDetection.toUpperCase(),
+                      I18n.translate("arrhythmiaDetection")!.toUpperCase(),
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -1902,14 +1902,14 @@ class InitScreen extends StatelessWidget {
                             print("result ${resultAr!.getResult}");
                             switch (resultAr!.getResult) {
                               case 0:
-                                text = I18n.of(context).normal.toUpperCase();
+                                text = I18n.translate("normal")!.toUpperCase();
                                 break;
                               case 1:
                                 text =
-                                    I18n.of(context).arrhythmia.toUpperCase();
+                                    I18n.translate("arrhythmia")!.toUpperCase();
                                 break;
                               case 2:
-                                text = I18n.of(context).noise.toUpperCase();
+                                text = I18n.translate("noise")!.toUpperCase();
                                 break;
                               default:
                             }
