@@ -9,11 +9,6 @@ This application was developed as a degree project for the degree in Electronic 
 
 You can get the installers for Windows and Android in the Installers folder. <br />
 
-These folder contains two folders, one for English and one for Spanish. <br />
-
-In each folder you will find the installer for Windows and Android. <br />
-
-
 ## 
 
 Industrial University of Santander (UIS) [https://www.uis.edu.co/] <br />
