@@ -78,7 +78,7 @@ class MyApp extends StatelessWidget {
     return FlutterSizer(
       builder: (context, orientation, deviceType) {
         return MaterialApp(
-          title: 'Alas TV',
+          title: 'AWECG',
           initialRoute: "/splash",
           routes: routes,
           theme: ThemeData(
